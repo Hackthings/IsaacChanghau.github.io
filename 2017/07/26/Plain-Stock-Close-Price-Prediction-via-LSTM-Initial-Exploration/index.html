@@ -1,0 +1,1217 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java,deep learning,machine learning,lstm,deeplearning4j,spark," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="This is a practice of using LSTM to do the one day ahead prediction of the stock close price. The dataset I used here is the New York Stock Exchange from Kaggle">
+<meta name="keywords" content="java,deep learning,machine learning,lstm,deeplearning4j,spark">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Plain Stock Close-Price Prediction via LSTM">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/07/26/Plain-Stock-Close-Price-Prediction-via-LSTM-Initial-Exploration/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="This is a practice of using LSTM to do the one day ahead prediction of the stock close price. The dataset I used here is the New York Stock Exchange from Kaggle">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/stockpredict/rnndata.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/stockpredict/predict.png">
+<meta property="og:updated_time" content="2018-01-30T08:33:21.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Plain Stock Close-Price Prediction via LSTM">
+<meta name="twitter:description" content="This is a practice of using LSTM to do the one day ahead prediction of the stock close price. The dataset I used here is the New York Stock Exchange from Kaggle">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/deeplearning/stockpredict/rnndata.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/07/26/Plain-Stock-Close-Price-Prediction-via-LSTM-Initial-Exploration/"/>
+
+
+
+
+
+  <title>Plain Stock Close-Price Prediction via LSTM | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/07/26/Plain-Stock-Close-Price-Prediction-via-LSTM-Initial-Exploration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Plain Stock Close-Price Prediction via LSTM</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-26T13:58:38+08:00">
+                2017-07-26
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:33:21+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 2,723 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 17 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>This is a practice of using <a href="https://en.wikipedia.org/wiki/Long_short-term_memory" target="_blank" rel="noopener">LSTM</a> to do the one day ahead prediction of the stock close price. The dataset I used here is the <a href="https://www.kaggle.com/dgawlik/nyse" target="_blank" rel="noopener">New York Stock Exchange</a> from <a href="https://www.kaggle.com/" target="_blank" rel="noopener">Kaggle</a><a id="more"></a>, which consists of following files:</p>
+<ul>
+<li><code>prices.csv</code>: raw, as-is daily prices. Most of data spans from 2010 to the end 2016, for companies new on stock market date range is shorter. There have been approx. 140 stock splits in that time, this set doesn’t account for that.</li>
+<li><code>prices-split-adjusted.csv</code>: same as prices, but there have been added adjustments for splits.</li>
+<li><code>securities.csv</code>: general description of each company with division on sectors</li>
+<li><code>fundamentals.csv</code>: metrics extracted from annual SEC 10K fillings (2012-2016), should be enough to derive most of popular fundamental indicators.</li>
+</ul>
+<p>For those four <code>.csv</code> files, I only use the <code>prices-split-adjusted.csv</code> to train the LSTM-based neural networks model. Since the data in <code>prices-split-adjusted.csv</code> does not have any missing values, thus, data preprocessing tasks, like data clean, transforming, can be eliminated. Meanwhile, <code>prices-split-adjusted.csv</code> contains the information of more than 500 different stocks, here I only select one of them and extract all the information of such stock to analyze it.<br>To implement the LSTM-based neural networks for learning, I use <a href="https://github.com/deeplearning4j/deeplearning4j" target="_blank" rel="noopener">Deeplearning4J (DL4J)</a> to process the data and build the model. For more information about how to play with DL4J, you can access their offical website <a href="https://deeplearning4j.org/" target="_blank" rel="noopener">here</a>. Typically, if you wonder how to implement a LSTMs, we may want to visit DL4J’s introduction of <a href="https://deeplearning4j.org/usingrnns" target="_blank" rel="noopener">“Using Recurrent Neural Networks in DL4J”</a> as well as some examples of DL4J: <a href="https://github.com/deeplearning4j/dl4j-examples" target="_blank" rel="noopener">[link]</a>.</p>
+<h1 id="Data-Preview"><a href="#Data-Preview" class="headerlink" title="Data Preview"></a>Data Preview</h1><p>Here I use <a href="https://spark.apache.org/docs/latest/sql-programming-guide.html" target="_blank" rel="noopener">Spark Dataframe</a> to analyze the data and show some statistical information. First, we need to configure spark and load the data from file to build the dataframe.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Logger.getLogger(<span class="string">"org"</span>).setLevel(Level.OFF); <span class="comment">// shut down log info.</span></span><br><span class="line">SparkSession spark = SparkSession.builder().master(<span class="string">"local"</span>).appName(<span class="string">"DataProcess"</span>).getOrCreate();</span><br><span class="line">String filename = <span class="string">"prices-split-adjusted.csv"</span>;</span><br><span class="line"><span class="comment">// load data from csv file</span></span><br><span class="line">Dataset&lt;Row&gt; data = spark.read().format(<span class="string">"csv"</span>).option(<span class="string">"header"</span>, <span class="keyword">true</span>)</span><br><span class="line">        .load(<span class="keyword">new</span> ClassPathResource(filename).getFile().getAbsolutePath())</span><br><span class="line">        .withColumn(<span class="string">"openPrice"</span>, functions.col(<span class="string">"open"</span>).cast(<span class="string">"double"</span>)).drop(<span class="string">"open"</span>)</span><br><span class="line">        .withColumn(<span class="string">"lowPrice"</span>, functions.col(<span class="string">"low"</span>).cast(<span class="string">"double"</span>)).drop(<span class="string">"low"</span>)</span><br><span class="line">        .withColumn(<span class="string">"highPrice"</span>, functions.col(<span class="string">"high"</span>).cast(<span class="string">"double"</span>)).drop(<span class="string">"high"</span>)</span><br><span class="line">        .withColumn(<span class="string">"volumeTmp"</span>, functions.col(<span class="string">"volume"</span>).cast(<span class="string">"double"</span>)).drop(<span class="string">"volume"</span>)</span><br><span class="line">        .withColumn(<span class="string">"closePrice"</span>, functions.col(<span class="string">"close"</span>).cast(<span class="string">"double"</span>)).drop(<span class="string">"close"</span>)</span><br><span class="line">        .toDF(<span class="string">"date"</span>, <span class="string">"symbol"</span>, <span class="string">"open"</span>, <span class="string">"low"</span>, <span class="string">"high"</span>, <span class="string">"volume"</span>, <span class="string">"close"</span>);</span><br><span class="line">data.show();</span><br></pre></td></tr></table></figure></p>
+<p>Below gives first 20 lines of the data, inside the <code>prices-split-adjusted.csv</code>, there are 7 fields, <em>date</em>, <em>symbol</em>, <em>open</em>, <em>close</em>, <em>low</em>, <em>high</em> and <em>volume</em>, where <em>symbol</em> denotes the name of stock.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">+----------+------+----------+----------+----------+----------+---------+</span><br><span class="line">|      date|symbol|      open|     close|       low|      high|   volume|</span><br><span class="line">+----------+------+----------+----------+----------+----------+---------+</span><br><span class="line">|2016-01-05|  WLTW|    123.43|125.839996|122.309998|    126.25|2163600.0|</span><br><span class="line">|2016-01-06|  WLTW|125.239998|119.980003|119.940002|125.540001|2386400.0|</span><br><span class="line">|2016-01-07|  WLTW|116.379997|114.949997|    114.93|119.739998|2489500.0|</span><br><span class="line">|2016-01-08|  WLTW|115.480003|116.620003|     113.5|117.440002|2006300.0|</span><br><span class="line">|2016-01-11|  WLTW|117.010002|114.970001|114.089996|117.330002|1408600.0|</span><br><span class="line">|2016-01-12|  WLTW|115.510002|115.550003|     114.5|116.059998|1098000.0|</span><br><span class="line">|2016-01-13|  WLTW|116.459999|112.849998|112.589996|    117.07| 949600.0|</span><br><span class="line">|2016-01-14|  WLTW|113.510002|114.379997|110.050003|115.029999| 785300.0|</span><br><span class="line">|2016-01-15|  WLTW|113.330002|112.529999|111.919998|114.879997|1093700.0|</span><br><span class="line">|2016-01-19|  WLTW|113.660004|110.379997|109.870003|115.870003|1523500.0|</span><br><span class="line">|2016-01-20|  WLTW|109.059998|109.300003|    108.32|111.599998|1653900.0|</span><br><span class="line">|2016-01-21|  WLTW|109.730003|     110.0|    108.32|110.580002| 944300.0|</span><br><span class="line">|2016-01-22|  WLTW|111.879997|111.949997|110.190002|112.949997| 744900.0|</span><br><span class="line">|2016-01-25|  WLTW|    111.32|110.120003|     110.0|114.629997| 703800.0|</span><br><span class="line">|2016-01-26|  WLTW|110.419998|     111.0|107.300003|111.400002| 563100.0|</span><br><span class="line">|2016-01-27|  WLTW|110.769997|110.709999|109.019997|    112.57| 896100.0|</span><br><span class="line">|2016-01-28|  WLTW|110.900002|112.580002|109.900002|112.970001| 680400.0|</span><br><span class="line">|2016-01-29|  WLTW|113.349998|114.470001|111.669998|114.589996| 749900.0|</span><br><span class="line">|2016-02-01|  WLTW|     114.0|     114.5|112.900002|114.849998| 574200.0|</span><br><span class="line">|2016-02-02|  WLTW|    113.25|110.559998|    109.75|113.860001| 694800.0|</span><br><span class="line">+----------+------+----------+----------+----------+----------+---------+</span><br><span class="line">only showing top 20 rows</span><br></pre></td></tr></table></figure></p>
+<p>Then we extract all symbols from the dataset and display some of them:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Dataset&lt;Row&gt; symbols = data.select(<span class="string">"date"</span>, <span class="string">"symbol"</span>).groupBy(<span class="string">"symbol"</span>).agg(functions.count(<span class="string">"date"</span>).as(<span class="string">"count"</span>));</span><br><span class="line">System.out.println(symbols.count());</span><br><span class="line">symbols.show();</span><br></pre></td></tr></table></figure></p>
+<p>Here we got the result, <code>count</code> means the number of data available for each <code>symbol</code>:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Number of Symbols: 501</span><br><span class="line">+------+-----+</span><br><span class="line">|symbol|count|</span><br><span class="line">+------+-----+</span><br><span class="line">|  ALXN| 1762|</span><br><span class="line">|   GIS| 1762|</span><br><span class="line">|     K| 1762|</span><br><span class="line">|   LEN| 1762|</span><br><span class="line">|  SPGI| 1762|</span><br><span class="line">|   AVY| 1762|</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<p>Actually, with Spark Dataframe, you can easily handle the data and deal with a lot of different tasks, here I only show the general information above and do not go deep in this part, since my own task is to build a lstm networks to train the data and make a prediction.<br>In order to transform the data to the format suitable for training, here I define a <code>StockData</code> class to store the stock information, this class will be used in the “Customize DataSet Iterator” part.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by zhanghao on 25/7/17.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ZHANG HAO</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StockData</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String date; <span class="comment">// date</span></span><br><span class="line">    <span class="keyword">private</span> String symbol; <span class="comment">// stock name</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span> open; <span class="comment">// open price</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span> close; <span class="comment">// close price</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span> low; <span class="comment">// low price</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span> high; <span class="comment">// high price</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span> volume; <span class="comment">// volume</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">StockData</span> <span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">StockData</span> <span class="params">(String date, String symbol, <span class="keyword">double</span> open, <span class="keyword">double</span> close, <span class="keyword">double</span> low, <span class="keyword">double</span> high, <span class="keyword">double</span> volume)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.date = date;</span><br><span class="line">        <span class="keyword">this</span>.symbol = symbol;</span><br><span class="line">        <span class="keyword">this</span>.open = open;</span><br><span class="line">        <span class="keyword">this</span>.close = close;</span><br><span class="line">        <span class="keyword">this</span>.low = low;</span><br><span class="line">        <span class="keyword">this</span>.high = high;</span><br><span class="line">        <span class="keyword">this</span>.volume = volume;</span><br><span class="line">    &#125;</span><br><span class="line">    ... Getter and Setter</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="Customize-DataSet-Iterator"><a href="#Customize-DataSet-Iterator" class="headerlink" title="Customize DataSet Iterator"></a>Customize DataSet Iterator</h1><p>For a stock, we have 5 features, say, <code>open</code>, <code>close</code>, <code>low</code>, <code>high</code> and <code>volume</code>, and our task is to predict “future” <code>close</code> price of such stock. So here we set <code>VECTOR_SIZE=5</code>.<br>Since LSTMs is one kind of <a href="https://en.wikipedia.org/wiki/Recurrent_neural_network" target="_blank" rel="noopener">Recurrent Neural Networks</a>, unlike standard feed-forward network, who expect input and output data that is two-dimensional, that is, data with “shape” <code>[numExamples,inputSize]</code>. It means that the data into a feed-forward network has <code>numExamples</code> rows/examples, where each row consists of <code>inputSize</code> columns. Similarly, output data for a standard feed-forward network is also two dimensional, with shape <code>[numExamples,outputSize]</code>.<br>Conversely, data for RNNs are time series. Thus, they have 3 dimensions: one additional dimension for time. Input data has shape <code>[numExamples,inputSize,timeSeriesLength]</code>, and output data has shape <code>[numExamples,outputSize,timeSeriesLength]</code>. It means that the data in <a href="http://nd4j.org/doc/org/nd4j/linalg/api/ndarray/INDArray.html" target="_blank" rel="noopener">INDArray</a> is laid out such that the value at position (i,j,k) is the jth value at the kth time step of the ith example in the minibatch. This data layout is shown below.<br><img src="/images/deeplearning/stockpredict/rnndata.png" alt="RNN and FNN Data"><br>In this case, we need to indicate the time series length of the data, so I define the <code>exampleLength</code> to represent the time series length for RNNs. Another thing is the <code>miniBatchSize</code>, which is defined to create the mini-batch for training.<br>Given the <code>miniBatchSize</code>, <code>VECTOR_SIZE</code> and <code>exampleLength</code>, we need to create the mini-batch <a href="http://nd4j.org/doc/org/nd4j/linalg/dataset/DataSet.html" target="_blank" rel="noopener">DataSet</a> for training, in the DataSet, we have two things, one is 3-dimensional input data, and another is labels. Since we need to predict one-day ahead close price of a stock, and my strategy is to <strong>using the previous one-month information to construct the input time series data</strong>, then <strong>predict the close price of next day</strong>. Suppose that there are 22 working days per month, so the time series length should be 22. For instance, with <code>miniBatchSize=64</code>, assume time start from $t=0$, our input data has shape <code>[numExamples,inputSize,timeSeriesLength]</code>, where <code>numExamples=64</code>, <code>inputSize=5</code> and <code>timeSeriesLength=0~22</code>, while label (output) data has shape <code>[numExamples,outputSize,timeSeriesLength]</code>, where <code>numExamples=64</code>, <code>outputSize=1</code> (only predict close price) and <code>timeSeriesLength=1~23</code> (one-day ahead).<br>More implementation details are shown in the codes below, the <code>StockDataSetIterator</code> implements the standard <a href="http://nd4j.org/doc/org/nd4j/linalg/dataset/api/iterator/DataSetIterator.html" target="_blank" rel="noopener">DataSetIterator</a>, which is pre-defined interface by Deeplearning4J to help user to construct a proper custom dataset available for Deeplearning4J neural networks and for iterating over DataSet objects - objects that encapsulate the input and target INDArrays, plus (optionally) the input and labels mask arrays.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by zhanghao on 26/7/17.</span></span><br><span class="line"><span class="comment"> * Modified by zhanghao on 28/9/17.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ZHANG HAO</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StockDataSetIterator</span> <span class="keyword">implements</span> <span class="title">DataSetIterator</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> VECTOR_SIZE = <span class="number">5</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> miniBatchSize;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> exampleLength = <span class="number">22</span>; <span class="comment">// default 22, say, 22 working days per month</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span>[] minNum = <span class="keyword">new</span> <span class="keyword">double</span>[VECTOR_SIZE];</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span>[] maxNum = <span class="keyword">new</span> <span class="keyword">double</span>[VECTOR_SIZE];</span><br><span class="line">    <span class="keyword">private</span> PriceCategory category = PriceCategory.CLOSE; <span class="comment">// default to train to predict the CLOSE price model</span></span><br><span class="line">    <span class="keyword">private</span> LinkedList&lt;Integer&gt; exampleStartOffsets = <span class="keyword">new</span> LinkedList&lt;&gt;();</span><br><span class="line">    <span class="keyword">private</span> List&lt;StockData&gt; train;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Pair&lt;INDArray, INDArray&gt;&gt; test;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">StockDataSetIterator</span> <span class="params">(String filename, String symbol, <span class="keyword">int</span> miniBatchSize, <span class="keyword">int</span> exampleLength, <span class="keyword">double</span> splitRatio, PriceCategory category)</span> </span>&#123;</span><br><span class="line">        List&lt;StockData&gt; stockDataList = readStockDataFromFile(filename, symbol);</span><br><span class="line">        <span class="keyword">this</span>.miniBatchSize = miniBatchSize;</span><br><span class="line">        <span class="keyword">this</span>.exampleLength = exampleLength;</span><br><span class="line">        <span class="keyword">this</span>.category = category;</span><br><span class="line">        <span class="keyword">int</span> split = (<span class="keyword">int</span>) Math.round(stockDataList.size() * splitRatio);</span><br><span class="line">        train = stockDataList.subList(<span class="number">0</span>, split);</span><br><span class="line">        test = generateTestDataSet(stockDataList.subList(split, stockDataList.size()));</span><br><span class="line">        initializeOffsets();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initializeOffsets</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">        exampleStartOffsets.clear();</span><br><span class="line">        <span class="keyword">int</span> window = exampleLength + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; train.size() - window; i++) &#123; exampleStartOffsets.add(i); &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> List&lt;Pair&lt;INDArray, INDArray&gt;&gt; getTestDataSet() &#123; <span class="keyword">return</span> test; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">double</span>[] getMaxNum() &#123; <span class="keyword">return</span> maxNum; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">double</span>[] getMinNum() &#123; <span class="keyword">return</span> minNum; &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> DataSet <span class="title">next</span><span class="params">(<span class="keyword">int</span> num)</span> </span>&#123; ... &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">double</span> <span class="title">feedLabel</span><span class="params">(StockData data)</span> </span>&#123; ... &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">totalExamples</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> train.size() - exampleLength - <span class="number">1</span>; &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">inputColumns</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> VECTOR_SIZE; &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">totalOutcomes</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.category.equals(PriceCategory.ALL)) <span class="keyword">return</span> VECTOR_SIZE;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">resetSupported</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">false</span>; &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">asyncSupported</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> <span class="keyword">false</span>; &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">reset</span><span class="params">()</span> </span>&#123; initializeOffsets(); &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">batch</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> miniBatchSize; &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">cursor</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> totalExamples() - exampleStartOffsets.size(); &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">numExamples</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> totalExamples(); &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPreProcessor</span><span class="params">(DataSetPreProcessor dataSetPreProcessor)</span> </span>&#123; <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"Not Implemented"</span>); &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> DataSetPreProcessor <span class="title">getPreProcessor</span><span class="params">()</span> </span>&#123; <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"Not Implemented"</span>); &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> List&lt;String&gt; <span class="title">getLabels</span><span class="params">()</span> </span>&#123; <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"Not Implemented"</span>); &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> exampleStartOffsets.size() &gt; <span class="number">0</span>; &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> DataSet <span class="title">next</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> next(miniBatchSize); &#125;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Pair&lt;INDArray, INDArray&gt;&gt; generateTestDataSet (List&lt;StockData&gt; stockDataList) &#123; ... &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> List&lt;StockData&gt; <span class="title">readStockDataFromFile</span> <span class="params">(String filename, String symbol)</span> </span>&#123; ... &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="Build-LSTM-RNNs"><a href="#Build-LSTM-RNNs" class="headerlink" title="Build LSTM RNNs"></a>Build LSTM RNNs</h1><p>After customizing the <code>StockDataSetIterator</code>, we need to build the recurrent neural networks model to train. To handle this task, I construct a four layer neural network, which contains two LSTM layers and two dense layers, <code>GravesLSTM</code> -&gt;  <code>GraveLSTM</code> -&gt; <code>DenseLayer</code> -&gt; <code>RNNOutputLayer</code>, and the stucture of the model and its parameters are shown in the codes.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by zhanghao on 25/7/17.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ZHANG HAO</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LSTMNetwork</span> </span>&#123;</span><br><span class="line">    ... (Parameters definition)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> MultiLayerNetwork <span class="title">buildLstmNetworks</span> <span class="params">(<span class="keyword">int</span> nIn, <span class="keyword">int</span> nOut)</span> </span>&#123;</span><br><span class="line">        MultiLayerConfiguration conf = <span class="keyword">new</span> NeuralNetConfiguration.Builder()</span><br><span class="line">                .seed(seed)</span><br><span class="line">                .iterations(iterations)</span><br><span class="line">                .learningRate(learningRate)</span><br><span class="line">                .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)</span><br><span class="line">                .weightInit(WeightInit.XAVIER)</span><br><span class="line">                .updater(Updater.RMSPROP)</span><br><span class="line">                .regularization(<span class="keyword">true</span>)</span><br><span class="line">                .l2(<span class="number">1e-4</span>)</span><br><span class="line">                .list()</span><br><span class="line">                .layer(<span class="number">0</span>, <span class="keyword">new</span> GravesLSTM.Builder().nIn(nIn).nOut(lstmLayer1Size).activation(Activation.TANH).gateActivationFunction(Activation.HARDSIGMOID).dropOut(dropoutRatio).build())</span><br><span class="line">                .layer(<span class="number">1</span>, <span class="keyword">new</span> GravesLSTM.Builder().nIn(lstmLayer1Size).nOut(lstmLayer2Size).activation(Activation.TANH).gateActivationFunction(Activation.HARDSIGMOID).dropOut(dropoutRatio).build())</span><br><span class="line">                .layer(<span class="number">2</span>, <span class="keyword">new</span> DenseLayer.Builder().nIn(lstmLayer2Size).nOut(denseLayerSize).activation(Activation.RELU).build())</span><br><span class="line">                .layer(<span class="number">3</span>, <span class="keyword">new</span> RnnOutputLayer.Builder().nIn(denseLayerSize).nOut(nOut).activation(Activation.IDENTITY).lossFunction(LossFunctions.LossFunction.MSE).build())</span><br><span class="line">                .backpropType(BackpropType.TruncatedBPTT)</span><br><span class="line">                .tBPTTForwardLength(exampleLength)</span><br><span class="line">                .tBPTTBackwardLength(exampleLength)</span><br><span class="line">                .pretrain(<span class="keyword">false</span>)</span><br><span class="line">                .backprop(<span class="keyword">true</span>)</span><br><span class="line">                .build();</span><br><span class="line">        MultiLayerNetwork net = <span class="keyword">new</span> MultiLayerNetwork(conf);</span><br><span class="line">        net.init();</span><br><span class="line">        net.setListeners(<span class="keyword">new</span> ScoreIterationListener(<span class="number">100</span>));</span><br><span class="line">        <span class="keyword">return</span> net;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="Train-and-Predict"><a href="#Train-and-Predict" class="headerlink" title="Train and Predict"></a>Train and Predict</h1><p>For training and prediction process, we use the stock <code>GOOG</code> as an example. Firstly, we load the file, create the <code>StockDataSetIterator</code> and split the dataset to training dataset and test dataset. Then, construct the LSTM RNN model, and do the training process. The codes are shown below.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by zhanghao on 26/7/17.</span></span><br><span class="line"><span class="comment"> * Modified by zhanghao on 28/9/17.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> ZHANG HAO</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StockPricePrediction</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger log = LoggerFactory.getLogger(StockPricePrediction.class);</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span> <span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String file = <span class="keyword">new</span> ClassPathResource(<span class="string">"prices-split-adjusted.csv"</span>).getFile().getAbsolutePath();</span><br><span class="line">        String symbol = <span class="string">"GOOG"</span>; <span class="comment">// stock name</span></span><br><span class="line">        <span class="keyword">int</span> batchSize = <span class="number">64</span>; <span class="comment">// mini-batch size</span></span><br><span class="line">        <span class="keyword">int</span> exampleLength = <span class="number">22</span>; <span class="comment">// time series length, assume 22 working days per month</span></span><br><span class="line">        <span class="keyword">double</span> splitRatio = <span class="number">0.9</span>; <span class="comment">// 90% for training, 10% for testing</span></span><br><span class="line">        <span class="keyword">int</span> epochs = <span class="number">100</span>; <span class="comment">// training epochs</span></span><br><span class="line">        log.info(<span class="string">"Create dataSet iterator..."</span>);</span><br><span class="line">        PriceCategory category = PriceCategory.CLOSE; <span class="comment">// CLOSE: predict close price</span></span><br><span class="line">        StockDataSetIterator iterator = <span class="keyword">new</span> StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category);</span><br><span class="line">        log.info(<span class="string">"Load test dataset..."</span>);</span><br><span class="line">        List&lt;Pair&lt;INDArray, INDArray&gt;&gt; test = iterator.getTestDataSet();</span><br><span class="line">        log.info(<span class="string">"Build lstm networks..."</span>);</span><br><span class="line">        MultiLayerNetwork net = RecurrentNets.buildLstmNetworks(iterator.inputColumns(), iterator.totalOutcomes());</span><br><span class="line">        log.info(<span class="string">"Training..."</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; epochs; i++) &#123;</span><br><span class="line">            <span class="keyword">while</span> (iterator.hasNext()) net.fit(iterator.next()); <span class="comment">// fit model using mini-batch data</span></span><br><span class="line">            iterator.reset(); <span class="comment">// reset iterator</span></span><br><span class="line">            net.rnnClearPreviousState(); <span class="comment">// clear previous state</span></span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">"Saving model..."</span>);</span><br><span class="line">        File locationToSave = <span class="keyword">new</span> File(<span class="string">"src/main/resources/StockPriceLSTM_"</span>.concat(String.valueOf(category)).concat(<span class="string">".zip"</span>));</span><br><span class="line">        <span class="comment">// saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this to train your network more in the future</span></span><br><span class="line">        ModelSerializer.writeModel(net, locationToSave, <span class="keyword">true</span>);</span><br><span class="line">        log.info(<span class="string">"Load model..."</span>);</span><br><span class="line">        net = ModelSerializer.restoreMultiLayerNetwork(locationToSave);</span><br><span class="line">        log.info(<span class="string">"Testing..."</span>);</span><br><span class="line">        ...</span><br><span class="line">        log.info(<span class="string">"Done..."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Here is some <code>log</code> information while training, and the final prediction graph is shown below.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[main] INFO com.isaac.stock.StockClosePricePrediction - create stock dataSet iterator...</span><br><span class="line">[main] INFO org.nd4j.linalg.factory.Nd4jBackend - Loaded [CpuBackend] backend</span><br><span class="line">...</span><br><span class="line">[main] INFO com.isaac.stock.StockClosePricePrediction - load <span class="built_in">test</span> dataset...</span><br><span class="line">[main] INFO com.isaac.stock.StockClosePricePrediction - build lstm networks...</span><br><span class="line">...</span><br><span class="line">[main] INFO com.isaac.stock.StockClosePricePrediction - training...</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 0 is 0.23434746144095608</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 100 is 0.20113769402560447</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 200 is 0.06535478890549833</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 300 is 0.007232614184257477</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 400 is 0.005167405140985004</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 500 is 0.00527686810765035</span><br><span class="line">...</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 2100 is 0.005341530172120316</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 2200 is 0.008277905296288288</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 2300 is 0.0065657371367870785</span><br><span class="line">[main] INFO org.deeplearning4j.optimize.listeners.ScoreIterationListener - Score at iteration 2400 is 0.006721078631611399</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<p><img src="/images/deeplearning/stockpredict/predict.png" alt="Prediction"><br>The graph above shows that the prediction result is not bad. Actually, the dataset I used here is quiet small, if the dataset is larger, the result should be more accurate, and another things is that the parameters setting also can be modified to achieve more convinced prediction. Anyway, it is just my first attempt to deal with stock price prediction tasks usring LSTMs. Plus, <a href="https://www.quandl.com/product/WIKIP/WIKI/PRICES-Quandl-End-Of-Day-Stocks-Info" target="_blank" rel="noopener">Quandl Financial and Economic Data</a> provides up to 40 years stock prices information for more than 3000 tickers, you can get more related data here.<br>Full Java Codes are available on my GitHub repository: <a href="https://github.com/IsaacChanghau/StockPrediction" target="_blank" rel="noopener">StockPrediction</a></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a href="https://www.kaggle.com/dgawlik/nyse" target="_blank" rel="noopener">New York Stock Exchange – Kaggle</a></li>
+<li><a href="https://deeplearning4j.org/usingrnns" target="_blank" rel="noopener">Using Recurrent Neural Networks in DL4J</a></li>
+<li><a href="https://github.com/deeplearning4j/dl4j-examples/tree/master/dl4j-examples/src/main/java/org/deeplearning4j/examples/recurrent/character" target="_blank" rel="noopener">DL4J examples – GravesLSTMCharModellingExample</a></li>
+<li><a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="noopener">Understanding LSTM Networks</a></li>
+<li><a href="http://www.jakob-aungiers.com/articles/a/LSTM-Neural-Network-for-Time-Series-Prediction" target="_blank" rel="noopener">LSTM Neural Network for Time Series Prediction</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/07/26/Plain-Stock-Close-Price-Prediction-via-LSTM-Initial-Exploration/" title="Plain Stock Close-Price Prediction via LSTM">https://isaacchanghau.github.io/2017/07/26/Plain-Stock-Close-Price-Prediction-via-LSTM-Initial-Exploration/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/lstm/" rel="tag"># lstm</a>
+          
+            <a href="/tags/deeplearning4j/" rel="tag"># deeplearning4j</a>
+          
+            <a href="/tags/spark/" rel="tag"># spark</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/22/LSTM-and-GRU-Formula-Summary/" rel="next" title="LSTM and GRU -- Formula Summary">
+                <i class="fa fa-chevron-left"></i> LSTM and GRU -- Formula Summary
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/02/Seq2Seq-Learning-and-Neural-Conversational-Model/" rel="prev" title="Seq2Seq Learning and Neural Conversational Model">
+                Seq2Seq Learning and Neural Conversational Model <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Data-Preview"><span class="nav-number">1.</span> <span class="nav-text">Data Preview</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Customize-DataSet-Iterator"><span class="nav-number">2.</span> <span class="nav-text">Customize DataSet Iterator</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Build-LSTM-RNNs"><span class="nav-number">3.</span> <span class="nav-text">Build LSTM RNNs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Train-and-Predict"><span class="nav-number">4.</span> <span class="nav-text">Train and Predict</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

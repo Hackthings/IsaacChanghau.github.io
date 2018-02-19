@@ -1,0 +1,1280 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="deep learning,machine learning,mathematics,autoencoder," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="The article is excerpted from Andrew Ng’s CS294A Lecture notes: Sparse Autoencoder with some personal understanding. Before going through this article, you would better get some information from the B">
+<meta name="keywords" content="deep learning,machine learning,mathematics,autoencoder">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Autoencoder and Sparsity">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/08/19/Autoencoder-and-Sparsity/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="The article is excerpted from Andrew Ng’s CS294A Lecture notes: Sparse Autoencoder with some personal understanding. Before going through this article, you would better get some information from the B">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/autoencoder/1.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/autoencoder/2.png">
+<meta property="og:updated_time" content="2018-01-30T08:31:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Autoencoder and Sparsity">
+<meta name="twitter:description" content="The article is excerpted from Andrew Ng’s CS294A Lecture notes: Sparse Autoencoder with some personal understanding. Before going through this article, you would better get some information from the B">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/deeplearning/autoencoder/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/08/19/Autoencoder-and-Sparsity/"/>
+
+
+
+
+
+  <title>Autoencoder and Sparsity | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/08/19/Autoencoder-and-Sparsity/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Autoencoder and Sparsity</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-19T14:43:15+08:00">
+                2017-08-19
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:31:43+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 3,019 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 19 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>The article is excerpted from Andrew Ng’s <a href="https://web.stanford.edu/class/cs294a/" target="_blank" rel="noopener">CS294A Lecture notes</a>: <a href="https://web.stanford.edu/class/cs294a/sparseAutoencoder_2011new.pdf" target="_blank" rel="noopener">Sparse Autoencoder</a> with some personal understanding. Before going through this article, you would better get some information from the <a href="https://github.com/IsaacChanghau/2017/08/17/Backpropagation-Algorithm/" target="_blank" rel="noopener">Backpropagation Algorithm</a>.<a id="more"></a></p>
+<p>Suppose we have only unlabeled training examples set $\{x^{(1)},x^{(2)},x^{(3)},\dots\}$, where $x^{(i)}\in\mathbb{R}^{n}$. An <strong>autoencoder neural network</strong> is an <strong>unsupervised learning algorithm</strong> that applies backpropagation, setting the target values to be equal to the inputs. i.e., it uses $y^{(i)}=x^{(i)}$. Below is an autoencoder:<br><img src="/images/deeplearning/autoencoder/1.png" alt="1.png"><br>The <strong>autoencoder</strong> tries to learn a function $h_{W,b}(x)\approx x$. In other words, it is trying to learn an approximation to the identity function, so as to output $\hat{x}$ that is similar to $x$. The identity function seems a particularly trivial function to be trying to learn; but <strong>by placing constraints on the network</strong>, such as by <strong>limiting the number of hidden units</strong>, we can <strong>discover interesting structure about the data</strong>. </p>
+<p>As a concrete example, suppose the inputs x are the pixel intensity values from a $10\times 10$ image (100 pixels) so $n=100$, and there are $s_{2}=50$ hidden units in layer $L_{2}$. Note that we also have $y\in\mathbb{R}^{100}$. Since there are only 50 hidden units, the network is forced to <strong>learn a compressed representation of the input</strong>. That is, given only the vector of hidden unit activations $a^{(2)}\in\mathbb{R}^{50}$, it must try to <strong>reconstruct</strong> the 100-pixel input $x$.</p>
+<p>If the input were completely random, say, each $x_{i}$ comes from an I.I.D. (Independently and Identically Distribute) Gaussian independent of the other features, then this compression task would be very difficult. But if there is structure in the data, for example, if some of the input features are correlated, then this algorithm will be able to discover some of those correlations.</p>
+<blockquote>
+<p>In fact, this simple autoencoder oftern ends up learning a <strong>low-dimensional representation</strong> very similar to <strong>PCA’s</strong>.</p>
+</blockquote>
+<p>Our argument above relied on the number of hidden units $s_{2}$ being small. But even when the number of hidden units is large (perhaps even greater than the number of input pixels), we can still discover interesting structure, by imposing other constraints on the network. In particular, if we impose a <strong>sparsity constraint</strong> on the hidden units, then the autoencoder will still discover interesting structure in the data, even if the number of hidden units is large.</p>
+<p>Informally, we will think of a neuron as being “active” (or as “firing”) if its output value is close to 1, or as being “inactive” if its output value is close to 0. We would like to constrain the neurons to be inactive most of the time.</p>
+<blockquote>
+<p>This discussion assumes a <code>sigmoid</code> activation function. If you are using a <code>tanh</code> activation function, then we think of a neuron as being inactive when it outputs values close to -1.</p>
+</blockquote>
+<p>Recall that $a_{j}^{(2)}$ denotes the activation of hidden unit $j$ in the autoencoder. However, this notation does not make explicit what was the input $x$ that led to that activation. Thus, we will write $a_{j}^{(2)}(x)$ to denote the activation of this hidden unit when the network is given a specific input $x$. Further, let$$<br>\hat{\rho}_{j}=\frac{1}{m}\sum_{i=1}^{m}\big[a_{j}^{(2)}(x^{(i)})\big]\tag{1}<br>$$be the <strong>average activation</strong> of hidden unit $j$ (averaged over the training set). We would like to (approximately) enforce the constraint$$<br>\hat{\rho}_{j}=\rho\tag{2}<br>$$where $\rho$ is a <strong>sparsity parameter</strong>, typically, a small value close to zero (say $\rho=0.05$). In other words, we would like the average activation of each hidden neuron $j$ to be close to 0.05 (say). To satisfy this constraint, the hidden unit’s activations must mostly be near 0.</p>
+<p>To achieve this, we will add an extra <strong>penalty term</strong> to our <strong>optimization objective</strong> that penalizes $\hat{\rho}_{j}$ deviating significantly from $\rho$. Many choices of the penalty term will give reasonable results. We will choosr the following:$$<br>\sum_{j=1}^{s_{2}}\rho\log\frac{\rho}{\hat{\rho}_{j}}+(1-\rho)\log\frac{1-\rho}{1-\hat{\rho}_{j}}\tag{3}<br>$$Here, $s_{2}$ is the number of neurons in the hidden layer, and the index $j$ is summing over the hidden units in our network. If you are familiar with the concept of <strong>KL divergence</strong>, this penalty term is based on it, and can also be written$$<br>\sum_{j=1}^{s_{2}}KL(\rho\Vert\hat{\rho}_{j})\tag{4}<br>$$where $KL(\rho\Vert\hat{\rho}_{j})=\rho\log\frac{\rho}{\hat{\rho}_{j}}+(1-\rho)\log\frac{1-\rho}{1-\hat{\rho}_{j}}$ is the <strong>Kullback-Leibler (KL) divergence</strong> between a <strong>Bernoulli random variable</strong> with mean $\rho$ and a <strong>Bernoulli random variable</strong> with mean $\hat{\rho}_{j}$. <strong>KL-divergence is a standard function for measuring how different two different distributions are</strong>.</p>
+<p>This penalty function has the property that $KL(\rho\Vert\hat{\rho}_{j})=0$ if $\hat{\rho}_{j}=\rho$, and<br>otherwise it increases monotonically as $\hat{\rho}_{j}$ diverges from $\rho$. For example, in the figure below, we have set $\rho=0.2$, and plotted $KL(\rho\Vert\hat{\rho}_{j})$ for a range of values of $\hat{\rho}_{j}$<br><img src="/images/deeplearning/autoencoder/2.png" alt="2.png"><br>We see that the KL-divergence reaches its minimum of 0 at $\hat{\rho}_{j}=\rho$, and blows up (it actually approaches $\infty$) as $\hat{\rho}_{j}$ approaches 0 or 1. <strong>Thus, minimizing this penalty term has the effect of causing $\hat{\rho}_{j}$ to be close to $\rho$</strong>. Our overall cost function is now$$<br>J_{sparse}(W,b)=J(W,b)+\beta\sum_{j=1}^{s_{2}}KL(\rho\Vert\hat{\rho}_{j})\tag{5}<br>$$where $J(W,b)$ is as defined previously, and <strong>$\beta$ controls the weight of the sparsity penalty term</strong>. The term $\hat{\rho}_{j}$ (implicitly) depends on $W$, $b$ also, because it is the average activation of hidden unit $j$, and the activation of a hidden unit depends on the parameters $W$, $b$.</p>
+<p>To incorporate the KL-divergence term into your derivative calculation, there is a simple-to-implement trick involving only a small change to your code. Specifically, where previously for the second layer ($l = 2$), during backpropagation you would have computed$$<br>\delta_{i}^{(2)}=\bigg(\sum_{j=1}^{s_{2}}W_{ji}^{(2)}\delta_{j}^{(3)}\bigg)f’(z_{i}^{(2)})\tag{6}<br>$$now instead compute$$<br>\delta_{i}^{(2)}=\bigg(\big(\sum_{j=1}^{s_{2}}W_{ji}^{(2)}\delta_{j}^{(3)}\big)+\beta\big(-\frac{\rho}{\hat{\rho}_{i}}+\frac{1-\rho}{1-\hat{\rho}_{i}}\big)\bigg)f’(z_{i}^{(2)})\tag{7}<br>$$</p>
+<blockquote>
+<p>Here is how to derive the $\frac{\partial J_{sparse}(W,b)}{\partial W_{i,j}^{(l)}}$ and $\frac{\partial J_{sparse}(W,b)}{\partial b_{i}^{(l)}}$<br>Denote $S(W,b)=\sum_{j=1}^{s_{2}}KL(\rho\Vert\hat{\rho}_{j})$, so (5) can be written as$$<br>J_{sparse}(W,b)=J(W,b)+\beta S(W,b)\tag{8}<br>$$Then the two partial derivations in gradient descent algorithm are$$\begin{cases}<br>\frac{\partial J_{sparse}(W,b)}{\partial W_{i,j}^{(l)}} &amp;=\frac{\partial J(W,b)}{\partial W_{i,j}^{(l)}}+\beta\frac{\partial S(W,b)}{\partial W_{i,j}^{(l)}}\\<br>\frac{\partial J_{sparse}(W,b)}{\partial b_{i}^{(l)}} &amp;=\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}+\beta\frac{\partial S(W,b)}{\partial b_{i}^{(l)}}<br>\end{cases}\tag{9}$$The calculation of $\frac{\partial J(W,b)}{\partial W_{i,j}^{(l)}}$ and $\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}$ have discussed in <a href="https://isaacchanghau.github.io/2017/08/17/Backpropagation-Algorithm/">Backpropagation Algorithm</a>, here we only discuss the computation of $\frac{\partial S(W,b)}{\partial W_{i,j}^{(l)}}$ and $\frac{\partial S(W,b)}{\partial b_{i}^{(l)}}$.<br>First, expand $S(W,b)$, we have$$<br>S(W,b)=\sum_{t=1}^{s_{2}}KL(\rho\Vert\hat{\rho}_{t})=\sum_{t=1}^{s_{2}}\big[\rho\ast\log\frac{\rho}{\hat{\rho}_{t}}+(1-\rho)\ast\log\frac{1-\rho}{1-\hat{\rho}_{t}}\big]\tag{10}<br>$$where$$<br>\hat{\rho}_{t}=\frac{1}{m}\sum_{k=1}^{m}a_{t}^{(2)}\big(x^{(k)}\big)=\frac{1}{m}\sum_{k=1}^{m}f\big(z_{t}^{(2)}\big)\tag{11}<br>$$here$$<br>z_{t}^{(2)}=z_{t}^{(2)}\big(x^{(k)}\big)=\bigg(\sum_{s=1}^{s_{1}}W_{t,s}^{(1)}x_{s}^{(k)}\bigg)+b_{t}^{(1)}\tag{12}<br>$$according to (11) and (12), we can get the following two points:</p>
+<ol>
+<li>when $l\neq 1$, $\frac{\partial S(W,b)}{\partial W_{i,j}^{(l)}}=0$, $\frac{\partial S(W,b)}{\partial b_{i}^{(l)}}=0$.</li>
+<li>$\frac{\partial S(W,b)}{\partial W_{i,j}^{(l)}}=\frac{\partial\sum_{t=1}^{s_{2}}KL(\rho\Vert\hat{\rho}_{t})}{\partial W_{i,j}^{(l)}}=\frac{\partial KL(\rho\Vert\hat{\rho}_{i})}{\partial W_{i,j}^{(l)}}$; $\frac{\partial S(W,b)}{\partial b_{i}^{(l)}}=\frac{\partial\sum_{t=1}^{s_{2}}KL(\rho\Vert\hat{\rho}_{t})}{\partial b_{i}^{(l)}}=\frac{\partial KL(\rho\Vert\hat{\rho}_{i})}{\partial b_{i}^{(l)}}$.</li>
+</ol>
+</blockquote>
+<blockquote>
+<p>According to the above two points, we have$$\begin{aligned}<br>\frac{\partial S(W,b)}{\partial W_{i,j}^{(1)}} &amp;=\frac{\partial}{\partial W_{i,j}^{(1)}}\big[\rho\ast\log\frac{\rho}{\hat{\rho}_{i}}+(1-\rho)\ast\log\frac{1-\rho}{1-\hat{\rho}_{i}}\big]\\<br>&amp;= \frac{\partial}{\partial W_{i,j}^{(1)}}\big\{\rho(\log\rho-\log\hat{\rho}_{i})+(1-\rho)[\log(1-\rho)-\log(1-\hat{\rho}_{i})]\big\}\quad (\textrm{According to }\log\frac{A}{B}=\log A-\log B)\\<br>&amp;=\rho\big(0-\frac{1}{\hat{\rho}_{i}}\frac{\partial\hat{\rho}_{i}}{\partial W_{i,j}^{(1)}}\big)+(1-\rho)\big(0+\frac{1}{1-\hat{\rho}_{i}}\frac{\partial\hat{\rho}_{i}}{\partial W_{i,j}^{(1)}}\big)\quad (\rho\textrm{ is constant})\\<br>&amp;=\big(-\frac{\rho}{\hat{\rho}_{i}}+\frac{1-\rho}{1-\hat{\rho}_{i}}\big)\frac{\partial\hat{\rho}_{i}}{\partial W_{i,j}^{(1)}}<br>\end{aligned}$$Samely, we have$$<br>\frac{\partial S(W,b)}{\partial b_{i}^{(1)}}=\big(-\frac{\rho}{\hat{\rho}_{i}}+\frac{1-\rho}{1-\hat{\rho}_{i}}\big)\frac{\partial\hat{\rho}_{i}}{\partial b_{i}^{(1)}}<br>$$Then, we need to compute $\frac{\partial\hat{\rho}_{i}}{\partial W_{i,j}^{(1)}}$ and $\frac{\partial\hat{\rho}_{i}}{\partial b_{i}^{(1)}}$, according to (11), we have$$\begin{aligned}<br>\frac{\partial\hat{\rho}_{i}}{\partial W_{i,j}^{(1)}} &amp;=\frac{1}{m}\sum_{k=1}^{m}f’\big(z_{i}^{(2)}\big)\centerdot\frac{\partial z_{i}^{(2)}}{\partial W_{i,j}^{(1)}}\\<br>&amp;=\frac{1}{m}\sum_{k=1}^{m}f’\big(z_{i}^{(2)}\big)\centerdot x_{j}^{(k)}\quad (\textrm{according to (12), we have }\frac{\partial z_{i}^{(2)}}{\partial W_{i,j}^{(1)}}=x_{j}^{(k)})<br>\end{aligned}$$Samely, we have$$\begin{aligned}<br>\frac{\partial\hat{\rho}_{i}}{\partial b_{i}^{(1)}} &amp;=\frac{1}{m}\sum_{k=1}^{m}f’\big(z_{i}^{(2)}\big)\centerdot\frac{\partial z_{i}^{(2)}}{\partial b_{i}^{(1)}}\\<br>&amp;=\frac{1}{m}\sum_{k=1}^{m}f’\big(z_{i}^{(2)}\big)\quad (\textrm{according to (12), we have }\frac{\partial z_{i}^{(2)}}{\partial b_{i}^{(1)}}=1)<br>\end{aligned}$$In summary, we can obtain$$\begin{cases}<br>\frac{\partial S(W,b)}{\partial W_{i,j}^{(1)}} &amp;=\big(-\frac{\rho}{\hat{\rho}_{i}}+\frac{1-\rho}{1-\hat{\rho}_{i}}\big)\centerdot\frac{1}{m}\sum_{k=1}^{m}f’\big(z_{i}^{(2)}\big)\centerdot x_{j}^{(k)}\\<br>\frac{\partial S(W,b)}{\partial b_{i}^{(1)}}&amp;=\big(-\frac{\rho}{\hat{\rho}_{i}}+\frac{1-\rho}{1-\hat{\rho}_{i}}\big)\centerdot\frac{1}{m}\sum_{k=1}^{m}f’\big(z_{i}^{(2)}\big)<br>\end{cases}\tag{13}$$In <a href="https://isaacchanghau.github.io/2017/08/17/Backpropagation-Algorithm/">Backpropagation Algorithm</a>, we already obtain that$$\begin{cases}<br>\frac{\partial J(W,b)}{\partial W_{i,j}^{(1)}}&amp;=\big[\frac{1}{m}\sum_{k=1}^{m}a_{j}^{(1)}\delta_{i}^{(2)}\big]+\lambda W_{i,j}^{(1)}\\<br>\frac{\partial J(W,b)}{\partial b_{i}^{(1)}}&amp;=\frac{1}{m}\sum_{k=1}^{m}\delta_{i}^{(2)}<br>\end{cases}\tag{14}$$Thus, put (13), (14) into (9), we will get$$\begin{cases}<br>\frac{\partial J_{sparse}(W,b)}{\partial W_{i,j}^{(l)}} &amp;=\big[\frac{1}{m}\sum_{k=1}^{m}a_{j}^{(1)}\delta_{i}^{(2)}\big]+\lambda W_{i,j}^{(1)}+\beta\big(-\frac{\rho}{\hat{\rho}_{i}}+\frac{1-\rho}{1-\hat{\rho}_{i}}\big)\centerdot\frac{1}{m}\sum_{k=1}^{m}f’\big(z_{i}^{(2)}\big)\centerdot x_{j}^{(k)}\\<br>\frac{\partial J_{sparse}(W,b)}{\partial b_{i}^{(l)}} &amp;=\frac{1}{m}\sum_{k=1}^{m}\delta_{i}^{(2)}+\beta\big(-\frac{\rho}{\hat{\rho}_{i}}+\frac{1-\rho}{1-\hat{\rho}_{i}}\big)\centerdot\frac{1}{m}\sum_{k=1}^{m}f’\big(z_{i}^{(2)}\big)<br>\end{cases}\tag{15}$$Note that $a_{j}^{(1)}$, $\delta_{i}^{(2)}$ and $z_{i}^{(2)}$ are related to $x^{(k)}$ (or $y^{(k)}$), particularly, we have $a_{j}^{(1)}=x_{j}^{(k)}$. After simplify (15), we get$$\begin{cases}<br>\frac{\partial J_{sparse}(W,b)}{\partial W_{i,j}^{(l)}} &amp;=\frac{1}{m}\sum_{k=1}^{m}\bigg\{a_{j}^{(1)}\big[\delta_{i}^{(2)}+\beta\big(-\frac{\rho}{\hat{\rho}_{i}}+\frac{1-\rho}{1-\hat{\rho}_{i}}\big)f’\big(z_{i}^{(2)}\big)\big]\bigg\}+\lambda W_{i,j}^{(1)}\\<br>\frac{\partial J_{sparse}(W,b)}{\partial b_{i}^{(l)}} &amp;=\frac{1}{m}\sum_{k=1}^{m}\big[\delta_{i}^{(2)}+\beta\big(-\frac{\rho}{\hat{\rho}_{i}}+\frac{1-\rho}{1-\hat{\rho}_{i}}\big)f’\big(z_{i}^{(2)}\big)\big]<br>\end{cases}$$Now, we obtain how to change (6) to (7).</p>
+</blockquote>
+<p>One subtlety is that you’ll need to know $\hat{\rho}_{i}$ to compute this term. Thus, you’ll need to compute a forward pass on all the training examples first to compute the average activations on the training set, before computing backpropagation on any example. If your training set is small enough to fit comfortably in computer memory (this will be the case for the programming assignment), you can compute forward passes on all your examples and keep the resulting activations in memory and compute the $\hat{\rho}_{i}$s. Then you can use your precomputed activations to perform backpropagation on all your examples. <strong>If your data is too large to fit in memory, you may have to scan through your examples computing a forward pass on each to accumulate (sum up) the activations and compute $\hat{\rho}_{i}$</strong> (discarding the result of each forward pass after you have taken its activations $a_{i}^{(2)}$ into account for computing $\hat{\rho}_{i}$). Then after having computed $\hat{\rho}_{i}$, you’d have to redo the forward pass for each example so that you can do backpropagation on that example. <strong>In this latter case, you would end up computing a forward pass twice on each example in your training set, making it computationally less efficient</strong>.</p>
+<p>The full derivation showing that the algorithm above results in gradient descent is beyond the scope of these notes. But if you implement the autoencoder using backpropagation modified this way, you will be performing gradient descent exactly on the objective $J_{sparse}(W,b)$. Using the derivative checking method, you will be able to verify this for yourself as well.</p>
+<p>Below is the <strong>summary of notation</strong></p>
+<style>
+table th:first-of-type {
+    width: 70px;
+}
+</style>
+
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Expression</th>
+<th style="text-align:left">Explanation </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">$x$</td>
+<td style="text-align:left">Input features for a training example, $x\in\mathbb{R}^{n}$.</td>
+</tr>
+<tr>
+<td style="text-align:center">$y$</td>
+<td style="text-align:left">Output/target values. Here, $y$ can be vector valued. In the case of an autoencoder, $y = x$.</td>
+</tr>
+<tr>
+<td style="text-align:center">$(x^{(i)},y^{(i)})$</td>
+<td style="text-align:left">The $i$-th training example.</td>
+</tr>
+<tr>
+<td style="text-align:center">$h_{W,b}(x)$</td>
+<td style="text-align:left">Output of our hypothesis on input $x$, using parameters $W$, $b$. This should be a vector of the same dimension as the target value $y$.</td>
+</tr>
+<tr>
+<td style="text-align:center">$W_{i,j}^{(l)}$</td>
+<td style="text-align:left">The parameter associated with the connection between unit $j$ in layer $l$, and unit $i$ in layer $l+1$.</td>
+</tr>
+<tr>
+<td style="text-align:center">$b_{i}^{(l)}$</td>
+<td style="text-align:left">The bias term associated with unit $i$ in layer $l+1$. Can also be thought of as the parameter associated with the connection between the bias unit in layer $l$ and unit $i$ in layer $l+1$.</td>
+</tr>
+<tr>
+<td style="text-align:center">$\theta$</td>
+<td style="text-align:left">Our parameter vector. It is useful to think of this as the result of taking the parameters $W$, $b$ and “unrolling” them into a long column vector.</td>
+</tr>
+<tr>
+<td style="text-align:center">$a_{i}^{(l)}$</td>
+<td style="text-align:left">Activation (output) of unit $i$ in layer $l$ of the network. In addition, since layer $L_{1}$ is the input layer, we also have $a_{i}^{(1)}=x_{i}$.</td>
+</tr>
+<tr>
+<td style="text-align:center">$f(\centerdot)$</td>
+<td style="text-align:left">The activation function. Throughout these notes, we used $f(z)=tanh(z)$.</td>
+</tr>
+<tr>
+<td style="text-align:center">$z_{i}^{(l)}$</td>
+<td style="text-align:left">Total weighted sum of inputs to unit $i$ in layer $l$. Thus, $a_{i}^{(l)}=f\big(z_{i}^{(l)}\big)$</td>
+</tr>
+<tr>
+<td style="text-align:center">$\alpha$</td>
+<td style="text-align:left">Learning rate parameter.</td>
+</tr>
+<tr>
+<td style="text-align:center">$s_{l}$</td>
+<td style="text-align:left">Number of units in layer $l$ (not counting the bias unit).</td>
+</tr>
+<tr>
+<td style="text-align:center">$n_{l}$</td>
+<td style="text-align:left">Number layers in the network. Layer $L_{1}$ is usually the input layer, and layer $L_{n_{l}} the output layer.</td>
+</tr>
+<tr>
+<td style="text-align:center">$\lambda$</td>
+<td style="text-align:left">Weight decay parameter.</td>
+</tr>
+<tr>
+<td style="text-align:center">$\hat{x}$</td>
+<td style="text-align:left">For an autoencoder, its output; i.e., its reconstruction of the input $x$. Same meaning as $h_{W,b}(x)$.</td>
+</tr>
+<tr>
+<td style="text-align:center">$\rho$</td>
+<td style="text-align:left">Sparsity parameter, which specifies our desired level of sparsity.</td>
+</tr>
+<tr>
+<td style="text-align:center">$\hat{\rho}_{i}$</td>
+<td style="text-align:left">The average activation of hidden unit $i$ (in the sparse autoencoder).</td>
+</tr>
+<tr>
+<td style="text-align:center">$\beta$</td>
+<td style="text-align:left">Weight of the sparsity penalty term (in the sparse autoencoder objective).</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/08/19/Autoencoder-and-Sparsity/" title="Autoencoder and Sparsity">https://isaacchanghau.github.io/2017/08/19/Autoencoder-and-Sparsity/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/mathematics/" rel="tag"># mathematics</a>
+          
+            <a href="/tags/autoencoder/" rel="tag"># autoencoder</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/17/Backpropagation-Algorithm/" rel="next" title="Backpropagation Algorithm">
+                <i class="fa fa-chevron-left"></i> Backpropagation Algorithm
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/10/Python-itchat包分析微信朋友/" rel="prev" title="Python itchat包分析微信好友">
+                Python itchat包分析微信好友 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

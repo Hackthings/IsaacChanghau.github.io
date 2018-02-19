@@ -1,0 +1,1214 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java,deep learning,natural language processing,word embeddings,skip-gram," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="It is a summary of Dependency-based Word Embeddings and A Simple Word Embedding Model for Lexical Substitution">
+<meta name="keywords" content="java,deep learning,natural language processing,word embeddings,skip-gram">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Word2Vecf -- Dependency-Based Word Embeddings and Lexical Substitute">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/05/18/word2vecf/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="It is a summary of Dependency-based Word Embeddings and A Simple Word Embedding Model for Lexical Substitution">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/word2vecf/parse.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/word2vecf/example.png">
+<meta property="og:updated_time" content="2017-11-02T10:52:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Word2Vecf -- Dependency-Based Word Embeddings and Lexical Substitute">
+<meta name="twitter:description" content="It is a summary of Dependency-based Word Embeddings and A Simple Word Embedding Model for Lexical Substitution">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/nlp/word2vecf/parse.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/05/18/word2vecf/"/>
+
+
+
+
+
+  <title>Word2Vecf -- Dependency-Based Word Embeddings and Lexical Substitute | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/05/18/word2vecf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Word2Vecf -- Dependency-Based Word Embeddings and Lexical Substitute</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-18T21:49:56+08:00">
+                2017-05-18
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2017-11-02T18:52:09+08:00" content="2017-11-02">
+                  2017-11-02
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 2,345 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 15 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Natural-Language-Processing/" itemprop="url" rel="index">
+                    <span itemprop="name">Natural Language Processing</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>It is a summary of <a href="http://www.aclweb.org/anthology/P14-2050" target="_blank" rel="noopener">Dependency-based Word Embeddings</a> and <a href="http://www.aclweb.org/anthology/W15-1501" target="_blank" rel="noopener">A Simple Word Embedding Model for Lexical Substitution</a> <a id="more"></a>proposed by <a href="https://levyomer.wordpress.com" target="_blank" rel="noopener">Omer Levy</a> on <a href="http://acl2014.org" target="_blank" rel="noopener">ACL 2014</a> and <a href="http://naacl15vs.github.io/index.html" target="_blank" rel="noopener">VSM 2015</a> respectively. After studying the two papers, I implement the methods intorduced in the two papers with Java to enhance my comprehension and deal with some practical tasks.</p>
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>The method proposed in “Dependency-based Word Embeddings” is a generalized skip-gram model with negative sampling, which is capable of dealing with the arbitrary contexts, and its generated embeddings are less topical and exhibit more functional similarity than the original skip-gram embeddings (For more details of skip-gram and negative sampling, you can see my another blog: <a href="https://isaacchanghau.github.io/2017/05/22/Word2Vec/">Word2Vec Summary</a>). While the methods introduced in “A Simple Word Embedding Model for Lexical Substitution” are using the results generated by the generalized skip-gram model to handle the <a href="https://en.wikipedia.org/wiki/Lexical_substitution" target="_blank" rel="noopener">lexical substitution</a> task. The novelty of our approach is in leveraging explicitly the context embeddings generated within the skip-gram model, which were so far considered only as an internal component of the learning process.</p>
+<h1 id="Dependency-based-Word-Embeddings"><a href="#Dependency-based-Word-Embeddings" class="headerlink" title="Dependency-based Word Embeddings"></a>Dependency-based Word Embeddings</h1><p>In this paper, the author proposed an improved skip-gram model with negative sampling, which is capable of dealing with the arbitrary contexts.</p>
+<h2 id="Skip-Gram-Model"><a href="#Skip-Gram-Model" class="headerlink" title="Skip-Gram Model"></a>Skip-Gram Model</h2><p>Here I will introduce the skip-gram model in brief, more details can refer my another blog – <a href="https://isaacchanghau.github.io/2017/05/22/Word2Vec/">Word2Vec Summary</a>. Before start, let’s summarize the notations will be used later: $\boldsymbol{\mathcal{W}}$ represents the words vocabulary, $\boldsymbol{\mathcal{C}}$ represents the contexts vocabulary, $d$ denotes the vector dimensionality, $w$ denotes a word in words vocabulary, $c$ denotes a context in contexts vocabulary, $\mathbf{v}_{w}$ and $\mathbf{v}_{c}$, respectively, represents word vector and context vector, and $\boldsymbol{\mathcal{D}}$ represents a dataset of observed $(w,c)$ pairs of words $w$ and contexts $c$, which appeared in a large body of text (in this case, a word $w$ in $\boldsymbol{\mathcal{D}}$ only have one context $c$, so it can be treated as unigram).</p>
+<p>In the skip-gram model, each word $w\in\boldsymbol{\mathcal{W}}$ is associated with a vector $\mathbf{v}_{w}\in\mathbb{R}^{d}$ and similarly each context $c\in\boldsymbol{\mathcal{C}}$ is represented as a vector $\mathbf{v}_{c}\in\mathbb{R}^{d}$. The entries in the vectors are latent, and treated as parameters to be learned, the author aims to seek the vector representations for both words and contexts such that the dot product $\mathbf{v}_{w}\centerdot\mathbf{v}_{c}$ associated with “good” word-context pairs is maximized.</p>
+<p>For example, consider a word-context pair $(w,c)$, the probability that $(w,c)$ is from the dataset denotes by $P(1|w,c)$, while the probability that $(w,c)$ did not is given by $P(0|w,c)=1-P(1|w,c)$, this is the idea of negative sampling, and it’s also a binary classification problem. Note that $P(1|w,c)=\frac{1}{1+exp(-\mathbf{v}_{w}^{T}\centerdot\mathbf{v}_{c})}$, and $\mathbf{v}_{w}$, $\mathbf{v}_{c}$ are the model parameters to be learned. Thus, the goal is to maximize the log-probability of the observed pairs belonging to the dataset, leadig to the objective:$$\arg\max_{\mathbf{v}_{w},\mathbf{v}_{c}}\sum_{(w,c)\in\boldsymbol{\mathcal{D}}}\log\frac{1}{1+e^{-\mathbf{v}_{w}^{T}\centerdot\mathbf{v}_{c}}}$$However, this objective admits a trivial solution where $P(1|w,c)=1$ for every pair $(w,c)$ if $\mathbf{v}_{w}=\mathbf{v}_{c}$ or $\mathbf{v}_{w}^{T}\centerdot\mathbf{v}_{c}=K$ for all $w,c$, where $K$ is large enough number. To avoid the trivial solution, the objective is extended with $(w,c)$ pairs for which $P(1|w,c)$ must be low, say, pairs which are not in the dataset, by generating the set $\boldsymbol{\mathcal{D}}’$ of random $(w,c)$ pairs yielding the negative-sampling training objective:$$\arg\max_{\mathbf{v}_{w},\mathbf{v}_{c}}\big(\prod_{(w,c)\in\boldsymbol{\mathcal{D}}}P(1|w,c)\centerdot\prod_{(w,c)\in\boldsymbol{\mathcal{D}}’}P(0|w,c)\big)$$and its logarithmic form is$$\arg\max_{\mathbf{v}_{w},\mathbf{v}_{c}}\big(\sum_{(w,c)\in\boldsymbol{\mathcal{D}}}\log\sigma(\mathbf{v}_{w}^{T}\mathbf{v}_{c})+\sum_{(w,c)\in\boldsymbol{\mathcal{D}}’}\log\sigma(-\mathbf{v}_{w}^{T}\mathbf{v}_{c})\big)$$The objective is trained in the online fashion using stochastic gradient updates over the corpus $\boldsymbol{\mathcal{D}}\cup\boldsymbol{\mathcal{D}}’$. Optimizing this objective makes observed word-context pairs have similar embeddings, while scattering unobserved pairs. Intuitively, words that appear in similar contexts should have similar embeddings, but the author has not yet found a formal proof that skip-gram model does indeed maximize the dot product of similar words.</p>
+<h2 id="Dependency-based-Context"><a href="#Dependency-based-Context" class="headerlink" title="Dependency-based Context"></a>Dependency-based Context</h2><p>In the original skip-gram model, the contexts of a word $w$ are the words surrounding it in the text, thus, the context vocabulary $\boldsymbol{\mathcal{C}}$ is identical to the word vocabulary $\boldsymbol{\mathcal{W}}$. However, contexts need to corresponding to words and the number of context-types can be substantially larger than the number of word-types, so the author generalize the skip-gram by replacing the bag-of-words contexts with arbitrary contexts, i.e., dependency-based syntactic contexts, which is capable of capturing different information than bag-of-word contexts. Using the sentence below as an example:</p>
+<blockquote>
+<p><em><strong>Australian scientist discovers star with telescope</strong></em>.</p>
+</blockquote>
+<p>For bag-of-words contexts, for example, by setting the window equals to 2, the contexts of <em>“discovers”</em> are <em>“Australian”</em>, <em>“scientist”</em>, <em>“star”</em> and <em>“with”</em>. the window with size 2 will miss some important contexts ,like <em>“telescope”</em>, and include some accidental ones, like <em>“Australian”</em>. Moreover, the contexts are unmarked, resulting in <em>“discovers”</em> being a context of both <em>“stars”</em> and <em>“scientist”</em>, which may result in <em>“stars”</em> and <em>“scientists”</em> ending up as neighbours in the embedded space. By setting the window equals to 5, it is able to capture broad topicalcontent, but may weaken the importance of focused information about the target word.</p>
+<p>For dependency-based contexts, an alternative to the bag-of-words approach is to derive contexts based on the syntactic relations the word participates in. This type of contexts can be derived by some parsing technology. After parsing sentence, the derived word contexts is: for a target word $w$ with modifier $m_{1},\dots ,m_{k}$ and a head $h$, consider the contexts $(m_{1},lbl_{1}),\dots ,(m_{k},lbl_{k}),(h,lbl_{h}^{-1})$, where $lbl$ is the type of the dependency relation between the head and the modifier (e.g., <em>nsubj</em>, <em>dobj</em>, <em>amod</em> and etc., see <a href="https://nlp.stanford.edu/software/lex-parser.html" target="_blank" rel="noopener">link</a> to get more information) and $lbl^{-1}$ is used to mark the inverse-relation.<br><img src="/images/nlp/word2vecf/parse.png" alt="parse"><br>Relations that include a preposition are “collapsed” prior to context extraction, by directly connecting the head and the object of the preposition, and subsuming the preposition itself into the dependency label. The dependency-based contexts are able to capture relations to words that are far apart and thus “out-of-reach” with small window bag-of-words (like <em>discovers</em> and <em>telescope</em>) and also filter out coincidental contexts which are within the window but not directly related to the target word (like <em>Australian</em> and <em>discovers</em>). Thus, this syntactic contexts may yield more focused embeddings and capture more functional and less topical similarity.</p>
+<p>So, this is the general idea of dependency-based word embeddings, to build this improved skip-gram model, the author keeps the initial parameters setting in the original skip-gram model, and before using the corpus to train word vectors, the pre-process is needed, say, the dependency-based contexts extraction, and also construct the word and context vocabularies. All of those details are given in the author Python codes except the derivation of dependency-based contexts, however, in my Java implementation, I already cover all of them in my repository and make the model more flexiable.</p>
+<h1 id="Lexical-Substitute"><a href="#Lexical-Substitute" class="headerlink" title="Lexical Substitute"></a>Lexical Substitute</h1><p>Lexical substitution tasks are used for evaluating context-sensitive lexical inference models since the introduction of the original task in <a href="http://nlp.cs.swarthmore.edu/semeval/" target="_blank" rel="noopener">SemEval-2007</a> and additional later variants (<a href="http://www.aclweb.org/anthology/E14-1057" target="_blank" rel="noopener">Kremer et al.</a>, <a href="http://dl.acm.org/citation.cfm?id=2447295" target="_blank" rel="noopener">Biemann</a>). In these tasks, systems are required to predict substitutes for a target word instance, which preserve its meaning in a given sentential context. To address this challenge, several models, like <a href="http://www.aclweb.org/anthology/I11-1127" target="_blank" rel="noopener">sparse syntax-based vector models</a>, <a href="http://delivery.acm.org/10.1145/2490000/2483675/a42-moon.pdf?ip=192.122.131.129&amp;id=2483675&amp;acc=ACTIVE%20SERVICE&amp;key=FF6731C4D3E3CFFF%2E93CCAFF1814A016F%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35&amp;CFID=939797143&amp;CFTOKEN=87880992&amp;__acm__=1495525783_5f62129b620aace2b701e9291ee4493f" target="_blank" rel="noopener">probabilistic graphical models</a>, <a href="http://delivery.acm.org/10.1145/2690000/2687974/coli_a_00194.pdf?ip=192.122.131.129&amp;id=2687974&amp;acc=PUBLIC&amp;key=FF6731C4D3E3CFFF%2E93CCAFF1814A016F%2E4D4702B0C3E38B35%2E4D4702B0C3E38B35&amp;CFID=939797143&amp;CFTOKEN=87880992&amp;__acm__=1495525739_8fecaa2857873496f910249d31e87670" target="_blank" rel="noopener">LDA topic models</a>, were proposed recent years, these models typically generated a word instance representation, which is biased towards its given context, and then identified substitute words based on their similarity to this biased representation.</p>
+<p>In this paper, the author directly utilize the skip-gram model with dependency-based context for the context-sensitive lexical substitution by make use of the learned context embeddings in conjunction with the target word embeddings to model target word instances, instead of discarding them. The suitable substitute is identified via its combined similarity to the embeddings of both the target and its given context. The model supposes that a good lexical substitute for a target word instance under a given context needs to be both <strong>semantically similar to the target word</strong> and <strong>compatible with the given context</strong>.<br><img src="/images/nlp/word2vecf/example.png" alt="example"><br>Above is an example of identifying substitutes for target word <code>acquire</code> under the syntactic context <code>dobj_company</code>, visualized in a 2-dimensional embedded space. Even though <code>learn</code> is the closest word to <code>acquire</code>, the word <code>buy</code> is both reasonably close to <code>acquire</code> as well as to the context <code>dobj_company</code> and is therefore considered a better substitute.</p>
+<p>In order to satisfy the assumptions, the model estimates the semantic similarity between a substitute word and the target word using a second-order target-to-target similarity measure, and the compatibility of a substitute word with the given context using a first-order target-to-context similarity measure. Mathematically, the model contains four methods, and they are defined as$$Add=\frac{\cos (s,t)+\sum_{c\in\mathcal{C}}\cos (s,c)}{|\mathcal{C}|+1}\\ BalAdd=\frac{|\mathcal{C}|\centerdot\cos (s,t)+\sum_{c\in\mathcal{C}}\cos (s,c)}{2\centerdot |\mathcal{C}|}\\Mult=\sqrt[|\mathcal{C}|+1]{pcos(s,t)\centerdot\prod_{c\in\mathcal{C}}pcos(s,c)}\\BalMult=\sqrt[2\centerdot |\mathcal{C}|]{pcos(s,t)^{|\mathcal{C}|}\centerdot\prod_{c\in\mathcal{C}}pcos(s,c)}$$where $\mathcal{C}$ is the set of the target word’s context elements in the context sentence and $|\mathcal{C}|$ denotes the number of context element, $c$ denotes an individual context element, $pcos(v,v’)=\frac{\cos(v,v’)+1}{2}$ is used to avoid negative values, $s$ is a lexical substitute and $t$ is the target word. Actually, we can derive from the formula that both target-to-target and target-to-context similarities are estimated by the vector Cosine distance.</p>
+<p>These four methods are the context-sensitive substitutability metric for estimating the suitability of a lexical substitute for a target word in a given sentential context. Besides, the $Add$ and $BalAdd$ are called arithmetic mean, $Mult$ and $BalMult$ are named as geometrical mean. Below give two snippets of Java implementation to help you have a better understanding. For $Add$ and $BalAdd$:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> INDArray <span class="title">Represent</span><span class="params">(String target, List&lt;String&gt; deps, <span class="keyword">boolean</span> avgFlag)</span> </span>&#123;</span><br><span class="line">	INDArray targetVec = wordVecs.Represent(target);</span><br><span class="line">	INDArray depVec = contextVecs.Zeros();</span><br><span class="line">	<span class="keyword">int</span> depsFound = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (String dep : deps) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!contextVecs.Contains(dep)) <span class="keyword">continue</span>;</span><br><span class="line">		depsFound++;</span><br><span class="line">		depVec.addi(contextVecs.Represent(dep).dup()); <span class="comment">// each element add with each other</span></span><br><span class="line">	&#125;</span><br><span class="line">	INDArray retVec = targetVec.dup();</span><br><span class="line">	<span class="keyword">if</span> (depsFound &gt; <span class="number">0</span>) &#123;</span><br><span class="line">		<span class="keyword">if</span> (avgFlag) depVec.divi(Nd4j.scalar(depsFound));</span><br><span class="line">		retVec.addi(depVec);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">double</span> norm = Math.pow(retVec.mmul(retVec.transpose()).getDouble(<span class="number">0</span>), <span class="number">0.5</span>);</span><br><span class="line">	<span class="keyword">if</span> (norm != <span class="number">0.0</span>) retVec.divi(Nd4j.scalar(norm));</span><br><span class="line">	<span class="keyword">return</span> retVec;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>For $Mult$ and $BalMult$:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> List&lt;Map.Entry&lt;String, Float&gt;&gt; Mult(String target, List&lt;String&gt; deps, <span class="keyword">boolean</span> geoMeanFlag) &#123;</span><br><span class="line">	INDArray targetVec = wordVecs.Represent(target);</span><br><span class="line">	INDArray scores = wordVecs.PosScores(targetVec);</span><br><span class="line">	<span class="keyword">for</span> (String dep : deps) &#123;</span><br><span class="line">		<span class="keyword">if</span> (!contextVecs.Contains(dep)) <span class="keyword">continue</span>;</span><br><span class="line">		INDArray depVec = contextVecs.Represent(dep);</span><br><span class="line">		INDArray multScores = wordVecs.PosScores(depVec);</span><br><span class="line">		<span class="keyword">if</span> (geoMeanFlag) multScores = Transforms.pow(multScores, <span class="number">1.0</span> / deps.size());</span><br><span class="line">		scores.muli(multScores);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> wordVecs.TopScores(scores, -<span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="Java-Implementation"><a href="#Java-Implementation" class="headerlink" title="Java Implementation"></a>Java Implementation</h1><p>For “Dependency-based Word Embeddings”, by referring the Python <a href="https://bitbucket.org/yoavgo/word2vecf" target="_blank" rel="noopener">source codes</a> provided by the author on Bitbucket, I wrote a Java version to achieve its functions and make this algorithm more flexiable. In addition, the source provided by the author only implement the core algorithm of dependency-based skip-gram with negative sampling, it does not give any implementation details about how to parse sentences in corpus to the dependency-based context (the author only introduce the parsing technology in brief). So after studying the structure of dependency-based context (CoNLL-U), and search the related information online, I find that <a href="https://stanfordnlp.github.io/CoreNLP/" target="_blank" rel="noopener">Stanford CoreNLP</a> toolkit (Java based) powered by the <a href="https://nlp.stanford.edu/" target="_blank" rel="noopener">Stanford Natural Language Processing Group</a> provides tools to analyze and parse sentences to generate the dependency-based context (details of CoNLL-U format: <a href="http://universaldependencies.org/docs/format.html" target="_blank" rel="noopener">[link]</a>). So I add this function into my Word2Vecf Java repository. Moreover, I also implement the four lexical substitution methods in this repository as well as some similarity functions and measuring tasks, like WS353, Analogy, TOEFL tasks, introduced in Mikolov’s <a href="https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/rvecs.pdf" target="_blank" rel="noopener">Word2Vec</a> paper. Here is the GitHub link of my java codes: <a href="https://github.com/IsaacChanghau/Word2VecfJava/tree/master/src/main/java/com/isaac/word2vecf" target="_blank" rel="noopener">Word2VecfJava</a>.</p>
+<p>For “A Simple Word Embedding Model for Lexical Substitution”, the author also provide the Python <a href="https://github.com/orenmel/lexsub" target="_blank" rel="noopener">source codes</a>, this source is used to implement the four methods proposed by the author to deal with two datasets, <a href="http://hnk.ffzg.hr/bibl/acl2007/SemEval-2007/pdf/SemEval-200709.pdf" target="_blank" rel="noopener">LS-SE</a> and <a href="http://www.aclweb.org/anthology/E14-1057" target="_blank" rel="noopener">LS-CIC</a>, and measure the results by “Generalized Average Precision (GAP)”, “BEST” and “OOT” scores to validate the accuracy and reliability of those methods. Here is the GitHub link of my java implementation: <a href="https://github.com/IsaacChanghau/Word2VecfJava/tree/master/src/main/java/com/isaac/lexsub" target="_blank" rel="noopener">LexicalSubstitute</a>.</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="http://www.aclweb.org/anthology/P14-2050" target="_blank" rel="noopener">Dependency-based Word Embeddings</a></li>
+<li><a href="http://www.aclweb.org/anthology/W15-1501" target="_blank" rel="noopener">A Simple Word Embedding Model for Lexical Substitution</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/05/18/word2vecf/" title="Word2Vecf -- Dependency-Based Word Embeddings and Lexical Substitute">https://isaacchanghau.github.io/2017/05/18/word2vecf/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/natural-language-processing/" rel="tag"># natural language processing</a>
+          
+            <a href="/tags/word-embeddings/" rel="tag"># word embeddings</a>
+          
+            <a href="/tags/skip-gram/" rel="tag"># skip-gram</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/13/Word2Vec/" rel="next" title="Word2Vec Summary -- Mathematical Principles and Java Implementation">
+                <i class="fa fa-chevron-left"></i> Word2Vec Summary -- Mathematical Principles and Java Implementation
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/22/Activation-Functions-in-Artificial-Neural-Networks/" rel="prev" title="Activation Functions in Artificial Neural Networks">
+                Activation Functions in Artificial Neural Networks <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dependency-based-Word-Embeddings"><span class="nav-number">2.</span> <span class="nav-text">Dependency-based Word Embeddings</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Skip-Gram-Model"><span class="nav-number">2.1.</span> <span class="nav-text">Skip-Gram Model</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dependency-based-Context"><span class="nav-number">2.2.</span> <span class="nav-text">Dependency-based Context</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Lexical-Substitute"><span class="nav-number">3.</span> <span class="nav-text">Lexical Substitute</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-Implementation"><span class="nav-number">4.</span> <span class="nav-text">Java Implementation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

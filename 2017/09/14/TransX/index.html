@@ -1,0 +1,1260 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="deep learning,python,natural language processing,c plus plus,word embeddings," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="It is a summary of several papers about embedding entities and relationships of multi-relational knowledge database, while each paper contains one kind of specific method. Generally, the set of method">
+<meta name="keywords" content="deep learning,python,natural language processing,c plus plus,word embeddings">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TransX -- Embedding Entities and Relationships of Multi-relational Data">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/09/14/TransX/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="It is a summary of several papers about embedding entities and relationships of multi-relational knowledge database, while each paper contains one kind of specific method. Generally, the set of method">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/conceptnet-wordnet.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/relation-forms.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/basic-component.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/transe-translation-graph.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/transh-graph.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/transh-solve-problem.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/limitation-transh.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/transr.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/transd-graph.png">
+<meta property="og:updated_time" content="2018-01-30T08:34:21.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TransX -- Embedding Entities and Relationships of Multi-relational Data">
+<meta name="twitter:description" content="It is a summary of several papers about embedding entities and relationships of multi-relational knowledge database, while each paper contains one kind of specific method. Generally, the set of method">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/nlp/transx/conceptnet-wordnet.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/09/14/TransX/"/>
+
+
+
+
+
+  <title>TransX -- Embedding Entities and Relationships of Multi-relational Data | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/09/14/TransX/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">TransX -- Embedding Entities and Relationships of Multi-relational Data</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-14T22:46:18+08:00">
+                2017-09-14
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:34:21+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 3,965 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 25 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Natural-Language-Processing/" itemprop="url" rel="index">
+                    <span itemprop="name">Natural Language Processing</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>It is a summary of several papers about embedding entities and relationships of multi-relational knowledge database, while each paper contains one kind of specific method. Generally, the set of methods are called TransX.<a id="more"></a> Here, I only describe the general idea and mathematical process of each method, for more information about those methods in parameters setting, experiment results and discussion, you can directly read the original papers through the links I provide.</p>
+<h1 id="Multi-relational-Data-Overview"><a href="#Multi-relational-Data-Overview" class="headerlink" title="Multi-relational Data Overview"></a>Multi-relational Data Overview</h1><p>There are a lot of relational knowledge database available nowadays, like:</p>
+<ul>
+<li><a href="http://conceptnet.io" target="_blank" rel="noopener">ConceptNet</a>, which is a freely-available semantic network, designed to help computers understand the meanings of words that people use.</li>
+<li><a href="https://wordnet.princeton.edu" target="_blank" rel="noopener">WordNet</a>, which is a large lexical database of English. Nouns, verbs, adjectives and adverbs are grouped into sets of cognitive synonyms (synsets), each expressing a distinct concept. WordNet’s structure makes it a useful tool for computational linguistics and natural language processing.</li>
+<li><a href="https://verbs.colorado.edu/verbnet/" target="_blank" rel="noopener">VerbNet</a>, which is the largest on-line verb lexicon currently available for English. It is a hierarchical domain-independent, broad-coverage verb lexicon with mappings to other lexical resources such as WordNet, <a href="http://www.cis.upenn.edu/~xtag/" target="_blank" rel="noopener">Xtag</a> and <a href="https://framenet.icsi.berkeley.edu/fndrupal/" target="_blank" rel="noopener">FrameNet</a>.</li>
+<li><a href="https://en.wikipedia.org/wiki/Freebase" target="_blank" rel="noopener">FreeBase</a>, which is a large collaborative knowledge base consisting of data composed mainly by its community members. It was an online collection of structured data harvested from many sources, including individual, user-submitted wiki contributions. Freebase aimed to create a global resource that allowed people (and machines) to access common information more effectively.</li>
+<li><a href="https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/yago/" target="_blank" rel="noopener">YaGo</a>, which is a huge semantic knowledge base, derived from Wikipedia, WordNet and GeoNames. It has knowledge of more than 10 million entities and contains more than 120 million facts about these entities.</li>
+</ul>
+<p>Actually, there are still a lot of different relational knowledge database exist, here we only show some representative databases above. Before we discuss those algorithms, let’s see some examples of multi-relational knowledge database to get the idea about how the database looks like.<br><img src="/images/nlp/transx/conceptnet-wordnet.png" alt="conceptnet and wordnet"><br>In the graph above, I show an example of two knowledge DB. For ConceptNet, each entity (or, node) is a concept, and entities are connected to each other through some specific relations, like, <code>oven--UsedFor--&gt;cook</code>, <code>cake--IsA--&gt;dessert</code>, here <code>oven</code>, <code>cook</code>, <code>cake</code> and <code>dessert</code> are entities, while <code>UsedFor</code> and <code>IsA</code> are relations. For WordNet, there are two different entities, one is called Synset (blue node), another is Word (green one). Each synset in WordNet is connected with other synsets through <strong>hypernym</strong> and <strong>hyponym</strong> relations, while Word only connect to its own synset and has some links with other words in the same synset, but never connected to words outside.</p>
+<p>Although there are amount of relations and connections within a knowledge database, generally, all of the relations are in the several certain forms, like <strong>one-to-many relation</strong>, <strong>many-to-one relation</strong>, <strong>one-to-one relation</strong>, <strong>co-relation</strong>, <strong>reflexive relation</strong> and so on.<br><img src="/images/nlp/transx/relation-forms.png" alt="relation-forms"><br>For example, one-to-many relation, which means one entity with one relation, links to several different entities, say, <code>apple--is_a--&gt;fruit</code>, <code>apple--is_a--&gt;computer_brand</code>, <code>apple--is_a--&gt;computer_manufacturer</code> and so on. For many-to-one relation, it is similar. However, the reflexive relation is unique, since two entities connect to each other with same relation, like <code>plate--is_a-&gt;dish</code>, while <code>dish--is_a--&gt;plate</code> too.</p>
+<p>Dispite the scale of relational knowledge databases and how many different relation forms they have, all of them are able to be decomposed to the <strong>basic component</strong> (triple), i.e., an entity connect to another entity with a certain relation, as shown below<br><img src="/images/nlp/transx/basic-component.png" alt="basic-component"><br>In order to convert those relational data into embeddings, which are convenient and easy to access via statistical approach, researchers proposed several methods to handle this issue, like <a href="http://machinelearning.wustl.edu/mlpapers/paper_files/ICML2011Nickel_438.pdf" target="_blank" rel="noopener">RESCAL</a>, <a href="https://pdfs.semanticscholar.org/057a/c29c84084a576da56247bdfd63bf17b5a891.pdf" target="_blank" rel="noopener">SE</a>, <a href="http://www.thespermwhale.com/jaseweston/papers/ebrm_mlj.pdf" target="_blank" rel="noopener">SME(linear)</a>, <a href="http://www.thespermwhale.com/jaseweston/papers/ebrm_mlj.pdf" target="_blank" rel="noopener">SME(bilinear)</a>, <a href="https://hal.inria.fr/hal-00776335/document" target="_blank" rel="noopener">LFM</a>, <a href="https://papers.nips.cc/paper/5071-translating-embeddings-for-modeling-multi-relational-data.pdf" target="_blank" rel="noopener">TransE</a>, <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.486.2800&amp;rep=rep1&amp;type=pdf" target="_blank" rel="noopener">TransH</a>, <a href="https://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/view/9571/9523" target="_blank" rel="noopener">TransR</a>, <a href="http://www.aclweb.org/anthology/P15-1067" target="_blank" rel="noopener">TransD</a> and so on, while the TransE, TransH, TransR, TransD are a group of similar methods, thus, we put them together and named as <strong>TransX</strong>. So, TransX is a set of methods to create embeddings for entities and relations while remembering their connection information.</p>
+<h1 id="TransE"><a href="#TransE" class="headerlink" title="TransE"></a>TransE</h1><p>TransE – <a href="https://papers.nips.cc/paper/5071-translating-embeddings-for-modeling-multi-relational-data.pdf" target="_blank" rel="noopener">Translating Embeddings for Modeling Multi-relational Data</a>.</p>
+<p>This paper considers the problem of embedding entities and relationships of multi-relational data in low-dimensional vector spaces, its objective is to propose a canonical model which is easy to train, contains a reduced number of parameters and can scale up to very large databases. So the TransE is proposed, which models relationships by interpreting them as translations operating on the low-dimensional embeddings of the entities.</p>
+<p>TransE, an energy-based model for learning low-dimensional embeddings of entities.  In TransE, relationships are represented as translations in the embedding space:</p>
+<blockquote>
+<p>if $(h,r,t)$ holds, then the embedding of the tail entity $t$ should be <strong>close to</strong> the embedding of the head entity $h$ <strong>plus</strong> some vector that depends on the relationship $r$, while it is also the general idea of the training process of TransE.</p>
+</blockquote>
+<p>The main motivation behind this translation-based parameterization is that hierarchical relationships are extremely common in KBs and translations are the natural transformations for representing them. Another motivation comes from <a href="https://arxiv.org/abs/1310.4546" target="_blank" rel="noopener">Distributed Representations of Words and Phrases and Their Compositionality</a>, in which the authors learn word embeddings from free text, and some <em>1-to-1</em> relationships between entities of different types are (coincidentally rather than willingly) represented by the model as translations in the embedding space. This suggests that there may exist embedding spaces in which <em>1-to-1</em> relationships between entities of different types may, as well, be represented by translations.</p>
+<p><strong>Translation-based model</strong>:<br>Given a training set $S$ of triplets $(h,r,t)$ composed of two entities $h,t\in E$ (the set of entities) and a relationship $r\in R$ (the set of relationships), TransE learns vector embeddings of the entities and the relationships. The embeddings take values in $\mathbb{R}^{k}$ ($k$ is a model hyperparameter) and are denoted with the same letters, in boldface characters.</p>
+<p>The basic idea behind the model is that the functional relation induced by the $r$-labeled edges corresponds to a translation of the embeddings, i.e. <strong>$h+r\approx t$ when $(h,r,t)$ holds ($t$ should be a nearest neighbor of $h+r$), while $h+r$ should be far away from $t$ otherwise</strong>, as the graph below shows. Following an energy-based framework, the energy of a triplet is equal to $d(h+r,t)$ for some dissimilarity measure $d$, which we take to be either the $L_{1}$ or the $L_{2}$-norm.<br><img src="/images/nlp/transx/transe-translation-graph.png" alt="TransE Translation"><br>To learn such embeddings, we minimize a margin-based ranking criterion over the training set:$$<br>\mathcal{L}=\sum_{(h,r,t)\in S}\sum_{(h’,r,t’)\in S’_{(h,r,t)}}\big[\gamma+d(h+r,t)-d(h’+r,t’)\big]_{+}\tag{1}<br>$$where $[x]_{+}$ denotes the positive part of $x$, $\gamma&gt;0$ is a margin hyperparameter, and the dissimilarity measure $d$ is the squared euclidean distance, which computed by$$<br>d(h+r,t)=\lVert h\rVert^{2}_{2}+\lVert r\rVert^{2}_{2}+\lVert t\rVert^{2}_{2}-2\big(h^{T}t+r^{T}(t-h)\big)\tag{2}<br>$$with the norm constraints that $\lVert h\rVert^{2}_{2}=\lVert t\rVert^{2}_{2}=1$, and the set of corrupted triplets, constructed according to the equation (3) below, is composed of training triplets with either the head or tail replaced by a random entity (but not both at the same time)$$<br>S’_{(h,r,t)}=\big\{(h’,r,t)\vert h’\in E\big\}\bigcup\big\{(h,r,t’)\vert t’\in E\big\}\tag{3}<br>$$The loss function (1) favors lower values of the energy for training triplets than for corrupted triplets, and is thus a natural implementation of the intended criterion.</p>
+<p>The optimization is carried out by stochastic gradient descent (in minibatch mode), over the possible $h$, $r$, and $t$, with the additional constraints that the $L_{2}$-norm of the embeddings of the entities is 1 (no regularization or norm constraints are given to the label embeddings $r$). This constraint is important, because it prevents the training process to trivially minimize $\mathcal{L}$ by artificially increasing entity embeddings norms. The detailed optimization procedure is described in the graph below.</p>
+<blockquote>
+<p><strong>Algorithm</strong>: Learning <strong>TransE</strong><br><strong>Input</strong>: Training set $S=\{(h,r,t)\}$, entities and relations set $E$ and $R$, margin $\gamma$, embedding dimension $k$.<br>$\quad$1: <strong>Initialize</strong>:<br>$\quad$2: $\qquad\quad$$r\gets \textrm{uniform}(-\frac{6}{\sqrt k},\frac{6}{\sqrt k})$ for each $r\in R$<br>$\quad$3: $\qquad\quad$$r\gets \frac{r}{\Vert r\Vert}$ for each $r\in R$<br>$\quad$4: $\qquad\quad$$e\gets \textrm{uniform}(-\frac{6}{\sqrt k},\frac{6}{\sqrt k})$ for each entity $e\in E$<br>$\quad$5: <strong>Loop</strong>:<br>$\quad$6: $\qquad\quad$$e\gets \frac{e}{\Vert e\Vert}$ for each entity $e\in E$<br>$\quad$7: $\qquad\quad$$S_{batch}\gets \textrm{sample}(S,b)$$\quad$// sample a mini-batch of size $b$<br>$\quad$8: $\qquad\quad$$T_{batch}\gets\emptyset$$\quad$// initialize the set of pairs of triples<br>$\quad$9: $\qquad\quad$<strong>for</strong> $(h,r,t)\in S_{batch}$ <strong>do</strong><br>$\quad$10: $\qquad\qquad$$(h’,r,t’)\gets\textrm{sample}(S’_{h,r,t})$$\quad$// sample a corrupted triple<br>$\quad$11: $\qquad\qquad$$T_{batch}\gets T_{batch}\bigcup\big\{\big((h,r,t),(h’,r,t’)\big)\big\}$<br>$\quad$12:$\qquad\quad$<strong>end for</strong><br>$\quad$13:$\qquad\quad$Update embeddings w.r.t. $\sum_{\big((h,r,t),(h’,r,t’)\big)\in T_{batch}}\nabla\big[\gamma+d(h+r,t)-d(h’+r,t’)\big]_{+}$<br>$\quad$14: <strong>End loop</strong></p>
+</blockquote>
+<h1 id="TransH"><a href="#TransH" class="headerlink" title="TransH"></a>TransH</h1><p>TransH – <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.486.2800&amp;rep=rep1&amp;type=pdf" target="_blank" rel="noopener">Knowledge Graph Embedding by Translating on Hyperplanes</a>.</p>
+<p>Before talking about TransH, let’s see some problems that TransE holds. TransE models a relation $r$ as a translation vector $r\in\mathbb{R}^{k}$, and assumes the error $\Vert h+r-t\Vert_{l_{1}/l_{2}}$ is low if $(h,r,t)$ is a golden triple. It applies well to irreflexive and one-to-one relations but has problems when dealing with reflexive or many-to-one, one-to-many, many-to-many relations. Considering the ideal case of no-error embedding where $h+r-t=0$, if $(h,r,t)\in\Delta$, we can get the following consequences directly from TransE model.</p>
+<ul>
+<li>If $(h,r,t)\in\Delta$ and $(t,r,h)\in\Delta$, i.e., $r$ is a reflexive map, then $r=0$ and $h=t$.</li>
+<li>If $\forall i\in\{0,1,\dots,m\}$, $(h_{i},r,t)\in\Delta$, i.e., $r$ is a many-to-one map, then $h_{0}=\dots=h_{m}$. Similarly, if $(h,r,t_{i})\in\Delta$, i.e., $r$ is a one-to-many map, then $t_{0}=\dots=t_{m}$.</li>
+</ul>
+<p>The reason leading to the above consequences is, in TransE, the representation of an entity is the same when involved in any relations, ignoring <em>distributed representations of entities when involved in different relations</em>. Hence, TransH is proposed to handle the problems of TransE in modeling reflexive, one-to-many, many-to-one and many-to-many relations. The general idea of TransH is shown below, which introduces a <strong>relation-specific hyperplane</strong> to project the entities to the hyperplane, and the translation process is done in such hyperplane too. For a relation $r$, the authors position the relation-specific translation vector $d_{r}$ in the relation-specific hyperplane $w_{r}$ (the normal vector) rather than in the same space of entity embeddings.<br><img src="/images/nlp/transx/transh-graph.png" alt="TransH Graph"><br>Specifically, for a triplet $(h,r,t)$, the embedding $h$ and $t$ are first projected to the hyperplane $w_{r}$. The projections are denoted as $h_{\bot}$ and $t_{\bot}$, respectively, while$$\begin{aligned}<br>h_{\bot} &amp;=h-w_{r}^{T}hw_{r}\\<br>t_{\bot} &amp;=t-w_{r}^{T}tw_{r}<br>\end{aligned}$$The authors expect $h_{\bot}$ and $t_{\bot}$ can be connected by a translation vector $d_{r}$ on the hyperplane with low error if $(h,r,t)$ is a golden triplet. And the graph below shows how the TransH sloves the problems in TransE.<br><img src="/images/nlp/transx/transh-solve-problem.png" alt="TransH Solve Problems"><br>Thus, in TransH, by introducing the mechanism of projecting to the relation-specific hyperplane, it enables different roles of an entity in different relations/triplets. Generally, the training process of TransH is similar to TransE, its cost function is also a margin-based ranking loss$$<br>\mathcal{L}=\sum_{(h,r,t)\in S}\sum_{(h’,r,t’)\in S’_{(h,r,t)}}\big[f_{r}(h,t)+\gamma-f_{r’}(h’,t’)\big]_{+}\tag{4}<br>$$where $[x]_{+}=\max(0,x)$, $S$ is a set of golden triples, $S’_{(h,r,t)}$ denotes the set of negative triplets constructed by corrupting $(h,r,t)$, $\gamma$ is the margin separating positive and negative triplets, and $f_{r}(h,t)$ is a score function and derived by$$<br>f_{r}(h,t)=\Vert h_{\bot}+d_{r}-t_{\bot}\Vert_{2}^{2}=\Vert(h-w_{r}^{T}hw_{r})+d_{r}-(t-w_{r}^{T}tw_{r})\Vert_{2}^{2}\tag{5}<br>$$When minimizing the loss $\mathcal{L}$, the following constraints are considered:</p>
+<ul>
+<li>$\forall e\in E$, $\Vert e\Vert_{2}\leq 1$</li>
+<li>$\forall r\in R$, $\vert w_{r}^{T}d_{r}\vert/\Vert d_{r}\Vert_{2}\leq\epsilon$</li>
+<li>$\forall r\in R$, $\Vert w_{r}\Vert_{2}=1$</li>
+</ul>
+<p><strong>Reducing False Negative Labels</strong>:<br>Here shows a new method to sample the corrupted triples to reduce the false.</p>
+<ol>
+<li>Give more chance to replacing the head entity if the relation is one-to-many and give more chance to replacing the tail entity if the relation is many-to-one.</li>
+<li>Among all the triplets of a relation r, we first get the following two statistics:<br>(1) the average number of tail entities per head entity, denoted as $tph$<br>(2) the average number of head entities per tail entity, denoted as $hpt$</li>
+</ol>
+<p>Then defining a Bernoulli distribution with parameter $\frac{thp}{thp+hpt}$ for sampling: given a golden triplet $(h,r,t)$ of the relation $r$, with probability $\frac{thp}{thp+hpt}$ to corrupt the triplet by replacing the head, and with probability $\frac{pht}{thp+hpt}$ to corrupt the triplet by replacing the tail.</p>
+<h1 id="TransR-and-CTransR"><a href="#TransR-and-CTransR" class="headerlink" title="TransR and CTransR"></a>TransR and CTransR</h1><p>TransR – <a href="https://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/view/9571/9523" target="_blank" rel="noopener">Learning Entity and Relation Embeddings for Knowledge Graph Completion</a>.</p>
+<p>TransR is proposed since the authors realize that TransH still have some limitations, since both TransE and TransH assume embeddings of entities and relations being in the same space. However, an entity may have multiple aspects, and various relations focus on different aspects of entities. Hence, it is intuitive that some entities are similar and thus close to each other in the entity space, but are <strong>comparably different in some specific aspects</strong> and thus <strong>far away from each other in the corresponding relation spaces</strong>.<br><img src="/images/nlp/transx/limitation-transh.png" alt="TransH Limitations"><br>Thus, TransR models entities and relations in distinct spaces, i.e., entity space and multiple relation spaces (i.e., relation-specific entity spaces), and performs translation in the corresponding relation space. In TransR, for each triple $(h,r,t)$, entities embeddings are set as $h,t\in\mathbb{R}^{k}$, and relation embedding is set as $r\in\mathbb{R}^{d}$, while the dimensions of entity embeddings and relation embeddings are not necessarily identical. For each relation $r$, set a projection matrix $M_{r}\in\mathbb{R}^{k\times d}$ maps entities from entity space to relation space.<br><img src="/images/nlp/transx/transr.png" alt="TransR Limitations"><br>With the mapping matrix, the projected vectors of entities are computed by$$<br>h_{r}=hM_{r},\quad t_{r}=tM_{r}<br>$$And the score function is correspondingly defined as$$<br>f_{r}(h,t)=\Vert h_{r}+r-t_{r}\Vert_{2}^{2}\tag{6}<br>$$with the constraints that $\forall h,r,t$, $\Vert h\Vert_{2}\leq 1$, $\Vert r\Vert_{2}\leq 1$, $\Vert t\Vert_{2}\leq 1$, $\Vert hM_{r}\Vert_{2}\leq 1$, $\Vert tM_{r}\Vert_{2}\leq 1$. And the following margin-based score function as objective for training:$$<br>\mathcal{L}=\sum_{(h,r,t)\in S}\sum_{(h’,r,t’)\in S’_{(h,r,t)}}\max\big[0, f_{r}(h,t)+\gamma-f_{r}(h’,t’)\big]\tag{7}<br>$$where $\max(x, y)$ aims to get the maximum between $x$ and $y$, $\gamma$ is the margin, $S$ is the set of correct triples and $S’$ is the set of incorrect triples.</p>
+<p><strong>Cluster-based TransR (CTransR)</strong>:<br>The above mentioned models, including TransE, TransH and TransR, learn a unique vector for each relation, which may be under-representative to fit all entity pairs under this relation, because these relations are usually rather diverse. In order to better model these relations, the authors incorporate the idea of piecewise linear regression to extend TransR.</p>
+<p>The basic idea is that first segment input instances into several groups. Formally, for a specific relation $r$, all entity pairs $(h,t)$ in the training data are clustered into multiple groups, and entity pairs in each group are expected to exhibit similar $r$ relation. All entity pairs $(h,t)$ are represented with their vector offsets $(h−t)$ for clustering, where $h$ and $t$ are obtained with TransE. Afterwards, learn a separate relation vector $r_{c}$ for each cluster and matrix $M_{r}$ for each relation, respectively. The authors define the projected vectors of entities as $h_{r,c}=hM_{r}$, $t_{r,c}=tM_{r}$ and the score function is defined as$$<br>f_{r}(h,t)=\Vert h_{r,c}+r_{c}-t_{r,c}\Vert_{2}^{2}+\alpha\Vert r_{c}-r\Vert_{2}^{2}\tag{8}<br>$$where $\Vert r_{c}-r\Vert_{2}^{2}$ aims to ensure cluster-specific relation vector $r_{c}$ not too far away from the original relation vector $r$, and $\alpha$ controls the effect of this constraint. Besides, same to TransR, CTransR also enforce constraints on norm of embeddings $h$, $r$, $t$ and mapping matrices.</p>
+<h1 id="TransD"><a href="#TransD" class="headerlink" title="TransD"></a>TransD</h1><p>TransD – <a href="http://www.aclweb.org/anthology/P15-1067" target="_blank" rel="noopener">Knowledge Graph Embedding via Dynamic Mapping Matrix</a></p>
+<p>Despite that TransR/CTransR has significant improvements compared with previous state-of-the-art models. However, it also has several flaws:</p>
+<ol>
+<li>For a typical relation $r$, all entities share the same mapping matrix $M_{r}$. However, the entities linked by a relation always contains various types and attributes.</li>
+<li>The projection operation is an interactive process between an entity and a relation, it is unreasonable that the mapping matrices are determined only by relations.</li>
+<li>Matrix-vector multiplication makes it has large amount of calculation, and when relation number is large, it also has much more parameters than TransE and TransH.</li>
+</ol>
+<p>To solve these flaws, TransD is proposed and its basic idea is shown in the graph below. In TransD, <strong>two vectors</strong> are defined for each entity and relation. The first vector represents the meaning of an entity or a relation, the other one (called <strong>projection vector</strong>) represents the way that how to project a entity embedding into a relation vector space and it will be used to construct mapping matrices. Therefore, every entity-relation pair has an unique mapping matrix. In addition, TransD has no matrix-by-vector operations which can be replaced by vectors operations.<br><img src="/images/nlp/transx/transd-graph.png" alt="TransD Graph"><br>In the graph above, each shape represents an entity pair appearing in a triplet of relation $r$. $M_{rh}$ and $M_{rt}$ are mapping matrices of $h$ and $t$, respectively. $h_{ip}$, $t_{ip}$ ($i=1,2,3$) and $r_{p}$ are projection vectors. $h_{i\bot}$ and $t_{i\bot}$ ($i=1,2,3$) are projected vectors of entities. The projected vectors satisfy $h_{i\bot}+r\approx t_{i\bot}$ ($i=1,2,3$).</p>
+<p><strong>TransD Model</strong>: each named symbol object (entities and relations) is represented by <em>two</em> vectors. The first one captures the meaning of entity (relation), the other one is used to construct mapping matrices. For example, given a triplet $(h,r,t)$, its vectors are $h$, $h_{p}$, $r$, $r_{p}$, $t$, $t_{p}$, where subscript $p$ marks the projection vectors, $h,h_{p},t,t_{p}\in\mathbb{R}^{n}$ and $r,r_{p}\in\mathbb{R}^{m}$. For each triplet $(h,r,t)$ the authors set two mapping matrices $M_{rh},M_{rt}\in\mathbb{R}^{m\times n}$ to project entities from entity space to relation space:$$\begin{aligned}<br>M_{rh}&amp;=r_{p}h_{p}^{T}+I^{m\times n}\\<br>M_{rt}&amp;=r_{p}t_{p}^{T}+I^{m\times n}<br>\end{aligned}\tag{9}$$Therefore, the mapping matrices are determined by both entities and relations, and this kind of operation makes the two projection vectors interact sufficiently because each element of them can meet every entry comes from another vector. As the authors initialize each mapping matrix with an identity matrix, thus, the $I^{m\times n}$ is added to $M_{rh}$ and $M_{rt}$. With the mapping matrices, the projected vectors are defined as follows:$$\begin{aligned}<br>h_{\bot}&amp;=M_{rh}h\\<br>t_{\bot}&amp;=M_{rt}t<br>\end{aligned}\tag{10}$$and the score function is set as$$<br>f_{r}(h,t)=-\Vert h_{\bot}+r-t_{\bot}\Vert_{2}^{2}\tag{11}<br>$$with the constraints that $\Vert h\Vert_{2}\leq 1$, $\Vert t\Vert_{2}\leq 1$, $\Vert r\Vert_{2}\leq 1$, $\Vert h_{\bot}\Vert_{2}\leq 1$ and $\Vert t_{\bot}\Vert_{2}\leq 1$.</p>
+<p>For training process, the authors first denote that $S=\{(h_{i},r_{i},t_{i})\vert y_{i}=1\}$ as the golden triples, and $S’=\{(h_{i},r_{i},t_{i})\vert y_{i}=0\}$ as the negative triples, and the negative triples is derived by$$<br>S’=\{(h_{l},r_{k},t_{k})\vert h_{l}\neq h_{k}\land y_{k}=1\}\cup\{(h_{k},r_{k},t_{l})\vert t_{l}\neq t_{k}\land y_{k}=1\}<br>$$while the authors also use two strategies “unif” and “bern” described in TransH to replace the head or tail entity. using $\xi$ and $\xi’$ to denote a golden triplet and a corresponding negative triplet, respectively. The training objective is$$<br>\mathcal{L}=\sum_{\xi\in S}\sum_{\xi’\in S’}\big[\gamma+f_{r}(\xi’)-f_{r}(\xi)\big]_{+}\tag{12}<br>$$<strong>Connections with TransE/H/R and CTransR</strong>:</p>
+<ul>
+<li>TransE is a special case of TransD when the dimension of vectors satisfies $m=n$ and all projection vectors are set zero.</li>
+<li>TransH is related to TransD when we set $m=n$. Under the setting, projected vectors of entities can be rewritten as follows:$$\begin{aligned}<br>h_{\bot}&amp;=M_{rh}h=h+h_{p}^{T}hr_{p}\\<br>t_{\bot}&amp;=M_{rt}t=t+t_{p}^{T}tr_{p}<br>\end{aligned}$$Hence, when $m = n$, the difference between TransD and TransH is that projection vectors are determinded only by relations in TransH, but TransD’s projection vectors are determinded by both entities and relations.</li>
+<li>As to TransR/CTransR, TransD is an improvement of it. TransR/CTransR directly defines a mapping matrix for each relation, TransD consturcts two mapping matrices dynamically for each triplet by setting a projection vector for each entity and relation. In addition, TransD has no matrix-vector multiplication operation which can be replaced by vector operations. Without loss of generality, assuming $m\geq n$, the projected vectors can be computed as follows:$$\begin{aligned}<br>h_{\bot}&amp;=M_{rh}h=h_{p}^{T}hr_{p}+\big[h^{T},0^{T}\big]^{T}\\<br>t_{\bot}&amp;=M_{rt}t=t_{p}^{T}tr_{p}+\big[t^{T},0^{T}\big]^{T}<br>\end{aligned}$$Therefore, TransD has less calculation than TransR/CTransR, which makes it train faster and can be applied on large-scale knowledge graphs.</li>
+</ul>
+<h1 id="Python-and-C-Codes"><a href="#Python-and-C-Codes" class="headerlink" title="Python and C++ Codes"></a>Python and C++ Codes</h1><p>The Python and C++ codes of the methods above are available in the GitHub page of Natural Language Processing Lab at Tsinghua University (<a href="https://github.com/thunlp" target="_blank" rel="noopener">THUNLP</a>).<br>Python version: <a href="https://github.com/thunlp/TensorFlow-TransX" target="_blank" rel="noopener">TensorFlow-TransX</a>.<br>Converted TensorFlow-TransX for Python 2 and Tensorflow 0.12.0: <a href="https://github.com/IsaacChanghau/AmusingPythonCodes/tree/master/transx" target="_blank" rel="noopener">link</a><br>C++ version: <a href="https://github.com/thunlp/Fast-TransX" target="_blank" rel="noopener">Fast-TransX</a>, <a href="https://github.com/thunlp/KB2E" target="_blank" rel="noopener">KB2E</a>.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/09/14/TransX/" title="TransX -- Embedding Entities and Relationships of Multi-relational Data">https://isaacchanghau.github.io/2017/09/14/TransX/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/natural-language-processing/" rel="tag"># natural language processing</a>
+          
+            <a href="/tags/c-plus-plus/" rel="tag"># c plus plus</a>
+          
+            <a href="/tags/word-embeddings/" rel="tag"># word embeddings</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/10/Python-浅析-战狼2-170000-影评数据/" rel="next" title="Python 浅析 "战狼II" 170000+影评数据">
+                <i class="fa fa-chevron-left"></i> Python 浅析 "战狼II" 170000+影评数据
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/09/19/PTransE/" rel="prev" title="PTransE -- Modeling Relation Paths for Representation Learning of Knowledge Bases">
+                PTransE -- Modeling Relation Paths for Representation Learning of Knowledge Bases <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Multi-relational-Data-Overview"><span class="nav-number">1.</span> <span class="nav-text">Multi-relational Data Overview</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TransE"><span class="nav-number">2.</span> <span class="nav-text">TransE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TransH"><span class="nav-number">3.</span> <span class="nav-text">TransH</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TransR-and-CTransR"><span class="nav-number">4.</span> <span class="nav-text">TransR and CTransR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TransD"><span class="nav-number">5.</span> <span class="nav-text">TransD</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Python-and-C-Codes"><span class="nav-number">6.</span> <span class="nav-text">Python and C++ Codes</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

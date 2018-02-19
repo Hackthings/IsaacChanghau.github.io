@@ -1,0 +1,1182 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="deep learning,natural language processing,c plus plus,word embeddings," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="It is a summary of the paper Modeling Relation Paths for Representation Learning of Knowledge Bases (PTransE).">
+<meta name="keywords" content="deep learning,natural language processing,c plus plus,word embeddings">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PTransE -- Modeling Relation Paths for Representation Learning of Knowledge Bases">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/09/19/PTransE/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="It is a summary of the paper Modeling Relation Paths for Representation Learning of Knowledge Bases (PTransE).">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/ptranse-graph.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/transx/path-relation.png">
+<meta property="og:updated_time" content="2018-01-30T08:33:35.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PTransE -- Modeling Relation Paths for Representation Learning of Knowledge Bases">
+<meta name="twitter:description" content="It is a summary of the paper Modeling Relation Paths for Representation Learning of Knowledge Bases (PTransE).">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/nlp/transx/ptranse-graph.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/09/19/PTransE/"/>
+
+
+
+
+
+  <title>PTransE -- Modeling Relation Paths for Representation Learning of Knowledge Bases | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/09/19/PTransE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">PTransE -- Modeling Relation Paths for Representation Learning of Knowledge Bases</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-19T14:33:15+08:00">
+                2017-09-19
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:33:35+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 1,401 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 9 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Natural-Language-Processing/" itemprop="url" rel="index">
+                    <span itemprop="name">Natural Language Processing</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>It is a summary of the paper <strong>Modeling Relation Paths for Representation Learning of Knowledge Bases</strong> (<a href="https://arxiv.org/pdf/1506.00379.pdf" target="_blank" rel="noopener"><strong>PTransE</strong></a>).<a id="more"></a> PTransE is a novel extension of <a href="https://papers.nips.cc/paper/5071-translating-embeddings-for-modeling-multi-relational-data.pdf" target="_blank" rel="noopener">TransE</a>, which is a path-based representation learning model, to model relation paths for representation learning of knowledge bases. The authors argue that multiple-step relation paths also contain rich inference patterns between entities, thus, PTransE also considers relation paths as translations between entities for representation learning, and addresses two key challenges:</p>
+<ul>
+<li>Since not all relation paths are reliable, so a <strong>path-constraint resource allocation</strong> (PCRA) algorithm is designed to measure the reliability of relation paths.</li>
+<li>Relation paths is represented via semantic composition of relation embeddings.</li>
+</ul>
+<p>Despite the success of <a href="https://papers.nips.cc/paper/5071-translating-embeddings-for-modeling-multi-relational-data.pdf" target="_blank" rel="noopener">TransE</a>, <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.486.2800&amp;rep=rep1&amp;type=pdf" target="_blank" rel="noopener">TransH</a>, <a href="https://www.aaai.org/ocs/index.php/AAAI/AAAI15/paper/view/9571/9523" target="_blank" rel="noopener">TransR</a> and <a href="http://www.aclweb.org/anthology/P15-1067" target="_blank" rel="noopener">TransD</a> in modeling relational facts, these methods only take direct relations between entities into consideration (More details in <a href="https://isaacchanghau.github.io/2017/09/14/TransX/">TransX – Embedding Entities and Relationships of Multi-relational Data</a>). Actually, there are also substantial multiple-step relation paths between entities indicating their semantic relationships. For instance:$$<br>\mathbf{h}\xrightarrow{BornInCity}\mathbf{e}_{1}\xrightarrow{CityInState}\mathbf{e}_{2}\xrightarrow{StateInCountry}\mathbf{t}<br>$$which indicates the relation <code>Nationality</code> between $\mathbf{h}$ and $\mathbf{t}$, i.e., $(\mathbf{h},\textrm{Nationality},\mathbf{t})$. However, in PTransE, in addition to direct connected relational facts, the authors also build triples from knowledge bases using entity pairs connected with relation paths. As shown below<br><img src="/images/nlp/transx/ptranse-graph.png" alt="PTransE Graph"><br>TransE only considers direct relations between entities and optimizes the objective $h+r\approx t$, while PTransE generalizes TransE by regarding multiple-step relation paths as connections between entities, where $\circ$ is an operation to join the relations $r_{1}$ and $r_{2}$ together into a unified relation path representation.</p>
+<p><strong>PTransE</strong>:<br>Define entity set $\mathbf{E}$ and relation set $\mathbf{R}$ are in $\mathbb{R}^{k}$, $S=\{(h,r,t)\}$ represents a set of triples. For each triple $(h,r,t)$, the energy of TransE is computed by$$<br>E(h,r,t)=\Vert h+r-t\Vert\tag{1}<br>$$Since TransE only consider the direct relations, PTransE also considers the relation paths for representation. Suppose the multiple relation paths $P(h,t)=\{p_{1},\dots,p_{N}\}$ connecting two entities $h$ and $t$, where relation path $p=\{r_{1},\dots,r_{l}\}$ indicates $h\xrightarrow{r_{1}}\dots\xrightarrow{r_{l}}t$. For each triple $(h,r,t)$, the energy function of PTransE is defined as$$<br>G(h,r,t)=E(h,r,t)+E(h,P,t)\tag{2}<br>$$where $E(h,r,t)$ models correlations between relations and entities with direct relation triples, $E(h,P,t)$ models the inference correlations between relations with multiple-step relation path triples:$$<br>E(h,P,t)=\frac{1}{Z}\sum_{p\in P(h,t)}R(p|h,t)E(h,p,t)\tag{3}<br>$$ where $R(p|h,t)$ indicates the reliability of the relation path $p$ given the entity pair $(h,t)$, $Z=\sum_{p\in P(h,t)}R(p|h,t)$ is a normalization factor, and $E(h,p,t)$ is the energy function of the triple $(h,p,t)$. The component $R(p|h,t)$ concerns about relation path reliability, and $E(h,p,t)$ concerns about relation path representation.</p>
+<p><strong>Relation Path Reliability</strong>:<br>Since not all relation paths are meaningful and reliable for learning. the authors propose a <strong>path-constraint resource allocation</strong> (PCRA) algorithm to measure the reliability of relation paths and only the reliable relation paths are selected. The basic idea is that a certain amount of resource is associated with the head entity $h$, and will flow following the given path $p$. Using the resource amount that eventually flows to the tail entity $t$ to measure the reliability of the path $p$ as a meaningful connection between $h$ and $t$.</p>
+<p>For a triple $(h,p,t)$, the resource amount flowing from $h$ to $t$ is computed as follows. The flowing path is writen as $S_{0}\xrightarrow{r_{1}}S_{1}\xrightarrow{r_{2}}\dots\xrightarrow{r_{l}}S_{l}$, where $S_{0}=h$ and $t\in S_{l}$. For any entity $m\in S_{i}$, denote its direct predecessors along relation $r_{i}$ in $S_{i-1}$ as $S_{i-1}(\centerdot,m)$. The resource flowing to m is defined as$$<br>R_{p}(m)=\sum_{n\in S_{i-1}(\centerdot,m)}\frac{1}{\vert S_{i}(n,\centerdot)\vert}R_{p}(n)\tag{4}<br>$$where $S_{i}(n,\centerdot)$ is the direct successors of $n\in S_{i-1}$ following the relation $r_{i}$, and $R_{p}(n)$ is the resource obtained from the entity $n$. For each relation path $p$, we set the initial resource in $h$ as $R_{p}(h)=1$. By performing resource allocation recursively from $h$ through $p$, tail entity $t$ eventually obtains the resource $R_{p}(t)$ which indicates how much information of head entity $h$ can be well translated, thus, using $R_{p}(t)$ to measure the reliability of the path $p$ given $(h,t)$, i.e., $R(p\vert h,t)=R_{p}(t)$.</p>
+<p><strong>Relation Path Representation</strong>:<br>For <strong>relation path representation</strong>, the authors argue that the semantic meaning of a relation path depends on all relations in this path, thus, given a relation path $p=(r_{1},\dots,r_{l})$, they define and learn a binary (composition) operation function ($\circ$) to obtain the path embedding $p$ by recursively composing multiple relations. Formally, for a path $p=(r_{1},\dots,r_{l})$, the path embeddingas is obtained by $p=r_{1}\circ\centerdot\centerdot\centerdot\circ r_{l}$. As shown below<br><img src="/images/nlp/transx/path-relation.png" alt="Relation Path"><br>The authors propose three types of composition operation:</p>
+<ul>
+<li><strong>Addition (ADD)</strong>: The addition operation obtains the vector of a path by summing up the vectors of all relations$$<br>p=r_{1}+\dots+r_{l}\tag{5}<br>$$</li>
+<li><strong>Multiplication (MUL)</strong>: The multiplication operation obtains the vector of a path as the cumulative product of the vectors of all relations$$<br>p=r_{1}\times\dots\times r_{l}\tag{6}<br>$$</li>
+<li><strong>Recurrent Neural Network (RNN)</strong>: RNN is a recent neural-based model for semantic composition. The composition operation is realized using a matrix $\mathbf{W}$:$$<br>c_{i}=f(\mathbf{W}[c_{i-1};r_{i}])\tag{7}<br>$$where $f$ is a non-linearity or identical function, and $[a;b]$ represents the concatenation of two vectors. By setting $c_{1}=r_{1}$ and recursively performing RNN following the relation path, finally get $p=c_{n}$.</li>
+</ul>
+<p>Since $E(h,p,t)=\Vert h+p-t\Vert$, and $\Vert h+r-t\Vert$ has minimized with the direct relation triple $(h,r,t)$ to make sure $r\approx t-h$. So we can derive$$<br>E(h,p,t)=\Vert h+p-t\Vert=\Vert p-(t-h)\Vert\approx\Vert p-r\Vert=E(p,r)\tag{8}<br>$$<strong>Objective Formalization</strong>:<br>The objective of PTransE is given as$$<br>\mathcal{L}(S)=\sum_{(h,r,t)\in S}\big[L(h,r,t)+\frac{1}{Z}\sum_{p\in P(h,t)}R(p\vert h,t)L(p,r)\big]\tag{9}<br>$$Here the $L(\centerdot)$ is the margin-based loss functions$$\begin{aligned}<br>L(h,r,t)&amp;=\sum_{(h’,r’,t’)\in S^{-}}[\gamma+E(h,r,t)-E(h’,r’,t’)]_{+}\\<br>L(p,r)&amp;=\sum_{(h,r’,t)\in S^{-}}[\gamma+E(p,r)-E(p,r’)]_{+}<br>\end{aligned}$$where $[x]_{+}=\max(0,x)$ returns the maximum between $0$ and $x$, $\gamma$ is the margin, $S$ is the set of valid triples, and $S^{-}$ is the set of invalid triples derived by$$<br>S^{-}=\{(h’,r,t)\}\cup\{(h,r’,t)\}\cup\{(h,r,t’)\}\tag{10}<br>$$The objective function is also under the constraints that $\forall h,r,t$, $\Vert h\Vert_{2}\leq 1$, $\Vert r\Vert_{2}\leq 1$, $\Vert t\Vert_{2}\leq 1$.</p>
+<p><strong>Reverse Relation Addition</strong>:<br>Besides, the authors only consider the relation paths following one direction, so in order to solve the cases, like $e_{1}\xrightarrow{BornInCity}e_{2}\xleftarrow{CityOfCountry}e_{3}$, they add reverse relations for each relation, say, for each triple $(h,r,t)$, build another $(t,r^{-1},h)$, thus, the above-mentioned path can be set as $e_{1}\xrightarrow{BornInCity}e_{2}\xrightarrow{CityOfCountry^{-1}}e_{3}$.</p>
+<p><strong>Path Selection Limitation</strong>:<br>This process normally depends on the scale of knowledge database, generally, 3-steps are quiet enough for most cases.</p>
+<p><strong>Resources</strong>:<br><a href="https://github.com/thunlp/Fast-TransX" target="_blank" rel="noopener">Fast-TransX</a>, <a href="https://github.com/thunlp/KB2E" target="_blank" rel="noopener">KB2E</a> from Natural Language Processing Lab at Tsinghua University (<a href="https://github.com/thunlp" target="_blank" rel="noopener">THUNLP</a>).</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/09/19/PTransE/" title="PTransE -- Modeling Relation Paths for Representation Learning of Knowledge Bases">https://isaacchanghau.github.io/2017/09/19/PTransE/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/natural-language-processing/" rel="tag"># natural language processing</a>
+          
+            <a href="/tags/c-plus-plus/" rel="tag"># c plus plus</a>
+          
+            <a href="/tags/word-embeddings/" rel="tag"># word embeddings</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/14/TransX/" rel="next" title="TransX -- Embedding Entities and Relationships of Multi-relational Data">
+                <i class="fa fa-chevron-left"></i> TransX -- Embedding Entities and Relationships of Multi-relational Data
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/15/写给十月的一封信/" rel="prev" title="A Letter to the Past October">
+                A Letter to the Past October <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

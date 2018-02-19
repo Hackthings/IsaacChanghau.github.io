@@ -1,0 +1,1217 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="deep learning,lstm,gru,natural language processing,seq2seq," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="The paper, Neural Responding Machine for Short-Text Conversation, published by L Shang et. al. in 2015, introduces Neural Responding Machine (NRM), a neural network-based response generator for short-">
+<meta name="keywords" content="deep learning,lstm,gru,natural language processing,seq2seq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Neural Responding Machine for Short-Text Conversation (STC) -- Summary">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/07/19/Neural-Responding-Machine-for-Short-Text-Conversation/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="The paper, Neural Responding Machine for Short-Text Conversation, published by L Shang et. al. in 2015, introduces Neural Responding Machine (NRM), a neural network-based response generator for short-">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/NRM/dataset.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/NRM/framework.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/NRM/global.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/NRM/local.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/NRM/hybrid.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/NRM/decoder.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/NRM/result.png">
+<meta property="og:updated_time" content="2018-01-30T08:36:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Neural Responding Machine for Short-Text Conversation (STC) -- Summary">
+<meta name="twitter:description" content="The paper, Neural Responding Machine for Short-Text Conversation, published by L Shang et. al. in 2015, introduces Neural Responding Machine (NRM), a neural network-based response generator for short-">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/nlp/NRM/dataset.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/07/19/Neural-Responding-Machine-for-Short-Text-Conversation/"/>
+
+
+
+
+
+  <title>Neural Responding Machine for Short-Text Conversation (STC) -- Summary | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/07/19/Neural-Responding-Machine-for-Short-Text-Conversation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Neural Responding Machine for Short-Text Conversation (STC) -- Summary</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-19T16:09:37+08:00">
+                2017-07-19
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:36:29+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 1,502 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 9 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Natural-Language-Processing/" itemprop="url" rel="index">
+                    <span itemprop="name">Natural Language Processing</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>The paper, <a href="https://arxiv.org/pdf/1503.02364.pdf" target="_blank" rel="noopener">Neural Responding Machine for Short-Text Conversation</a>, published by L Shang et. al. in 2015, introduces Neural Responding Machine (NRM), a neural network-based response generator for short-text conversation.<a id="more"></a> The NRM takes the general encoder-decoder framework, which formalizes the generation of response as a decoding process based on the latent representation of the input text, while both encoding and decoding are realized with recurrent neural networks (RNN). In this paper, the author demonstrates that the proposed encoder-decoder-based neural network overperform the traditional <strong>Retrivial-based methods</strong> and <strong>Statistical Machine Translation (SMT) based methods</strong>.</p>
+<h1 id="Dataset-for-STC"><a href="#Dataset-for-STC" class="headerlink" title="Dataset for STC"></a>Dataset for STC</h1><p>The author prepares around <strong>4.4 million pairs</strong> of conversations from <a href="http://www.weibo.com/" target="_blank" rel="noopener">Weibo</a> to train the model. And the dataset is derived from hundreds of millions of post-response pairs by cleaning this raw data including:</p>
+<ul>
+<li>removing trivial responses like “wow”</li>
+<li>filtering out potential advertisements</li>
+<li>removing the response after first 30 ones for topic consistency.</li>
+</ul>
+<p>Below is some statistics of the dataset used:<br><img src="/images/nlp/NRM/dataset.png" alt="Dataset Overview"></p>
+<h1 id="Neural-Responding-Machines"><a href="#Neural-Responding-Machines" class="headerlink" title="Neural Responding Machines"></a>Neural Responding Machines</h1><p>The neural responding machine generally contains three parts, <em>encoder</em>, <em>context generator</em> and <em>decoder</em>, as shown in the graph below. Here, both encoder and decoder are <strong>Recurrent Neural Networks</strong>, beasue of its natural ability to summarize and generate word sequence of arbitrary lengths.<br><img src="/images/nlp/NRM/framework.png" alt="Framework"><br>where $\mathbf{x}=(x_{1},\dots,x_{T})$ is the input sequence ($x_{i}$ denotes the $i$-th word), $\mathbf{h}=(h_{1},\dots,h_{T})$ is a set of high-dimensional hidden representations, $\alpha_{t}$ is the attention signal at time $t$, while $c_{t}$ is the context at time $t$, $y_{t}$ is the generated $t$-th word of response. And the general process is:</p>
+<ol>
+<li>The encoder converts the input sequence $\mathbf{x}$ into the hidden representations $\mathbf{h}$;</li>
+<li>$\mathbf{h}$, along with attention signal $\alpha_{t}$, are fed to the context-generator to build the context $c_{t}$ input to decoder at time $t$.</li>
+<li>The $c_{t}$ is linearly transformed by the transformation matrix $\mathbf{L}$ into a stimulus of generating RNN to produce the $t$-th word $y_{t}$ of response.</li>
+</ol>
+<p>Here $\mathbf{L}$ performs the role to transform the representation of post (or some part of it) to the rich representation of many plausible responses, while $\alpha_{t}$ is to determine which part of the hidden representation $\mathbf{h}$ should be emphasized during the generation process, normally, $\alpha_{t}$ is function of historically generated subsequence $(y_{1},\dots,y_{t-1})$, $\mathbf{x}$ or their latent representations.</p>
+<h2 id="Encoder-and-Context-Generator"><a href="#Encoder-and-Context-Generator" class="headerlink" title="Encoder and Context Generator"></a>Encoder and Context Generator</h2><p>The author introduces three types of encoding schemes: global scheme, local scheme and hybrid scheme (combination of global and local schemes). And the context generator of each scheme is different.</p>
+<h3 id="Global-Scheme"><a href="#Global-Scheme" class="headerlink" title="Global Scheme"></a>Global Scheme</h3><p>Graph below visualizes the global scheme of the RNN-encoder and related context generator.<br><img src="/images/nlp/NRM/global.png" alt="Global Scheme"><br>The hidden state at time $t$ is computed by $h_{t}=\mathcal{f}(x_{t},h_{t-1})$, while the context generator simply uses the last hidden state as the context vector, i.e, $c_{t}=h_{T}$, it means that final hidden state $h_{T}$ is used as the global representation of the sentence. However, this scheme has drawbacks that <strong>a vectorial summarization of the entire post is often hard to obtain and may lose important details for response generation, especially when the dimension of the hidden state is not big enough</strong>.<br>It is worth to mentione that $\mathcal{f}(\centerdot)$ can be a logistic function, sophisticated <a href="https://arxiv.org/pdf/1503.04069.pdf" target="_blank" rel="noopener">Long Short-Term Memory (LSTM) unit</a>, or <a href="https://arxiv.org/pdf/1412.3555.pdf" target="_blank" rel="noopener">Gated Recurrent Unit (GRU)</a>. Compared to “Ungated” or vanilla logistic function, LSTM and GRU are specially designed for its long term memory, which is able to store information over extended time steps without too much decay. The author chooses GRU for this task, due to its performance comparable to LSTM on sequence modeling, but less parameters and easier to train.</p>
+<h3 id="Local-Scheme"><a href="#Local-Scheme" class="headerlink" title="Local Scheme"></a>Local Scheme</h3><p>Local scheme introduces an attention mechanism, which allows the encoder to dynamically select and linearly combine different parts of the input sequence, say, the contect vector here is computed by$$c_{t}=\sum_{j=1}^{T}\alpha_{tj}h_{j}$$where weighting factor $\alpha_{tj}$ is the attention signal to determine which part should be selected to generate the rew word $y_{t}$, which in turn is a function of hidden states $\alpha_{tj}=q(h_{j},s_{t-1})$, $s_{t-1}$ is the hidden state of decoder at time $t-1$, will be introduced later, graph of local scheme is shown below:<br><img src="/images/nlp/NRM/local.png" alt="Local Scheme"><br>Basically, the attention mechanism $\alpha_{tj}$ models the alignment between the inputs around position $j$ and the output at position $t$, so it can be viewed as a local matching model. This scheme enjoys <strong>the advantage of adaptively focusing on some important words of the input text according to the generated words of response</strong>, i.e., it cover the deficit that global scheme lost some important information.</p>
+<h3 id="Hybrid-Scheme"><a href="#Hybrid-Scheme" class="headerlink" title="Hybrid Scheme"></a>Hybrid Scheme</h3><p>As mentioned before, global scheme has the summarization of the entire post, while local scheme can adaptively select the important words in post for various suitable responses. Since post-response pairs in STC are not strictly parallel and a word in different context can have different meanings, the author assumes that the global representation in may provide useful context for extracting the local context, therefore complementary to the local scheme. Thus, <strong>hybrid scheme is therefore to combine the global and local schemes by concatenating their encoded hidden states to form an extended hidden representation for each time stamp</strong>, as shown below:<br><img src="/images/nlp/NRM/hybrid.png" alt="Hybrid Scheme"><br>Here the summarization $h_{T}^{g}$ is incorporated into $c_{t}$ and $\alpha_{tj}$ to provide a global context for local matching, thus the context generator function is$$c_{t}=\sum_{j=1}^{T}\alpha_{tj}\big[h_{j}^{l};h_{T}^{g}\big]$$where $\big[h_{j}^{l};h_{T}^{g}\big]$ denotes the concatenation of vectors $h_{j}^{l}$ and $h_{T}^{g}$. The author also mention that the context generator in hybrid scheme will evoke different encoding mechanisms in the global encoder and the local encoder, although they will be combined later in forming a unified representation. More specifically, the last hidden state of global scheme plays a role different from that of the last state of local scheme, since it has the responsibility to encode the entire input sentence. This role of global scheme, however, tends to be not adequately emphasized in training the hybrid encoder when the parameters of the two encoding RNNs are learned jointly from scratch. For this the author first initialize hybrid scheme with the parameters of local scheme and global scheme trained separately, then fine ture the parameters in encoder along with training the parameters of decoder.</p>
+<h2 id="Decoder"><a href="#Decoder" class="headerlink" title="Decoder"></a>Decoder</h2><p>The graph of decoder is shown below, which is essentially a standard RNN language model except conditioned on the context input $\mathbf{c}$.<br><img src="/images/nlp/NRM/decoder.png" alt="Decoder Scheme"><br>The generation probability of the $t$-th word is computed by$$p(y_{t}|y_{t-1},\dots,y_{1},\mathbf{x})=\mathcal{g}(y_{t-1},s_{t},c_{t})$$where $y_{t}$ is a one-hot word representation, $\mathcal{g}(\centerdot)$ is a softmax activation function, and $s_{t}$ is the hidden state of decoder at time $t$ computed by$$s_{t}=\mathcal{f}(y_{t-1},s_{t-1},c_{t})$$and $\mathcal{f}(\centerdot)$ is a non-linear activation function (i.e., still GRU unit), and the transformation $\mathbf{L}$ is often assigned as parameters of $\mathcal{f}(\centerdot)$.</p>
+<p>To learn the parameters of the model, the target is to maximize the likelihood of observing the original response conditioned on the post in the training set. While for a new post, NRMs generate their responses by using a left-to-right <a href="https://en.wikipedia.org/wiki/Beam_search" target="_blank" rel="noopener">beam search</a> with beam size = 10.</p>
+<h1 id="Implementation-Details-and-Experiments"><a href="#Implementation-Details-and-Experiments" class="headerlink" title="Implementation Details and Experiments"></a>Implementation Details and Experiments</h1><p>The author uses <a href="https://nlp.stanford.edu/software/segmenter.shtml" target="_blank" rel="noopener">Stanford Chinese word segmenter</a> to split the posts and responses into sequences of words. Since the number of unique words in post text is 125,237, and that of response text is 679,958. The author therefore construct two separate vocabularies for posts and responses by using <strong>40,000</strong> most frequent words on each side, covering 97.8% usage of words for post and 96.2% for response respectively. All the remaining words are replaced by a special token “UNK”. The dimensions of the hidden states of encoder and decoder are both <strong>1000</strong>, and the dimensions of the word-embedding for post and response are both <strong>620</strong>. Model parameters are initialized by randomly sampling from a uniform distribution between -0.1 and 0.1. Models are trained by stochastic gradient descent algorithm with mini-batch.<br>Below shows the responses generated by different models, where <em>NRM-glo</em> denotes global scheme, <em>NRM-loc</em> represents local scheme and <em>NRM-hyb</em> is the hybrid scheme, while <em>Rtr.-based</em> represents the Retrieval-based method used as a competitor.<br><img src="/images/nlp/NRM/result.png" alt="Result"><br>Above is a general summary of the paper: “Neural Responding Machine for Short-Text Conversation”, I only describe the algorithm introduced in this paper, and I am trying to build this model by myself in the furture.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/07/19/Neural-Responding-Machine-for-Short-Text-Conversation/" title="Neural Responding Machine for Short-Text Conversation (STC) -- Summary">https://isaacchanghau.github.io/2017/07/19/Neural-Responding-Machine-for-Short-Text-Conversation/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/lstm/" rel="tag"># lstm</a>
+          
+            <a href="/tags/gru/" rel="tag"># gru</a>
+          
+            <a href="/tags/natural-language-processing/" rel="tag"># natural language processing</a>
+          
+            <a href="/tags/seq2seq/" rel="tag"># seq2seq</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/14/新加坡两年/" rel="next" title="Singapore, Two Years">
+                <i class="fa fa-chevron-left"></i> Singapore, Two Years
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/22/LSTM-and-GRU-Formula-Summary/" rel="prev" title="LSTM and GRU -- Formula Summary">
+                LSTM and GRU -- Formula Summary <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Dataset-for-STC"><span class="nav-number">1.</span> <span class="nav-text">Dataset for STC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Neural-Responding-Machines"><span class="nav-number">2.</span> <span class="nav-text">Neural Responding Machines</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Encoder-and-Context-Generator"><span class="nav-number">2.1.</span> <span class="nav-text">Encoder and Context Generator</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Global-Scheme"><span class="nav-number">2.1.1.</span> <span class="nav-text">Global Scheme</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Local-Scheme"><span class="nav-number">2.1.2.</span> <span class="nav-text">Local Scheme</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hybrid-Scheme"><span class="nav-number">2.1.3.</span> <span class="nav-text">Hybrid Scheme</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Decoder"><span class="nav-number">2.2.</span> <span class="nav-text">Decoder</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Implementation-Details-and-Experiments"><span class="nav-number">3.</span> <span class="nav-text">Implementation Details and Experiments</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

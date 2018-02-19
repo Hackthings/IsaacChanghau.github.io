@@ -1,0 +1,1209 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="machine learning,python,elastic net,boosting," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="After cleaning and transforming processes in House Prices Advanced Regression Techniques – Data Analysis Exploration.">
+<meta name="keywords" content="machine learning,python,elastic net,boosting">
+<meta property="og:type" content="article">
+<meta property="og:title" content="House Prices Advanced Regression Techniques -- Training and Prediction">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/07/10/House-Price-Advanced-Regression-Techniques-2/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="After cleaning and transforming processes in House Prices Advanced Regression Techniques – Data Analysis Exploration.">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2017-09-21T09:19:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="House Prices Advanced Regression Techniques -- Training and Prediction">
+<meta name="twitter:description" content="After cleaning and transforming processes in House Prices Advanced Regression Techniques – Data Analysis Exploration.">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/07/10/House-Price-Advanced-Regression-Techniques-2/"/>
+
+
+
+
+
+  <title>House Prices Advanced Regression Techniques -- Training and Prediction | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/07/10/House-Price-Advanced-Regression-Techniques-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">House Prices Advanced Regression Techniques -- Training and Prediction</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-07-10T12:45:46+08:00">
+                2017-07-10
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2017-09-21T17:19:29+08:00" content="2017-09-21">
+                  2017-09-21
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 2,750 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 17 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>After cleaning and transforming processes in <a href="https://isaacchanghau.github.io/2017/07/08/House-Price-Advanced-Regression-Techniques-1/">House Prices Advanced Regression Techniques – Data Analysis Exploration</a>.<a id="more"></a> Here we continue to build machine learning model to train the dataset and make a prediction based on the trained model. We use <strong>Elastic Net</strong> and <strong>Gradient Boosting</strong> models to train the dataset and make predictions separately, then average the results of the two models to generate the final output.</p>
+<h1 id="Elastic-Net-Regression"><a href="#Elastic-Net-Regression" class="headerlink" title="Elastic Net Regression"></a>Elastic Net Regression</h1><p>In statistics and, in particular, in the fitting of linear or logistic regression models, the elastic net is a regularized regression method that linearly combines the L1 and L2 penalties of the <a href="https://en.wikipedia.org/wiki/Lasso_%28statistics%29" target="_blank" rel="noopener">lasso</a> and <a href="https://en.wikipedia.org/wiki/Tikhonov_regularization" target="_blank" rel="noopener">ridge</a> methods.<br>The target function of Lasso is given as:$$\min_{\mathbf{w}}\frac{1}{2n}\Vert\mathbf{X}^{T}\mathbf{w}-\mathbf{y}\Vert_{2}^{2}+\alpha\Vert\mathbf{w}\Vert_{1}$$where $n$ is number of samples, $\mathbf{w}$ is the coefficient parameters to learn, $\Vert\mathbf{w}\Vert_{1}$ term is L1 penality, which promotes sparsity, reduces the redundancy and improves the accurancy and robustness of regression (it alleviates the overfitting in some degree). Also if there is a group of highly correlated variables, then the Lasso tends to select one variable from a group and ignore the others. However, the L1 norm in Lass has some limitations that, for example, in the “large $p$ and small $n$” case (high-dimensional data with few examples), the Lasso selects at most n variables before it saturates.<br>While the target function of Ridge is computed by:$$\min_{\mathbf{w}}\frac{1}{2}\Vert\mathbf{X}^{T}\mathbf{w}-\mathbf{y}\Vert_{2}^{2}+\frac{\alpha}{2}\Vert\mathbf{w}\Vert_{2}$$where $\Vert\mathbf{w}\Vert_{2}^{2}$ term is L2 penality, which constrains the module of $\mathbf{w}$ in to a L2 ball to alleviate the overfitting problem. However, L2 norm shrinkages the value of approximated parameters, but does not make it zero, which means it does not perform the function of parameter selection.<br>For Elastic Net, it can be treated as a compromise between Lasso and Ridge, since it integrates the L1 and L2 regularizations. Its target function is described as:$$\min_{\mathbf{w}}\frac{1}{2n}\Vert\mathbf{X}^{T}\mathbf{w}-\mathbf{y}\Vert_{2}^{2}+\alpha\rho\Vert\mathbf{w}\Vert_{1}+\frac{\alpha(1-\rho)}{2}\Vert\mathbf{w}\Vert_{2}^{2}$$where $\rho$ is an adaptive hyper-parameter to control the contributions of L1 norm and L2 norm. With this compromise, Elastic Net remains part of the parameter selection function in Lasso and part of rotary stability property in Ridge. Meanwhile, compare to Lasso, Elastic Net not only randomly select one of the correlated variables, but also tends to obtain all of them and enahnces their group effect.</p>
+<h1 id="Gradient-Boosting-Regression"><a href="#Gradient-Boosting-Regression" class="headerlink" title="Gradient Boosting Regression"></a>Gradient Boosting Regression</h1><p>Gradient boosting is a machine learning technique for regression and classification problems, which produces a prediction model in the form of an ensemble of weak prediction models, typically decision trees. It builds the model in a stage-wise fashion like other boosting methods do, and it generalizes them by allowing optimization of an arbitrary differentiable loss function.<br>Like other boosting methods, gradient boosting combines weak “learners” into a single strong learner in an iterative fashion. It is easiest to explain in the least-squares regression setting, where the goal is to “teach” a model $F$ to predict values in the form $\hat{y} = F(\mathbf{x})$ by minimizing the mean squared error $(\hat{y} - y)^{2}$, averaged over some training set of actual values of the output variable $y$.<br>Given a training dataset $\{(\mathbf{x}_{1},y_{1}),(\mathbf{x}_{2},y_{2}),\dots,(\mathbf{x}_{n},y_{n})\}$, the goal is to find an approximation $\hat{F}(\mathbf{x})$ to a function $F(\mathbf{x})$ that minimizes the expected value of some specified loss function $\mathcal{L}(y, F(x))$:$$\hat{F}=\arg\min_{F}\mathbb{E}_{\mathbf{x},y}\big[\mathcal{L}(y, F(\mathbf{x}))\big]$$The gradient boosting method assumes a real-valued $y$ and seeks an approximation $\hat{F}(\mathbf{x})$ in the form of a weighted sum of functions $h_{i}(\mathbf{x})$ from some class $\mathcal{H}$, called base (or weak) learners:$$F(\mathbf{x})=\sum_{i=1}^{M}\gamma_{i}h_{i}(\mathbf{x})+const.$$In accordance with the empirical risk minimization principle, the method tries to find an approximation $\hat{F}(\mathbf{x})$ that minimizes the average value of the loss function on the training set. It does so by starting with a model, consisting of a constant function $F_{0}(\mathbf{x})$, and incrementally expanding it in a greedy fashion:$$F_{0}(\mathbf{x})=\arg\min_{\gamma}\sum_{i=1}^{n}\mathcal{L}(y_{i},\gamma)\\F_{m}(\mathbf{x})=F_{m-1}(\mathbf{x})+\arg\min_{h\in\mathcal{H}}\sum_{i=1}^{n}\mathcal{L}(y_{i},F_{m-1}(\mathbf{x}_{i})+h(\mathbf{x}_{i}))$$where $h\in\mathcal{H}$ is a base learner function.<br>Unfortunately, choosing the best function $h$ at each step for an arbitrary loss function $\mathcal{L}$ is a computationally infeasible optimization problem in general. Therefore, we will restrict to a simplification.<br>The idea is to apply a steepest descent step to this minimization problem. If we considered the continuous case, i.e. $\mathcal{H}$ the set of arbitrary differentiable functions on $\mathbb{R}$, we would update the model in accordance with the following equations:$$F_{m}(\mathbf{x})=F_{m-1}(\mathbf{x})-\gamma_{m}\sum_{i=1}^{n}\nabla_{F_{m-1}}\mathcal{L}(y_{i},F_{m-1}(\mathbf{x}_{i}))\\\gamma_{m}=\arg\min_{\gamma}\sum_{i=1}^{n}\mathcal{L}\bigg(y_{i},F_{m-1}(\mathbf{x}_{i})-\gamma\frac{\partial\mathcal{L}(y_{i},F_{m-1}(\mathbf{x}_{i}))}{\partial F_{m-1}(\mathbf{x}_{i})}\bigg)$$where the derivatives are taken with respect to the functions $F_{i}$ for $i\in\{1,\dots,m\}$. In the discrete case however, i.e. the set $\mathcal{H}$ is finite, we will choose the candidate function $h$ closest to the gradient of $\mathcal{L}$ for which the coefficient $\gamma$ may then be calculated with the aid of line search the above equations. Note that this approach is a heuristic and will therefore not yield an exact solution to the given problem, yet a satisfactory approximation.<br>In pseudocode, the generic gradient boosting method is:</p>
+<ol>
+<li>Input: training dataset $\{(\mathbf{x}_{i},y_{i})\}_{i=1}^{n}$, a differentiable loss function $\mathcal{L}(y,F(\mathbf{x}))$, number of iterations $M$.</li>
+<li>Initialize model with a constant value: $F_{0}(\mathbf{x})=\arg\min_{\gamma}\sum_{i=1}^{n}\mathcal{L}(y_{i},\gamma)$.</li>
+<li>For $m=1$ to $M$:<br>3.1. Compute so-called pseudo-residuals: $r_{im}=-\big[\frac{\partial\mathcal{L}(y_{i},F(\mathbf{x}_{i}))}{\partial F(\mathbf{x}_{i})}\big]_{F(\mathbf{x})=F_{m-1}(\mathbf{x})}$, for $i=1,\dots,n$.<br>3.2. Fit a base learner (e.g. tree) $h_{m}(\mathbf{x})$ to pseudo-residuals, i.e., train it using the training dataset $\{\mathbf{x}_{i},r_{im}\}_{i=1}^{n}$.<br>3.3. Compute multiplier $\gamma_{m}$ by solving <a href="https://en.wikipedia.org/wiki/Line_search" target="_blank" rel="noopener">one-dimensional optimization</a> problem: $\gamma_{m}=\arg\min_{\gamma}\sum_{i=1}^{n}\mathcal{L}(y_{i},F_{m-1}(\mathbf{x}_{i})+\gamma h_{m}(\mathbf{x}_{i}))$.<br>3.4. Update the model: $F_{m}(\mathbf{x})=F_{m-1}(\mathbf{x})+\gamma_{m}h_{m}(\mathbf{x})$.</li>
+<li>Output $F_{M}(\mathbf{x})$.</li>
+</ol>
+<h1 id="Summary-of-Data-Analysis-Process"><a href="#Summary-of-Data-Analysis-Process" class="headerlink" title="Summary of Data Analysis Process"></a>Summary of Data Analysis Process</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> ensemble, linear_model</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split, cross_val_score</span><br><span class="line"><span class="keyword">from</span> sklearn.utils <span class="keyword">import</span> shuffle</span><br><span class="line"><span class="keyword">from</span> method2.functions <span class="keyword">import</span> train_test</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.filterwarnings(<span class="string">'ignore'</span>)</span><br><span class="line"><span class="comment"># load data</span></span><br><span class="line">train = pd.read_csv(<span class="string">'train.csv'</span>)</span><br><span class="line">test = pd.read_csv(<span class="string">'test.csv'</span>)</span><br><span class="line">train_labels = train.pop(<span class="string">'SalePrice'</span>)</span><br><span class="line">data = pd.concat([train, test], keys=[<span class="string">'train'</span>, <span class="string">'test'</span>])</span><br><span class="line"><span class="comment"># drop the data with high missing percentage</span></span><br><span class="line">data.drop([<span class="string">'Id'</span>, <span class="string">'MiscFeature'</span>, <span class="string">'Fence'</span>, <span class="string">'PoolQC'</span>, <span class="string">'FireplaceQu'</span>, <span class="string">'Alley'</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)</span><br><span class="line"><span class="comment"># drop the Bsmt feature group, Garage feature group as well as some trivial features</span></span><br><span class="line">data.drop([<span class="string">'Utilities'</span>, <span class="string">'RoofMatl'</span>, <span class="string">'MasVnrArea'</span>, <span class="string">'MasVnrType'</span>, <span class="string">'Heating'</span>, <span class="string">'LowQualFinSF'</span>, <span class="string">'BsmtFullBath'</span>,</span><br><span class="line">           <span class="string">'BsmtHalfBath'</span>, <span class="string">'BsmtQual'</span>, <span class="string">'BsmtCond'</span>, <span class="string">'BsmtExposure'</span>, <span class="string">'BsmtFinType1'</span>, <span class="string">'BsmtFinSF1'</span>, <span class="string">'BsmtFinSF2'</span>,</span><br><span class="line">           <span class="string">'BsmtUnfSF'</span>, <span class="string">'BsmtFinType2'</span>, <span class="string">'Functional'</span>, <span class="string">'WoodDeckSF'</span>, <span class="string">'OpenPorchSF'</span>,</span><br><span class="line">           <span class="string">'GarageYrBlt'</span>, <span class="string">'GarageCond'</span>, <span class="string">'GarageType'</span>, <span class="string">'GarageFinish'</span>, <span class="string">'GarageQual'</span>, <span class="string">'GarageArea'</span>,</span><br><span class="line">           <span class="string">'EnclosedPorch'</span>, <span class="string">'3SsnPorch'</span>, <span class="string">'ScreenPorch'</span>, <span class="string">'PoolArea'</span>, <span class="string">'MiscVal'</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)</span><br><span class="line"><span class="comment"># merge TotalBsmtSF, 1stFlrSF, 2ndFlrSF to TotalSF</span></span><br><span class="line">data[<span class="string">'TotalBsmtSF'</span>] = data[<span class="string">'TotalBsmtSF'</span>].fillna(<span class="number">0</span>)</span><br><span class="line">data[<span class="string">'1stFlrSF'</span>] = data[<span class="string">'1stFlrSF'</span>].fillna(<span class="number">0</span>)</span><br><span class="line">data[<span class="string">'2ndFlrSF'</span>] = data[<span class="string">'2ndFlrSF'</span>].fillna(<span class="number">0</span>)</span><br><span class="line">data[<span class="string">'TotalSF'</span>] = data[<span class="string">'TotalBsmtSF'</span>] + data[<span class="string">'1stFlrSF'</span>] + data[<span class="string">'2ndFlrSF'</span>]</span><br><span class="line">data.drop([<span class="string">'TotalBsmtSF'</span>, <span class="string">'1stFlrSF'</span>, <span class="string">'2ndFlrSF'</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)</span><br><span class="line"><span class="comment"># MSSubClass as categorical</span></span><br><span class="line">data[<span class="string">'MSSubClass'</span>] = data[<span class="string">'MSSubClass'</span>].astype(str)</span><br><span class="line"><span class="comment"># MSZoning: filling NA with most popular values</span></span><br><span class="line">data[<span class="string">'MSZoning'</span>] = data[<span class="string">'MSZoning'</span>].fillna(data[<span class="string">'MSZoning'</span>].mode()[<span class="number">0</span>])</span><br><span class="line"><span class="comment"># LotFrontage: fill NA with mean value</span></span><br><span class="line">data[<span class="string">'LotFrontage'</span>] = data[<span class="string">'LotFrontage'</span>].fillna(data[<span class="string">'LotFrontage'</span>].mean())</span><br><span class="line"><span class="comment"># OverallCond as categorical</span></span><br><span class="line">data[<span class="string">'OverallCond'</span>] = data[<span class="string">'OverallCond'</span>].astype(str)</span><br><span class="line"><span class="comment"># Electrical: fill NA with most popular values</span></span><br><span class="line">data[<span class="string">'Electrical'</span>] = data[<span class="string">'Electrical'</span>].fillna(data[<span class="string">'Electrical'</span>].mode()[<span class="number">0</span>])</span><br><span class="line"><span class="comment"># KitchenAbvGr as categorical</span></span><br><span class="line">data[<span class="string">'KitchenAbvGr'</span>] = data[<span class="string">'KitchenAbvGr'</span>].astype(str)</span><br><span class="line"><span class="comment"># KitchenQual: fill NA with most popular values</span></span><br><span class="line">data[<span class="string">'KitchenQual'</span>] = data[<span class="string">'KitchenQual'</span>].fillna(data[<span class="string">'KitchenQual'</span>].mode()[<span class="number">0</span>])</span><br><span class="line"><span class="comment"># GarageCars: fill NA with 0</span></span><br><span class="line">data[<span class="string">'GarageCars'</span>] = data[<span class="string">'GarageCars'</span>].fillna(<span class="number">0.0</span>)</span><br><span class="line"><span class="comment"># SaleType: fill NA with most popular values</span></span><br><span class="line">data[<span class="string">'SaleType'</span>] = data[<span class="string">'SaleType'</span>].fillna(data[<span class="string">'SaleType'</span>].mode()[<span class="number">0</span>])</span><br><span class="line"><span class="comment"># Year and Month as categorical</span></span><br><span class="line">data[<span class="string">'YrSold'</span>] = data[<span class="string">'YrSold'</span>].astype(str)</span><br><span class="line">data[<span class="string">'MoSold'</span>] = data[<span class="string">'MoSold'</span>].astype(str)</span><br><span class="line"><span class="comment"># Exterior1st and Exterior2nd: fill NA with most popular values</span></span><br><span class="line">data[<span class="string">'Exterior1st'</span>] = data[<span class="string">'Exterior1st'</span>].fillna(data[<span class="string">'Exterior2nd'</span>].mode()[<span class="number">0</span>])</span><br><span class="line">data[<span class="string">'Exterior2nd'</span>] = data[<span class="string">'Exterior2nd'</span>].fillna(data[<span class="string">'Exterior2nd'</span>].mode()[<span class="number">0</span>])</span><br><span class="line"><span class="comment"># Standardizing LotFrontage and LotArea</span></span><br><span class="line">numeric_data = data.loc[:, [<span class="string">'LotFrontage'</span>, <span class="string">'LotArea'</span>, <span class="string">'GrLivArea'</span>, <span class="string">'TotalSF'</span>]]</span><br><span class="line">numeric_data_standardized = (numeric_data - numeric_data.mean())/numeric_data.std()</span><br><span class="line"><span class="comment"># Log transformation of labels, GrLivArea and TotalSF</span></span><br><span class="line">train_labels = np.log(train_labels)</span><br><span class="line"><span class="comment"># data['GrLivArea'] = np.log(data['GrLivArea'])</span></span><br><span class="line"><span class="comment"># data['TotalSF'] = np.log(data['TotalSF'])</span></span><br><span class="line"><span class="comment"># Getting Dummies from Condition1 and Condition2</span></span><br><span class="line">conditions = set([x <span class="keyword">for</span> x <span class="keyword">in</span> data[<span class="string">'Condition1'</span>]] + [x <span class="keyword">for</span> x <span class="keyword">in</span> data[<span class="string">'Condition2'</span>]])</span><br><span class="line">dummies = pd.DataFrame(data=np.zeros((len(data.index), len(conditions))), index=data.index, columns=conditions)</span><br><span class="line"><span class="keyword">for</span> i, cond <span class="keyword">in</span> enumerate(zip(data[<span class="string">'Condition1'</span>], data[<span class="string">'Condition2'</span>])):</span><br><span class="line">    dummies.ix[i, cond] = <span class="number">1</span></span><br><span class="line">data = pd.concat([data, dummies.add_prefix(<span class="string">'Condition_'</span>)], axis=<span class="number">1</span>)</span><br><span class="line">data.drop([<span class="string">'Condition1'</span>, <span class="string">'Condition2'</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)</span><br><span class="line"><span class="comment"># Getting Dummies from Exterior1st and Exterior2nd</span></span><br><span class="line">exteriors = set([x <span class="keyword">for</span> x <span class="keyword">in</span> data[<span class="string">'Exterior1st'</span>]] + [x <span class="keyword">for</span> x <span class="keyword">in</span> data[<span class="string">'Exterior2nd'</span>]])</span><br><span class="line">dummies = pd.DataFrame(data=np.zeros((len(data.index), len(exteriors))), index=data.index, columns=exteriors)</span><br><span class="line"><span class="keyword">for</span> i, ext <span class="keyword">in</span> enumerate(zip(data[<span class="string">'Exterior1st'</span>], data[<span class="string">'Exterior2nd'</span>])):</span><br><span class="line">    dummies.ix[i, ext] = <span class="number">1</span></span><br><span class="line">data = pd.concat([data, dummies.add_prefix(<span class="string">'Exterior_'</span>)], axis=<span class="number">1</span>)</span><br><span class="line">data.drop([<span class="string">'Exterior1st'</span>, <span class="string">'Exterior2nd'</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)</span><br><span class="line"><span class="comment"># Getting Dummies from all other categorical vars</span></span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> data.dtypes[data.dtypes == <span class="string">'object'</span>].index:</span><br><span class="line">    for_dummy = data.pop(col)</span><br><span class="line">    data = pd.concat([data, pd.get_dummies(for_dummy, prefix=col)], axis=<span class="number">1</span>)</span><br><span class="line"><span class="comment"># copy data</span></span><br><span class="line">data_standardized = data.copy()</span><br><span class="line"><span class="comment"># Replacing numeric feature by standardized values</span></span><br><span class="line">data_standardized.update(numeric_data_standardized)</span><br><span class="line"><span class="comment"># Splitting dataset to train and test</span></span><br><span class="line">train_data = data.loc[<span class="string">'train'</span>].select_dtypes(include=[np.number]).values</span><br><span class="line">test_data = data.loc[<span class="string">'test'</span>].select_dtypes(include=[np.number]).values</span><br><span class="line"><span class="comment"># Splitting standardized features</span></span><br><span class="line">train_data_st = data_standardized.loc[<span class="string">'train'</span>].select_dtypes(include=[np.number]).values</span><br><span class="line">test_data_st = data_standardized.loc[<span class="string">'test'</span>].select_dtypes(include=[np.number]).values</span><br></pre></td></tr></table></figure>
+<h1 id="Model-Construction-Training-and-Prediction"><a href="#Model-Construction-Training-and-Prediction" class="headerlink" title="Model Construction, Training and Prediction"></a>Model Construction, Training and Prediction</h1><h2 id="Shuffling-and-Splitting-Data"><a href="#Shuffling-and-Splitting-Data" class="headerlink" title="Shuffling and Splitting Data"></a>Shuffling and Splitting Data</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Shuffling train sets</span></span><br><span class="line">train_features_st, train_features, train_labels = shuffle(train_features_st, train_features, train_labels, random_state=<span class="number">5</span>)</span><br><span class="line"><span class="comment"># Splitting</span></span><br><span class="line">x_train, x_test, y_train, y_test = train_test_split(train_features, train_labels, test_size=<span class="number">0.1</span>, random_state=<span class="number">200</span>)</span><br><span class="line">x_train_st, x_test_st, y_train_st, y_test_st = train_test_split(train_features_st, train_labels, test_size=<span class="number">0.1</span>, random_state=<span class="number">200</span>)</span><br></pre></td></tr></table></figure>
+<p>where <code>**_features_st</code> dataset is used for training Elastic Net, while <code>**_features</code> dataset is used for training Gradient Boosting Regressor.<br><strong>Define two functions to show R2 and RMSE scores for train and validation sets</strong><br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> r2_score, mean_squared_error</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="comment"># Prints R2 and RMSE scores</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_score</span><span class="params">(prediction, labels)</span>:</span></span><br><span class="line">    print(<span class="string">'R2: &#123;&#125;'</span>.format(r2_score(prediction, labels)))</span><br><span class="line">    print(<span class="string">'RMSE: &#123;&#125;'</span>.format(np.sqrt(mean_squared_error(prediction, labels))))</span><br><span class="line"><span class="comment"># Shows scores for train and validation sets</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train_test</span><span class="params">(estimator, x_trn, x_tst, y_trn, y_tst)</span>:</span></span><br><span class="line">    prediction_train = estimator.predict(x_trn)</span><br><span class="line">    <span class="comment"># Printing estimator</span></span><br><span class="line">    print(estimator)</span><br><span class="line">    <span class="comment"># Printing train scores</span></span><br><span class="line">    get_score(prediction_train, y_trn)</span><br><span class="line">    prediction_test = estimator.predict(x_tst)</span><br><span class="line">    <span class="comment"># Printing test scores</span></span><br><span class="line">    print(<span class="string">"Test"</span>)</span><br><span class="line">    get_score(prediction_test, y_tst)</span><br></pre></td></tr></table></figure></p>
+<h2 id="Model-Construction"><a href="#Model-Construction" class="headerlink" title="Model Construction"></a>Model Construction</h2><p>For Elastic Net, we use cross validation method to select the best parameters group for a given parameters map.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ens_test = linear_model.ElasticNetCV(alphas=[<span class="number">0.0001</span>, <span class="number">0.0005</span>, <span class="number">0.001</span>, <span class="number">0.01</span>, <span class="number">0.1</span>, <span class="number">1</span>, <span class="number">10</span>], l1_ratio=[<span class="number">0.01</span>, <span class="number">0.1</span>, <span class="number">0.5</span>, <span class="number">0.9</span>, <span class="number">0.99</span>], max_iter=<span class="number">5000</span>).fit(x_train_st, y_train_st)</span><br><span class="line">train_test(ens_test, x_train_st, x_test_st, y_train_st, y_test_st)</span><br><span class="line"><span class="comment"># Average R2 score and standard deviation of 5-fold cross-validation</span></span><br><span class="line">scores = cross_val_score(ens_test, train_features_st, train_labels, cv=<span class="number">5</span>)</span><br><span class="line">print(<span class="string">"Accuracy: %0.2f (+/- %0.2f)"</span> % (scores.mean(), scores.std() * <span class="number">2</span>))</span><br></pre></td></tr></table></figure></p>
+<p>Here the $\alpha$ is given as <code>alphas=[0.0001, 0.0005, 0.001, 0.01, 0.1, 1, 10]</code>, $\rho$ is given as <code>l1_ratio=[0.01, 0.1, 0.5, 0.9, 0.99]</code>, and the maximal iterations is set as $5000$, $K$ of cross validation is set as $5$.<br>For Gradient Boosting Regressor, the cross validation technique is also used, parameters here are fixed and $K$ of cross validation is set as $5$.<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">g_best = ensemble.GradientBoostingRegressor(n_estimators=<span class="number">3000</span>, learning_rate=<span class="number">0.05</span>, max_depth=<span class="number">3</span>, max_features=<span class="string">'sqrt'</span>, min_samples_leaf=<span class="number">15</span>, min_samples_split=<span class="number">10</span>, loss=<span class="string">'huber'</span>).fit(x_train, y_train)</span><br><span class="line">train_test(g_best, x_train, x_test, y_train, y_test)</span><br><span class="line"><span class="comment"># Average R2 score and standard deviation of 5-fold cross-validation</span></span><br><span class="line">scores = cross_val_score(g_best, train_features_st, train_labels, cv=<span class="number">5</span>)</span><br><span class="line">print(<span class="string">"Accuracy: %0.2f (+/- %0.2f)"</span> % (scores.mean(), scores.std() * <span class="number">2</span>))</span><br></pre></td></tr></table></figure></p>
+<p>After cross validation and obtaining the best model of Elastic Net and Gradient Boosting Regressor, we need to retraining the model:<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Retraining models</span></span><br><span class="line">gb_model = g_best.fit(train_features, train_labels)</span><br><span class="line">enst_model = ens_test.fit(train_features_st, train_labels)</span><br></pre></td></tr></table></figure></p>
+<p>Then get the predictions and save to file<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Getting our SalePrice estimation</span></span><br><span class="line">final_labels = (np.exp(gb_model.predict(test_features)) + np.exp(enst_model.predict(test_features_st))) / <span class="number">2</span></span><br><span class="line"><span class="comment"># print result</span></span><br><span class="line">output = pd.DataFrame(&#123;<span class="string">'Id'</span>: test.Id, <span class="string">'SalePrice'</span>: final_labels&#125;)</span><br><span class="line">print(output)</span><br><span class="line"><span class="comment"># Saving to CSV</span></span><br><span class="line">output.to_csv(<span class="string">'submission.csv'</span>, index=<span class="keyword">False</span>)</span><br></pre></td></tr></table></figure></p>
+<p>Below shows some information in training process and the prediction results:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">ElasticNetCV(alphas=[0.0001, 0.0005, 0.001, 0.01, 0.1, 1, 10], copy_X=True,</span><br><span class="line">       cv=None, eps=0.001, fit_intercept=True,</span><br><span class="line">       l1_ratio=[0.01, 0.1, 0.5, 0.9, 0.99], max_iter=5000, n_alphas=100,</span><br><span class="line">       n_jobs=1, normalize=False, positive=False, precompute=<span class="string">'auto'</span>,</span><br><span class="line">       random_state=None, selection=<span class="string">'cyclic'</span>, tol=0.0001, verbose=0)</span><br><span class="line">R2: 0.9009282706669409</span><br><span class="line">RMSE: 0.1192142029440696</span><br><span class="line">Test</span><br><span class="line">R2: 0.8967299864999421</span><br><span class="line">RMSE: 0.11097041288345283</span><br><span class="line">Accuracy: 0.88 (+/- 0.10)</span><br><span class="line">GradientBoostingRegressor(alpha=0.9, criterion=<span class="string">'friedman_mse'</span>, init=None,</span><br><span class="line">             learning_rate=0.05, loss=<span class="string">'huber'</span>, max_depth=3,</span><br><span class="line">             max_features=<span class="string">'sqrt'</span>, max_leaf_nodes=None,</span><br><span class="line">             min_impurity_split=1e-07, min_samples_leaf=15,</span><br><span class="line">             min_samples_split=10, min_weight_fraction_leaf=0.0,</span><br><span class="line">             n_estimators=3000, presort=<span class="string">'auto'</span>, random_state=None,</span><br><span class="line">             subsample=1.0, verbose=0, warm_start=False)</span><br><span class="line">R2: 0.9617959062813555</span><br><span class="line">RMSE: 0.07593410094831428</span><br><span class="line">Test</span><br><span class="line">R2: 0.9062977017781593</span><br><span class="line">RMSE: 0.10586499921275429</span><br><span class="line">Accuracy: 0.90 (+/- 0.04)</span><br><span class="line"></span><br><span class="line">Predictions:</span><br><span class="line">        Id      SalePrice</span><br><span class="line">0     1461  119290.186865</span><br><span class="line">1     1462  152342.289928</span><br><span class="line">2     1463  180487.561653</span><br><span class="line">3     1464  201057.891220</span><br><span class="line">4     1465  191830.128695</span><br><span class="line">5     1466  170253.195886</span><br><span class="line">6     1467  170236.219405</span><br><span class="line">7     1468  167112.682814</span><br><span class="line">8     1469  190918.239557</span><br><span class="line">9     1470  123530.454116</span><br><span class="line">...    ...            ...</span><br><span class="line">1450  2911   86655.651123</span><br><span class="line">1451  2912  149131.128117</span><br><span class="line">1452  2913   80815.070698</span><br><span class="line">1453  2914   76847.953224</span><br><span class="line">1454  2915   83052.396061</span><br><span class="line">1455  2916   82826.406679</span><br><span class="line">1456  2917  157280.476185</span><br><span class="line">1457  2918  119939.102469</span><br><span class="line">1458  2919  221954.591126</span><br><span class="line"></span><br><span class="line">[1459 rows x 2 columns]</span><br></pre></td></tr></table></figure></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a href="https://en.wikipedia.org/wiki/Elastic_net_regularization" target="_blank" rel="noopener">Elastic Net Regularization</a></li>
+<li><a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNet.html" target="_blank" rel="noopener">Elastic Net in sklearn</a></li>
+<li><a href="http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.ElasticNetCV.html" target="_blank" rel="noopener">Cross Validation of Elastic Net in sklearn</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Gradient_boosting" target="_blank" rel="noopener">Gradient Boosting</a></li>
+<li><a href="http://scikit-learn.org/stable/modules/generated/sklearn.ensemble.GradientBoostingRegressor.html" target="_blank" rel="noopener">Gradient Boosting Regressor in sklearn</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/07/10/House-Price-Advanced-Regression-Techniques-2/" title="House Prices Advanced Regression Techniques -- Training and Prediction">https://isaacchanghau.github.io/2017/07/10/House-Price-Advanced-Regression-Techniques-2/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/elastic-net/" rel="tag"># elastic net</a>
+          
+            <a href="/tags/boosting/" rel="tag"># boosting</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/08/House-Price-Advanced-Regression-Techniques-1/" rel="next" title="House Prices Advanced Regression Techniques -- Data Analysis Exploration">
+                <i class="fa fa-chevron-left"></i> House Prices Advanced Regression Techniques -- Data Analysis Exploration
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/14/新加坡两年/" rel="prev" title="Singapore, Two Years">
+                Singapore, Two Years <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Elastic-Net-Regression"><span class="nav-number">1.</span> <span class="nav-text">Elastic Net Regression</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradient-Boosting-Regression"><span class="nav-number">2.</span> <span class="nav-text">Gradient Boosting Regression</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Summary-of-Data-Analysis-Process"><span class="nav-number">3.</span> <span class="nav-text">Summary of Data Analysis Process</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Model-Construction-Training-and-Prediction"><span class="nav-number">4.</span> <span class="nav-text">Model Construction, Training and Prediction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shuffling-and-Splitting-Data"><span class="nav-number">4.1.</span> <span class="nav-text">Shuffling and Splitting Data</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Model-Construction"><span class="nav-number">4.2.</span> <span class="nav-text">Model Construction</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">5.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

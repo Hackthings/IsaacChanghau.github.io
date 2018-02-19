@@ -1,0 +1,1270 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java,deep learning,lstm,gru,deeplearning4j,natural language processing,seq2seq," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="It is a summary of two papers: Sequence to Sequence Learning with Neural Networks and A Neural Conversational Model, as well as the implementation of Neural Conversation Model via Java with deeplearni">
+<meta name="keywords" content="java,deep learning,lstm,gru,deeplearning4j,natural language processing,seq2seq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Seq2Seq Learning and Neural Conversational Model">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/08/02/Seq2Seq-Learning-and-Neural-Conversational-Model/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="It is a summary of two papers: Sequence to Sequence Learning with Neural Networks and A Neural Conversational Model, as well as the implementation of Neural Conversation Model via Java with deeplearni">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/seq2seq-neuralconver/seq2seq.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/nlp/seq2seq-neuralconver/model-example.png">
+<meta property="og:updated_time" content="2018-01-30T08:33:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Seq2Seq Learning and Neural Conversational Model">
+<meta name="twitter:description" content="It is a summary of two papers: Sequence to Sequence Learning with Neural Networks and A Neural Conversational Model, as well as the implementation of Neural Conversation Model via Java with deeplearni">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/nlp/seq2seq-neuralconver/seq2seq.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/08/02/Seq2Seq-Learning-and-Neural-Conversational-Model/"/>
+
+
+
+
+
+  <title>Seq2Seq Learning and Neural Conversational Model | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/08/02/Seq2Seq-Learning-and-Neural-Conversational-Model/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Seq2Seq Learning and Neural Conversational Model</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-02T14:34:47+08:00">
+                2017-08-02
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:33:56+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 3,015 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 19 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Natural-Language-Processing/" itemprop="url" rel="index">
+                    <span itemprop="name">Natural Language Processing</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>It is a summary of two papers: <a href="https://arxiv.org/abs/1409.3215" target="_blank" rel="noopener">Sequence to Sequence Learning with Neural Networks</a> and <a href="https://arxiv.org/abs/1506.05869" target="_blank" rel="noopener">A Neural Conversational Model</a>, as well as the implementation of Neural Conversation Model via Java with <a href="https://github.com/deeplearning4j/deeplearning4j" target="_blank" rel="noopener">deeplearning4j</a> package.<a id="more"></a></p>
+<h1 id="Sequence-to-Sequence-Model"><a href="#Sequence-to-Sequence-Model" class="headerlink" title="Sequence to Sequence Model"></a>Sequence to Sequence Model</h1><p>In this paper, the author presents a general end-to-end approach to sequence learning that makes minimal assumptions on the sequence structure. The method uses a multilayered Long Short-Term Memory (LSTM) to map the input sequence to a vector of a fixed dimensionality, and then another deep LSTM to decode the target sequence from the vector. As an example shown below:<br><img src="/images/nlp/seq2seq-neuralconver/seq2seq.png" alt=""></p>
+<p><strong>The Model</strong>:<br>The author chooses <a href="https://www.cs.toronto.edu/~graves/" target="_blank" rel="noopener">GravesLSTM</a> as the network layer to avoid long term dependencies issue (vanishing gradient), where the goal of LSTM is to estimate the conditional probability $p(y_{1},\dots,y_{T’}|x_{1},\dots,x_{T})$, here $(x_{1},\dots,x_{T})$ is an input sequence and $(y_{1},\dots,y_{T’})$ is its corresponding output sequence whose length $T’$ may differ from $T$. The LSTM computes this conditional probability by first obtaining the fixed-dimensional representation $v$ of the input sequence $(x_{1},\dots,x_{T})$ given by the last hidden state of the LSTM, and then computing the probability of $(y_{1},\dots,y_{T’})$ with a standard LSTM-LM formulation whose initial hidden state is set to the representation $v$ of $(x_{1},\dots,x_{T})$:$$<br>p(y_{1},\dots,y_{T’}|x_{1},\dots,x_{T})=\prod_{t=1}^{T’}p(y_{t}|v,y_{1},\dots,y_{t-1})$$In this equation, each $p(y_{t}|v,y_{1},\dots,y_{t-1})$ distribution is represented with a softmax over all the words in the vocabulary. It is important to note that each sentence ends with a special end-of-sentence symbol <code>&lt;EOS&gt;</code>, which enables the model to define a distribution over sequences of all possible lengths. As the example shown below<br><img src="/images/nlp/seq2seq-neuralconver/model-example.png" alt=""><br>The LSTM computes the representation of <code>A</code>, <code>B</code>, <code>C</code>, <code>&lt;EOS&gt;</code> and then uses this representation to compute the probability of <code>W</code>, <code>X</code>, <code>Y</code>, <code>Z</code>, <code>&lt;EOS&gt;</code>. Thus, the model reads an input sentence <code>ABC</code> and produces <code>WXYZ</code> as the output sentence. The model stops making predictions after outputting the end-of-sentence token <code>&lt;EOS&gt;</code>.</p>
+<p>The actual model that the author built has three important differences to make the model more sophisticated and robust:</p>
+<ul>
+<li>The author used <strong>two different LSTMs</strong>: one for the input sequence and another for the output sequence, because doing so increases the number model parameters at negligible computational cost and makes it natural to train the LSTM on multiple language pairs simultaneously.</li>
+<li>The author chose an <strong>LSTM with four layers</strong>, since <strong>deep LSTMs significantly outperformed shallow LSTMs</strong>.</li>
+<li>The author found <strong>it extremely valuable to reverse the order of the words of the input sentence</strong>. For instance, instead of mapping the sentence ($a$, $b$, $c$) to the sentence ($\alpha$, $\beta$, $\gamma$), the LSTM is asked to map ($c$, $b$, $a$) to ($\alpha$, $\beta$, $\gamma$), where ($\alpha$, $\beta$, $\gamma$) is the translation of ($a$, $b$, $c$). This way, $a$ is in close proximity to $\alpha$, $b$ is fairly close to $\beta$, and so on, a fact that makes it easy for SGD to <em>“establish communication”</em> between the input and the output.</li>
+</ul>
+<p>The author used the <a href="https://github.com/bicici/ParFDAWMT14" target="_blank" rel="noopener">WMT’14</a> English to French dataset, and trained the model on a subset of 12M sen- tences consisting of 348M French words and 304M English words, which is a clean “selected” subset from <a href="http://www-lium.univ-lemans.fr/~schwenk/cslm_joint_paper/" target="_blank" rel="noopener">here</a>. As typical neural language models rely on a vector representation for each word, the author used a fixed vocabulary for both languages, <code>160K</code> of the most frequent words for the source language and <code>80K</code> of the most frequent words for the target language. Every out-of-vocabulary word was replaced with a special <code>UNK</code> token. With the model and the dataset, the author achieved some good results (<em>the best result achieved by direct translation with large neural networks</em> at that time).</p>
+<p>More details about <code>Decoding and Rescoring</code>, <code>Reversing the Source Sentences</code>, <code>Training</code> and so forth are available in the paper.</p>
+<h1 id="Neural-Conversational-Model"><a href="#Neural-Conversational-Model" class="headerlink" title="Neural Conversational Model"></a>Neural Conversational Model</h1><p>Actually, this paper did not propose any novel idea, however, it did something interesting that the author applied the Seq2Seq model, described in <a href="https://arxiv.org/abs/1409.3215" target="_blank" rel="noopener">Sequence to Sequence Learning with Neural Networks</a>, to not translation tasks but the conversation generation tasks. Thus, this paper named as <em>A Neural Conversational Model</em>.</p>
+<p>Taking a brief look at the Seq2Seq model, which is based on a recurrent neural network, it reads the input sequence <strong>one token at a time</strong>, and predicts the output sequence, also <strong>one token at a time</strong>. During training, the true output sequence is given to the model, so learning can be done by backpropagation. And the model is trained to maximize the cross entropy of the correct sequence given its context. Since given that the true output sequence is not observed during inference, so the model simply feed the predicted output token as input to predict the next output. This is a “greedy” inference approach. A less greedy approach would be to use <a href="https://en.wikipedia.org/wiki/Beam_search" target="_blank" rel="noopener">beam search</a>, and feed several candidates at the previous step to the next step. The predicted sequence can be selected based on the probability of the sequence.</p>
+<p>The author indicated that Seq2Seq model is simple and general, and the way to use Seq2Seq to build conversation modeling is straight: the input sequence can be the concatenation of what has been conversed so far (the context), and the output sequence is the reply. However, the Seq2Seq model will not be able to successfully <em>“solve”</em> the problem of modeling dialogue due to several obvious simplifications:</p>
+<ul>
+<li>The objective function being optimized does not capture the actual objective achieved through human communication, which is typically longer term and based on exchange of information rather than next step prediction.</li>
+<li>The lack of a model to ensure consistency and general world knowledge is another obvious limitation of a purely unsupervised model.</li>
+</ul>
+<p>In the paper, the author use this Seq2Seq model to handle two datasets and show the results: one is a closed-domain <a href="https://github.com/rkadlec/ubuntu-ranking-dataset-creator" target="_blank" rel="noopener">IT helpdesk troubleshooting dataset</a> and another is an open-domain <a href="https://github.com/Conchylicultor/DeepQA/tree/master/data/opensubs" target="_blank" rel="noopener">movie transcript dataset</a>.</p>
+<h1 id="DL4J-Implementation"><a href="#DL4J-Implementation" class="headerlink" title="DL4J Implementation"></a>DL4J Implementation</h1><p>Note that it is an implementation of <em>A Neural Conversation Model</em> and the corpus used here is <a href="https://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html" target="_blank" rel="noopener">Cornell Movie Dialogs Corpus</a>, which contains a large metadata-rich collection of fictional conversations extracted from raw movie scripts:</p>
+<ul>
+<li>220,579 conversational exchanges between 10,292 pairs of movie characters.</li>
+<li>involves 9,035 characters from 617 movies.</li>
+<li>in total 304,713 utterances and so forth.</li>
+</ul>
+<p>To implement the Sequence to Sequence model, we need to process the following steps: corpus pre-process, dataset iterator creation, dictionary construction, building neural networks model and so forth. Here I only focus on the model construction, for other parts, you can get information directly from codes: <a href="https://github.com/IsaacChanghau/NeuralNetworksLite/blob/master/src/main/java/com/isaac/dl4j/encdeclstm/CorpusProcessor.java" target="_blank" rel="noopener">CorpusProcessor</a>, <a href="https://github.com/IsaacChanghau/NeuralNetworksLite/blob/master/src/main/java/com/isaac/dl4j/encdeclstm/CorpusIterator.java" target="_blank" rel="noopener">CorpusIterator</a> and <a href="https://github.com/IsaacChanghau/NeuralNetworksLite/blob/master/src/main/java/com/isaac/dl4j/encdeclstm/Dictionaries.java" target="_blank" rel="noopener">Dictionaries</a>.<br>Below are some special tokens used in corpus process and training need to be introduced in advance:</p>
+<ul>
+<li><code>&lt;unk&gt;</code>: replaces any word or other token that’s not in the dictionary (too rare to be included or completely unknown)</li>
+<li><code>&lt;eos&gt;</code>: end of sentence, used only in the output to stop the processing; the model input and output length is limited by the <code>ROW_SIZE</code> constant.</li>
+<li><code>&lt;go&gt;</code>: used only in the decoder input as the first token before the model produced anything</li>
+</ul>
+<p>Generally, the model architecture looks like as follow:<br><strong><code>Input Layer =&gt; Embedding Layer =&gt; Encoder (LSTM Layer) =&gt; Decoder (LSTM Layer) =&gt; Output Layer(Softmax)</code></strong><br>The encoder layer produces a so called <strong>“thought vector”</strong> that contains a neurally-compressed representation of the input. Depending on that vector the model produces different sentences even if they start with the same token. There is one more input, connected directly to the decoder layer, it is used to provide the previous token of the output. For the very first output token, we send a special <code>&lt;go&gt;</code> token there, on the next iteration we use the token that the model produced the last time. On the training stage everything is simple, we apriori know the desired output so the decoder input would be the same token set prepended with the <code>&lt;go&gt;</code> token and without the last <code>&lt;eos&gt;</code> token. For instance:</p>
+<blockquote>
+<p>Input: “how” “do” “you” “do” “?”<br>Output: “I’m” “fine” “,” “thanks” “!” <code>&quot;&lt;eos&gt;&quot;</code><br>Decoder: <code>&quot;&lt;go&gt;&quot;</code> “I’m” “fine” “,” “thanks” “!”</p>
+</blockquote>
+<p>It is worth to mention that the input is reversed as per <a href="https://arxiv.org/abs/1409.3215" target="_blank" rel="noopener">Sequence to Sequence Learning with Neural Networks</a>, since the most important words are usually in the beginning of the phrase and they would get more weight if supplied last (the model “forgets” tokens that were supplied “long ago”, i.e. they have lesser weight than the recent ones). The output and decoder input sequence lengths are always equal.</p>
+<p>The encoder and decoder layers work sequentially. First the encoder creates the thought vector, that is the last activations of the layer. Those activations are then duplicated for as many time steps as there are elements in the output so that every output element can have its own copy of the thought vector. Then the decoder starts working. It receives two inputs, the thought vector made by the encoder and the token that it <em>should have produced</em> (but usually it outputs something else so we have our loss metric and can compute gradients for the backward pass) on the previous step (or <code>&lt;go&gt;</code> for the very first step). These two vectors are simply concatenated by the merge vertex. The decoder’s output goes to the softmax layer and that’s it (More details are available <a href="https://github.com/IsaacChanghau/NeuralNetworksLite/blob/master/src/main/resources/encdec/readme.txt" target="_blank" rel="noopener">here</a>).</p>
+<p>Implementing the Seq2Seq model via deeplearning4j, we need to create a <a href="https://deeplearning4j.org/compgraph" target="_blank" rel="noopener">ComputationGraph</a>, which is used to build complex network architectures and allows for greater freedom in network architectures in deeplearning4j. First of all, we need to configure a neural network by setting the <code>iterations</code>, <code>learning rate</code>, <code>optimizations</code>, <code>updater</code>, <code>parameters initialization</code> and etc., as shown below:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> NeuralNetConfiguration.Builder builder = <span class="keyword">new</span> NeuralNetConfiguration.Builder()</span><br><span class="line">        .iterations(<span class="number">1</span>)</span><br><span class="line">        .learningRate(LEARNING_RATE)</span><br><span class="line">        .rmsDecay(RMS_DECAY)</span><br><span class="line">        .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)</span><br><span class="line">        .miniBatch(<span class="keyword">true</span>)</span><br><span class="line">        .updater(Updater.RMSPROP)</span><br><span class="line">        .weightInit(WeightInit.XAVIER)</span><br><span class="line">        .gradientNormalization(GradientNormalization.RenormalizeL2PerLayer);</span><br></pre></td></tr></table></figure></p>
+<p>Note that those variables are custom defined, you can modify them as you want in order to achieve better results, and if you are not familiar with those variables or settings in deeplearning4j, you can visit the <a href="https://deeplearning4j.org/documentation" target="_blank" rel="noopener">official website</a> to get more knowledge.</p>
+<p>Next step is to build the ComputationGraph<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> ComputationGraphConfiguration.GraphBuilder graphBuilder = builder.graphBuilder()</span><br><span class="line">        .addInputs(<span class="string">"inputLine"</span>, <span class="string">"decoderInput"</span>)</span><br><span class="line">        .setInputTypes(InputType.recurrent(dict.size()), InputType.recurrent(dict.size()))</span><br></pre></td></tr></table></figure></p>
+<p><code>.addInputs</code> <a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/ComputationGraphConfiguration.GraphBuilder.html#addInputs-java.lang.String...-" target="_blank" rel="noopener">specify</a> the inputs to the network, and their associated labels, while the names of the inputs also defines their order. Here we have two inputs for the computation graph, <code>inputLine</code> is feed to next layer (embedding layer) directly, while <code>decoderInput</code> will be used later.<br><code>.setInputTypes</code> <a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/ComputationGraphConfiguration.GraphBuilder.html#setInputTypes-org.deeplearning4j.nn.conf.inputs.InputType...-" target="_blank" rel="noopener">specify</a> the types of inputs to the network, so that <strong>preprocessors can be automatically added</strong>, and <strong>the nIns (input size) for each layer can be automatically calculated and set</strong>. Meanwhile <code>InputType</code> is used to <a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/inputs/InputType.html" target="_blank" rel="noopener">define</a> the types of activations etc used in a ComputationGraph, <code>.recurrent(...)</code> indicates that it is for recurrent neural network (time series) data.</p>
+<p><strong>Add Embedding Layer</strong>:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// following previous codes</span></span><br><span class="line">.addLayer(<span class="string">"embeddingEncoder"</span>,</span><br><span class="line">        <span class="keyword">new</span> EmbeddingLayer.Builder()</span><br><span class="line">                .nIn(dict.size())</span><br><span class="line">                .nOut(EMBEDDING_WIDTH)</span><br><span class="line">                .build(),</span><br><span class="line">        <span class="string">"inputLine"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>Here we use <code>.addLayer</code> to <a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/ComputationGraphConfiguration.GraphBuilder.html#addLayer-java.lang.String-org.deeplearning4j.nn.conf.layers.Layer-java.lang.String...-" target="_blank" rel="noopener">add</a> an <a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/layers/EmbeddingLayer.html" target="_blank" rel="noopener">Embedding Layer</a> named as <code>embeddingEncoder</code>, where its input is the <code>inputLine</code>, the <code>nIn</code> (input size) is set as the size of dictionary, while <code>nOut</code> (output size) is the pre-defined <code>EMBEDDING_WIDTH</code>. Note that Embedding Layer can only be used as the first layer for a network.</p>
+<p><strong>Add Encoder (LSTM) Layer</strong>:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// following previous codes</span></span><br><span class="line">.addLayer(<span class="string">"encoder"</span>,</span><br><span class="line">        <span class="keyword">new</span> GravesLSTM.Builder()</span><br><span class="line">                .nIn(EMBEDDING_WIDTH)</span><br><span class="line">                .nOut(HIDDEN_LAYER_WIDTH)</span><br><span class="line">                .activation(Activation.TANH)</span><br><span class="line">                .gateActivationFunction(Activation.HARDSIGMOID)</span><br><span class="line">                .build(),</span><br><span class="line">        <span class="string">"embeddingEncoder"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>After Embedding Layer, we add a <a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/layers/GravesLSTM.html" target="_blank" rel="noopener">LSTM</a> as Encoder Layer, which named as <code>encoder</code> and the Embedding Layer act as its input, the activation function of LSTM gates are set as <code>HARDSIGMOID</code>, while the layer activation function is set as <code>TANH</code>.</p>
+<p><strong>Add Vertex</strong>:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// following previous codes</span></span><br><span class="line">.addVertex(<span class="string">"thoughtVector"</span>, <span class="keyword">new</span> LastTimeStepVertex(<span class="string">"inputLine"</span>), <span class="string">"encoder"</span>)</span><br><span class="line">.addVertex(<span class="string">"dup"</span>, <span class="keyword">new</span> DuplicateToTimeSeriesVertex(<span class="string">"decoderInput"</span>), <span class="string">"thoughtVector"</span>)</span><br><span class="line">.addVertex(<span class="string">"merge"</span>, <span class="keyword">new</span> MergeVertex(), <span class="string">"decoderInput"</span>, <span class="string">"dup"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>This part performs a role of concatenation between Encoder LSTM Layer and Decoder LSTM Layer, it addresses the output from previous layer and does some processes to generate the desired input for next layer. Below is the explanation of three different <a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/graph/GraphVertex.html" target="_blank" rel="noopener">GraphVertexs</a> used in the neural network construction:</p>
+<ul>
+<li><a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/graph/rnn/LastTimeStepVertex.html" target="_blank" rel="noopener">LastTimeStepVertex</a> is used in the context of recurrent neural network activations, to go from 3d (time series) activations to 2d activations, by <strong>extracting out the last time step of activations for each example</strong>. This can be used for example in sequence to sequence architectures, and potentially for sequence classification. <strong>Note that</strong> since RNNs may have masking arrays (to allow for examples/time series of different lengths in the same minibatch), it is necessary to provide the same of the network input that has the corresponding mask array. If this input does not have a mask array, the last time step of the input will be used for all examples; otherwise, the time step of the last non-zero entry in the mask array (for each example separately) will be used. <code>&quot;inputLine&quot;</code> here is the name of the input to look at when determining the last time step. Specifically, the mask array of this time series input is used when determining which time step to extract and return. Meanwhile <code>&quot;thoughtVector&quot;</code> is the Vertex Layer name, <code>&quot;encoder&quot;</code> is the Vertex inputs.</li>
+<li><a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/graph/rnn/DuplicateToTimeSeriesVertex.html" target="_blank" rel="noopener">DuplicateToTimeSeriesVertex</a> is a vertex that goes from 2d activations to a 3d time series activations, by means of duplication. That is, given a 2d input with shape <code>[numExamples,nIn]</code> duplicate each row to give output of <code>[numExamples,nIn,timeSeriesLength]</code>, where the activations are the same for all time steps. This method is used for example in sequence to sequence models. <strong>Note that</strong> the length of the output time series (number of time steps) is determined by means of referencing one of the inputs in the ComputationGraph, that is, since the length of the time series may differ at runtime, we generally want the number of time steps to match some other input; here, we are specifying the length of the output time series to be the same as one of the input time series. <code>&quot;decoderInput&quot;</code> is the name of the input in the ComputationGraph network to use, to determine how long the output time series should be. This input should exist, and be a time series input.</li>
+<li><a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/graph/MergeVertex.html" target="_blank" rel="noopener">MergeVertex</a> is used to combine the activations of two or more layers/GraphVertex by means of concatenation/merging. Here <code>&quot;decoderInput&quot;</code> and <code>&quot;dup&quot;</code> is the two layers to be merged, <code>&quot;merge&quot;</code> is the name of this Vertex Layer. Exactly how this is done depends on the type of input:<ul>
+<li>For 2d (feed forward layer) inputs: <strong>MergeVertex([numExamples, layerSize1], [numExamples, layerSize2])-&gt;[numExamples, layerSize1+layerSize2]</strong>.</li>
+<li>For 3d (time series) inputs: <strong>MergeVertex([numExamples, layerSize1, timeSeriesLength], [numExamples, layerSize2, timeSeriesLength])-&gt;[numExamples, layerSize1+layerSize2, timeSeriesLength]</strong>.</li>
+<li>For 4d (convolutional) inputs: <strong>MergeVertex([numExamples, depth1, width, height], [numExamples, depth2, width, height])-&gt;[numExamples, depth1+depth2, width, height]</strong>.</li>
+</ul>
+</li>
+</ul>
+<p>So, generally, the LastTimeStepVertex extract out the last time step of activations from Encoder Layer as tge <code>&quot;thoughtVector&quot;</code>, then DuplicateToTimeSeriesVertex duplicates the <code>&quot;thoughtVector&quot;</code> according to the time series length of <code>&quot;decoderInput&quot;</code>, finally, MergeVertex concatenate the duplicated <code>&quot;thoughtVector&quot;</code> and <code>&quot;decoderInput&quot;</code> through the method for 3d (time series) inputs. Then using this <code>&quot;merge&quot;</code> result as the input of Decoder Layer.</p>
+<p><strong>Add Decoder (LSTM) Layer</strong>:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// following previous codes</span></span><br><span class="line">.addLayer(<span class="string">"decoder"</span>,</span><br><span class="line">        <span class="keyword">new</span> GravesLSTM.Builder()</span><br><span class="line">                .nIn(dict.size() + HIDDEN_LAYER_WIDTH)</span><br><span class="line">                .nOut(HIDDEN_LAYER_WIDTH)</span><br><span class="line">                .activation(Activation.TANH)</span><br><span class="line">                .gateActivationFunction(Activation.HARDSIGMOID) <span class="comment">// always be a (hard) sigmoid function</span></span><br><span class="line">                .build(),</span><br><span class="line">        <span class="string">"merge"</span>)</span><br></pre></td></tr></table></figure></p>
+<p>The structure of Decoder Layer is similar to the Encoder Layer. One thing needs to mention here is that the <code>nIn</code> (input size) is <code>dict.size()+HIDDEN_LAYER_WIDTH</code>, since its input is from the <code>&quot;merge&quot;</code> Vertex Layer, which concatenates the <code>&quot;thoughtVector&quot;</code> and <code>&quot;decoderInput&quot;</code>.</p>
+<p><strong>Add Output Layer and Further Settings</strong>:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// following previous codes</span></span><br><span class="line">.addLayer(<span class="string">"output"</span>,</span><br><span class="line">        <span class="keyword">new</span> RnnOutputLayer.Builder()</span><br><span class="line">                .nIn(HIDDEN_LAYER_WIDTH)</span><br><span class="line">                .nOut(dict.size())</span><br><span class="line">                .activation(Activation.SOFTMAX)</span><br><span class="line">                .lossFunction(LossFunctions.LossFunction.MCXENT) <span class="comment">// multi-class cross entropy</span></span><br><span class="line">                .build(),</span><br><span class="line">        <span class="string">"decoder"</span>)</span><br><span class="line">.setOutputs(<span class="string">"output"</span>)</span><br><span class="line">.backpropType(BackpropType.Standard)</span><br><span class="line">.tBPTTForwardLength(TBPTT_SIZE)</span><br><span class="line">.tBPTTBackwardLength(TBPTT_SIZE)</span><br><span class="line">.pretrain(<span class="keyword">false</span>)</span><br><span class="line">.backprop(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure></p>
+<p>The last layer is <a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/layers/RnnOutputLayer.html" target="_blank" rel="noopener">RnnOutputLayer</a>, which is a type of layer used as the final layer with many recurrent neural network systems (for both regression and classification tasks). RnnOutputLayer <a href="https://deeplearning4j.org/usingrnns#rnnoutputlayer" target="_blank" rel="noopener">handles</a> things like score calculation, and error calculation (of prediction vs. actual) given a loss function etc. Functionally, it is very similar to the ‘standard’ OutputLayer class (which is used with feed-forward networks); however it both outputs (and expects as labels/targets) 3d time series data sets. After configuring the last layer, we still need to deal with several proper settings to make the whole computation graph works, like setting backpropagation as <code>.backpropType(BackpropType.Standard)</code>, setting BPTT forward and backward length as <code>.tBPTTForwardLength(TBPTT_SIZE)</code> and <code>.tBPTTBackwardLength(TBPTT_SIZE)</code> and etc.</p>
+<p><strong>Build and Initialize ComputetionGraph</strong>:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ComputationGraph net = <span class="keyword">new</span> ComputationGraph(graphBuilder.build());</span><br><span class="line">net.init();</span><br></pre></td></tr></table></figure></p>
+<p>Finally, after configuring all the required settings, we can build the Sequence to Sequence Computation Graph and initialize it. Above is the general graph of building a simple version of Sequence to Sequence model for consersation tasks. More related information are available in <a href="https://deeplearning4j.org/usingrnns" target="_blank" rel="noopener">DL4J Guidance</a> and <a href="https://github.com/deeplearning4j/dl4j-examples" target="_blank" rel="noopener">DL4J Examples</a>.</p>
+<p>Full Codes are available in my GitHub repository: <a href="https://github.com/IsaacChanghau/NeuralNetworksLite/tree/master/src/main/java/com/isaac/dl4j/encdeclstm" target="_blank" rel="noopener">EncDecLSTM</a>, and you can also get the original DL4J implementation of <code>encdec</code> based on Seq2Seq as well as <em>Python</em> and <em>Lua</em> implementation codes in the Resources at the end of this article.</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a href="https://arxiv.org/abs/1409.3215" target="_blank" rel="noopener">Sequence to Sequence Learning with Neural Networks</a></li>
+<li><a href="https://arxiv.org/abs/1506.05869" target="_blank" rel="noopener">A Neural Conversational Model</a></li>
+<li><a href="https://karpathy.github.io/2015/05/21/rnn-effectiveness/" target="_blank" rel="noopener">The Unreasonable Effectiveness of Recurrent Neural Networks</a></li>
+<li><a href="https://deeplearning4j.org/usingrnns#recurrent-neural-networks-in-dl4j" target="_blank" rel="noopener">Recurrent Neural Networks in DL4J</a></li>
+<li><a href="https://deeplearning4j.org/doc/org/deeplearning4j/nn/conf/ComputationGraphConfiguration.GraphBuilder.html" target="_blank" rel="noopener">Class ComputationGraphConfiguration.GraphBuilder – DL4J API</a></li>
+<li><a href="https://en.wikibooks.org/wiki/Artificial_Intelligence/Search/Heuristic_search/Beam_search" target="_blank" rel="noopener">Artificial Intelligence/Search/Heuristic search/Beam search</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Beam_search" target="_blank" rel="noopener">Beam search</a></li>
+<li><a href="https://stackoverflow.com/questions/22273119/beam-search-algorithm-how-does-it-work" target="_blank" rel="noopener">Beam Search Algorithm, how does it work?</a></li>
+</ul>
+<h1 id="Resources"><a href="#Resources" class="headerlink" title="Resources"></a>Resources</h1><p><strong>Python</strong>:<br><a href="https://github.com/JayParks/tf-seq2seq" target="_blank" rel="noopener">[JayParks/tf-seq2seq]</a>, <a href="https://github.com/farizrahman4u/seq2seq" target="_blank" rel="noopener">[farizrahman4u/seq2seq]</a><br><strong>Java</strong>:<br><a href="https://github.com/deeplearning4j/dl4j-examples/tree/master/dl4j-examples/src/main/java/org/deeplearning4j/examples/recurrent/encdec" target="_blank" rel="noopener">[dl4j-examples-encdec]</a>, <a href="https://github.com/deeplearning4j/dl4j-examples/tree/master/dl4j-examples/src/main/java/org/deeplearning4j/examples/recurrent/character" target="_blank" rel="noopener">[dl4j-examples-character]</a><br><strong>Lua</strong>:<br><a href="https://github.com/harvardnlp/seq2seq-attn" target="_blank" rel="noopener">[harvardnlp/seq2seq-attn]</a>, <a href="http://nlp.seas.harvard.edu/code/" target="_blank" rel="noopener">[harvardnlp]</a><br><strong>DataSets</strong>:<br><a href="https://github.com/rkadlec/ubuntu-ranking-dataset-creator" target="_blank" rel="noopener">[IT helpdesk troubleshooting dataset]</a>, <a href="https://github.com/Conchylicultor/DeepQA/tree/master/data/opensubs" target="_blank" rel="noopener">[movie transcript dataset]</a>, <a href="https://www.cs.cornell.edu/~cristian/Cornell_Movie-Dialogs_Corpus.html" target="_blank" rel="noopener">[Cornell Movie Dialogs Corpus]</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/08/02/Seq2Seq-Learning-and-Neural-Conversational-Model/" title="Seq2Seq Learning and Neural Conversational Model">https://isaacchanghau.github.io/2017/08/02/Seq2Seq-Learning-and-Neural-Conversational-Model/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/lstm/" rel="tag"># lstm</a>
+          
+            <a href="/tags/gru/" rel="tag"># gru</a>
+          
+            <a href="/tags/deeplearning4j/" rel="tag"># deeplearning4j</a>
+          
+            <a href="/tags/natural-language-processing/" rel="tag"># natural language processing</a>
+          
+            <a href="/tags/seq2seq/" rel="tag"># seq2seq</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/07/26/Plain-Stock-Close-Price-Prediction-via-LSTM-Initial-Exploration/" rel="next" title="Plain Stock Close-Price Prediction via LSTM">
+                <i class="fa fa-chevron-left"></i> Plain Stock Close-Price Prediction via LSTM
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/04/机器学习-周志华-学习笔记-3/" rel="prev" title="机器学习(周志华)--学习笔记(三) 支持向量机(Support Vector Machine)">
+                机器学习(周志华)--学习笔记(三) 支持向量机(Support Vector Machine) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Sequence-to-Sequence-Model"><span class="nav-number">1.</span> <span class="nav-text">Sequence to Sequence Model</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Neural-Conversational-Model"><span class="nav-number">2.</span> <span class="nav-text">Neural Conversational Model</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DL4J-Implementation"><span class="nav-number">3.</span> <span class="nav-text">DL4J Implementation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">4.</span> <span class="nav-text">Reference</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Resources"><span class="nav-number">5.</span> <span class="nav-text">Resources</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

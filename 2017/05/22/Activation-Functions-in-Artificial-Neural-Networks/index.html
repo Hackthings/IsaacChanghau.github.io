@@ -1,0 +1,1233 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="[object Object]," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="By definition, activation function is a function used to transform the activation level of a unit (neuron) into an output signal.">
+<meta name="keywords" content="[object Object]">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Activation Functions in Artificial Neural Networks">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/05/22/Activation-Functions-in-Artificial-Neural-Networks/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="By definition, activation function is a function used to transform the activation level of a unit (neuron) into an output signal.">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/activationfunction/intro.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/activationfunction/neuralnetworkexample.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/activationfunction/sigmoid.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/activationfunction/tanh.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/activationfunction/relu.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/activationfunction/rrelu.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/activationfunction/softmax.png">
+<meta property="og:updated_time" content="2018-01-30T08:30:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Activation Functions in Artificial Neural Networks">
+<meta name="twitter:description" content="By definition, activation function is a function used to transform the activation level of a unit (neuron) into an output signal.">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/deeplearning/activationfunction/intro.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/05/22/Activation-Functions-in-Artificial-Neural-Networks/"/>
+
+
+
+
+
+  <title>Activation Functions in Artificial Neural Networks | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/05/22/Activation-Functions-in-Artificial-Neural-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Activation Functions in Artificial Neural Networks</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-22T11:21:55+08:00">
+                2017-05-22
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:30:54+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 2,665 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 17 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>By definition, activation function is a function used to transform the activation level of a unit (neuron) into an output signal.<a id="more"></a> Typically, activation function has a “squashing” effect.<br><img src="/images/deeplearning/activationfunction/intro.png" alt="introduction"><br>An activation function serves as a threshold, alternatively called classification or a partition. Bengio et al. refers to this as “Space Folding”. It essentially divides the original space into typically two partitions. Activation functions are usually introduced as requiring to be a non-linear function, that is, the role of activation function is made neural networks non-linear.<br><img src="/images/deeplearning/activationfunction/neuralnetworkexample.png" alt="Neural Networks example"><br>The purpose of an activation function in a Deep Learning context is to ensure that the representation in the input space is mapped to a different space in the output. In all cases a similarity function between the input and the weights are performed by a neural network. This can be an inner product, a correlation function or a convolution function. In all cases it is a measure of similarity between the learned weights and the input. This is then followed by a activation function that performs a threshold on the calculated similarity measure. In its most general sense, a neural network layer performs a projection that is followed by a selection. Both projection and selection are necessary for the dynamics learning. Without selection and only projection, a network will thus remain in the same space and be unable to create higher levels of abstraction between the layers. The projection operation may in fact be non-linear, but without the threshold function, there will be no mechanism to consolidate information. The selection operation is enforces information irreversibility, an necessary criteria for learning$.^{[1]}$</p>
+<p>There have been many kinds of activation functions (over 640 different activation function proposals) that have been proposed over the years. However, best practice confines the use to only a limited kind of activation functions. Here I summarize several common-used activation functions, like <strong>Sigmoid</strong>, <strong>Tanh</strong>, <strong>ReLU</strong>, <strong>Softmax</strong> and so forth, as well as their merits and drawbacks.</p>
+<h1 id="Sigmoid-Units"><a href="#Sigmoid-Units" class="headerlink" title="Sigmoid Units"></a>Sigmoid Units</h1><p>A <a href="https://en.wikipedia.org/wiki/Sigmoid_function" target="_blank" rel="noopener">Sigmoid function</a> (used for hidden layer neuron output) is a special case of the <a href="https://en.wikipedia.org/wiki/Logistic_function" target="_blank" rel="noopener">logistic function</a> having a characteristic “S”-shaped curve. The logistic function is defined by the formula$$\sigma (x)=\frac{L}{1+e^{-k(x-x_{0})}}$$Where $e$ is the <a href="https://en.wikipedia.org/wiki/Natural_logarithm" target="_blank" rel="noopener">natural logarithm</a> base (also known as Euler’s number), $x_{0}$ is the x-value of the Sigmoid’s midpoint, $L$ is the curve’s maximum value, and $k$ is the steepness of the curve. By setting $L=1$, $k=1$, $x_{0}=0$, we derive$$\sigma (x)=\frac{1}{1+e^{-x}}$$This is so called Sigmoid function and it is shown in the image below.<br><img src="/images/deeplearning/activationfunction/sigmoid.png" alt="sigmoid"><br>Sigmoid function takes a real-valued number and “squashes” it into range between 0 and 1, i.e., $\sigma (x)\in (0,1)$. In particular, large negative numbers become 0 and large positive numbers become 1. Moreover, the sigmoid function  has a nice interpretation as the firing rate of a neuron: from not firing at all (0) to fully-saturated firing at an assumed maximum frequency (1). But it has two major drawbacks:</p>
+<ol>
+<li><strong>Sigmoids saturate and kill gradients</strong>: The Sigmoid neuron has a property that when the neuron’s activation saturates at either tail of 0 or 1, the gradient (where $\sigma’(x)=\sigma (x)\centerdot (1-\sigma (x))$, see the red dotted line above) at these regions is almost zero. During backpropagation, this gradient will be multiplied to the gradient of this gate’s output for the whole objective. Therefore, if the local gradient is very small, it will effectively “kill” the gradient and almost no signal will flow through the neuron to its weights and recursively to its data. So, it is critically important to initialize the weights of sigmoid neurons to prevent saturation. For instance, if the initial weights are too large then most neurons would become saturated and the network will barely learn$.^{[2]}$</li>
+<li><strong>Sigmoid outputs are not zero-centered</strong>: It is undesirable since neurons in later layers of processing in a Neural Network would be receiving data that is not zero-centered. This has implications on the dynamics during gradient descent, because if the data coming into a neuron is always positive (e.g. $x&gt;0$ elementwise in $f(x)=w^{T}x+b$), then the gradient on the weights $w$ will during backpropagation become either all be positive, or all negative (depending on the gradient of the whole expression $f$). This could introduce undesirable zig-zagging dynamics in the gradient updates for the weights. However, notice that once these gradients are added up across a batch of data the final update for the weights can have variable signs, somewhat mitigating this issue. Therefore, this is an inconvenience but it has less severe consequences compared to the saturated activation problem$.^{[2]}$</li>
+</ol>
+<h1 id="Tanh-Units"><a href="#Tanh-Units" class="headerlink" title="Tanh Units"></a>Tanh Units</h1><p>The hyperbolic tangent (tanh) function (used for hidden layer neuron output) is an alternative to Sigmoid function. It is defined by the formula$$tanh(x)=\frac{1-e^{-2x}}{1+e^{-2x}}$$See the following image, tanh function is similar to Sigmoid function (Mathematically, $tanh(x)=2\sigma (2x)-1$), which is also sigmoidal (“S”-shaped). It squashes real-valued number to the range between -1 and 1, i.e., $tanh(x)\in (-1, 1)$.<br><img src="/images/deeplearning/activationfunction/tanh.png" alt="tanh"><br>Like the Sigmoid units, its activations saturate, but its output is zero-centered (means tanh solves the second drawback of Sigmoid). Therefore, in practice the tanh units is always preferred to the sigmoid units. The derivative of tanh function is defined as$$tanh’(x)=1-tanh^{2}(x)$$See the red dotted line in the above image, it interprets that tanh also saturate and kill gradient, since tanh’s derivative has similar shape as compare to Sigmoid’s derivative. What’s more, tanh has stronger gradients, since data is centered around 0, the derivatives are higher, and tanh avoids bias in the gradients.</p>
+<h1 id="Rectified-Linear-Units-ReLU"><a href="#Rectified-Linear-Units-ReLU" class="headerlink" title="Rectified Linear Units (ReLU)"></a>Rectified Linear Units (ReLU)</h1><p>In the context of artificial neural networks, the ReLU (used for hidden layer neuron output) is defined as$$f(x)=max(0,x)$$Where x is the input to a neuron. In other words, the activation is simply thresholded at zero. The range of ReLU is betweem 0 to $\infty$. See the image below (red dotted line is the derivative)<br><img src="/images/deeplearning/activationfunction/relu.png" alt="ReLU"><br>The ReLU function is more effectively than the widely used logistic sigmoid and its more practical counterpart, the hyperbolic tangent, since it efficaciously reduce the computation cost as well as some other merits:</p>
+<ol>
+<li>It was found to greatly accelerate (<a href="http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf" target="_blank" rel="noopener">Krizhevsky et al.</a>) the convergence of stochastic gradient descent compared to the sigmoid/tanh functions. It is argued that this is due to its linear, non-saturating form$.^{[2]}$</li>
+<li>Compared to tanh/sigmoid neurons that involve expensive operations (exponentials, etc.), the ReLU can be implemented by simply thresholding a matrix of activations at zero$.^{[2]}$</li>
+</ol>
+<p>Unfortunately, ReLU also suffers several drawbacks, for instance,</p>
+<ul>
+<li>ReLU units can be fragile during training and can “die”$.^{[2]}$</li>
+</ul>
+<p>For example, a large gradient flowing through a ReLU neuron could cause the weights to update in such a way that the neuron will never activate on any datapoint again. If this happens, then the gradient flowing through the unit will forever be zero from that point on. That is, the ReLU units can irreversibly die during training since they can get knocked off the data manifold. You may find that as much as 40% of your network can be “dead” (i.e. neurons that never activate across the entire training dataset) if the learning rate is set too high. With a proper setting of the learning rate this is less frequently an issue$.^{[2]}$<br>Plus, here is a smooth approximation to the rectifier, which is called the softplus function (see the green line in the above image). It is defined as$$f(x)=\ln (1+e^{x})$$And its derivative is$$f’(x)=\frac{e^{x}}{1+e^{x}}=\frac{1}{1+e^{-x}}$$Interestingly, the derivative of Softplus is the logistic function. We can see that both the ReLU and Softplus are largely similar, except near 0 where the softplus is enticingly smooth and differentiable. But it is much easier and efficient to compute ReLU and its derivative than for the softplus function which has $log(\centerdot)$ and $exp(\centerdot)$ in its formulation. In deep learning, computing the activation function and its derivative is as frequent as addition and subtraction in arithmetic. By using ReLU, the forward and backward passes are much faster while retaining the non-linear nature of the activation function required for deep neural networks to be useful.</p>
+<h2 id="Leaky-and-Parametric-ReLU"><a href="#Leaky-and-Parametric-ReLU" class="headerlink" title="Leaky and Parametric ReLU"></a>Leaky and Parametric ReLU</h2><p>Leaky ReLU is one attempt to fix the “dying ReLU” problem. Instead of the function being zero when $x&lt;0$, a leaky ReLU will instead have a small negative slope (of 0.01, or so). That is, the function computes$$f(x)=0.01x, (x&lt;0)$$$$f(x)=x, (x\geq 0)$$This form of activation function achieves some success, but the results are not always consistent. The slope in the negative region can also be made into a parameter of each neuron, in this case, it is a Parametric ReLU (introduced in <a href="http://arxiv.org/abs/1502.01852" target="_blank" rel="noopener">Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification</a>), which take this idea further by making the coefficient of leakage into a parameter that is learned along with the other neural network parameters.$$f(x)=\alpha x, (x&lt;0)$$$$f(x)=x, (x\geq 0)$$ Where $\alpha$ is a small constant (smaller than 1). However, the consistency of the benefit across tasks is presently unclear. Moreover, the formula of Parametric ReLU is equivalent to$$f(x)=max(x, \alpha x)$$Which has a relation to “maxout” networks.</p>
+<h2 id="Randomized-ReLU"><a href="#Randomized-ReLU" class="headerlink" title="Randomized ReLU"></a>Randomized ReLU</h2><p>Randomized ReLU (RReLU) is a randomized version of Leaky ReLU, where the $\alpha$ is a random number. In RReLU, the slopes of negative parts are randomized in a given range in the training, and then fixed in the testing. It is reported that RReLU could reduce overfitting due to its randomized nature in the <a href="https://www.kaggle.com/" target="_blank" rel="noopener">Kaggle</a> National Data Science Bowl (<a href="https://www.kaggle.com/c/datasciencebowl" target="_blank" rel="noopener">NDSB</a>) competition. Mathematically, RReLU computes$$f(x_{ji})=x_{ji}, if x_{ji} \geq 0$$$$f(x_{ji})=\alpha_{ji}x_{ji}, if x_{ji}&lt;0$$Where $x_{ji}$ denotes the input of $i$th channel in $j$th example, $f(x_{ji})$ denotes the corresponding output after passing the activation function, $\alpha_{ji}\sim U(l,u), l &lt; u$ and $l,u\in[0,1)$. The highlight of RReLU is that in training process, $\alpha_{ji}$ is a random number sampled from a uniform distribution $U(l,u)$, while in the test phase, we take average of all the $\alpha_{ji}$ in training as in the method of <a href="https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf" target="_blank" rel="noopener">dropout</a>, and thus set $\alpha_{ji}$ to $\frac{l+u}{2}$ to get a deterministic result (In NDSB, $\alpha_{ji}$ is sampled from $U(3,8)$). So in the test time, we have$$f(x_{ji})=\frac{x_{ji}}{\frac{l+u}{2}}$$Here gives the comparing graph of different ReLUs<br><img src="/images/deeplearning/activationfunction/rrelu.png" alt="ReLU, Leaky ReLU, Parametric ReLU, Randomized ReLU"><br>For Parametric ReLU, $\alpha_{i}$ is learned and for Leaky ReLU $\alpha_{i}$ is fixed. For RReLU, $\alpha_{ji}$ is a random variable keeps sampling in a given range, and remains fixed in testing.<br>Generally, we summarize the advantages and potential problems of ReLUs:</p>
+<ul>
+<li>(+) Biological plausibility: One-sided, compared to the antisymmetry of tanh.</li>
+<li>(+) Sparse activation: For example, in a randomly initialized network, only about 50% of hidden units are activated (having a non-zero output).</li>
+<li>(+) Efficient gradient propagation: No vanishing or exploding gradient problems.</li>
+<li>(+) Efficient computation: Only comparison, addition and multiplication.</li>
+<li>(+) Scale-invariant: $max(0,\alpha x)=\alpha\centerdot max(0,x)$.</li>
+<li>(-) Non-differentiable at zero: however it is differentiable anywhere else, including points arbitrarily close to (but not equal to) zero.</li>
+<li>(-) Non-zero centered.</li>
+<li>(-) Unbounded: Could potentially blow up.</li>
+<li>(-) Dying Relu problem: Relu neurons can sometimes be pushed into states in which they become inactive for essentially all inputs. In this state, no gradients flow backward through the neuron, and so the neuron becomes stuck in a perpetually inactive state and “dies.” In some cases, large numbers of neurons in a network can become stuck in dead states, effectively decreasing the model capacity. This problem typically arises when the learning rate is set too high.</li>
+</ul>
+<h1 id="Maxout"><a href="#Maxout" class="headerlink" title="Maxout"></a>Maxout</h1><p>Some other types of units that do not have the functional form $f(w^{T}x+b)$ where a non-linearity is applied on the dot product between the weights and the data. One relatively popular choice is the <a href="http://www-etud.iro.umontreal.ca/~goodfeli/maxout.html" target="_blank" rel="noopener">Maxout neuron</a> that generalizes the ReLU and its leaky version. The Maxout neuron computes the function$$max(w^{T}_{1}+b_{1},w^{T}_{2}+b_{2})$$Notice that both ReLU and Leaky ReLU are a special case of this form (for example, for ReLU we have $w_{1},b_{1}=0$). The Maxout neuron therefore enjoys all the <strong>benefits</strong> of a ReLU unit (<strong>linear regime of operation</strong>, <strong>no saturation</strong>) and <em>does not have its drawbacks (dying ReLU)</em>. However, unlike the ReLU neurons it <em>doubles</em> the number of <em>parameters</em> for every single neuron, leading to a high total number of parameters.</p>
+<h1 id="Softmax"><a href="#Softmax" class="headerlink" title="Softmax"></a>Softmax</h1><p>The Softmax function (Used for multi-classification neural network output), or normalized exponential function, in mathematics, is a generalization of the logistic function that “squashes” a $K$-dimensional vector $\mathbf{z}$ from arbitrary real values to a $K$-dimensional vector $\sigma (\mathbf{z})$ of real values in the range $[0,1]$ that add up to 1. The function is given by$$\sigma (\mathbf{z})_{j}=\frac{e^{z_{j}}}{\sum_{k=1}^{K}e^{z_{k}}}, j=1, 2, \dots, K$$In probability theory, the output of the Softmax function can be used to represent a categorical distribution, that is, a probability distribution over $K$ different possible outcomes. In fact, it is the gradient-log-normalizer of the categorical probability distribution. Here is an example of Softmax application<br><img src="/images/deeplearning/activationfunction/softmax.png" alt="Softmax"><br>The softmax function is used in various multiclass classification methods, such as multinomial logistic regression, multiclass linear discriminant analysis, naive Bayes classifiers, and artificial neural networks. Specifically, in multinomial logistic regression and linear discriminant analysis, the input to the function is the result of K distinct linear functions, and the predicted probability for the $j$th class given a sample vector $\mathbf{x}$ and a weighting vector $\mathbf{w}$ is$$P(y=j|\mathbf{x})=\frac{e^{x^{T}w_{j}}}{\sum_{k=1}^{K}e^{x^{T}w_{k}}}$$This can be seen as the composition of $K$ linear functions $\mathbf{x}\mapsto x^{T}w_{1},\dots ,\mathbf{x}\mapsto x^{T}w_{K}$ and the softmax function (where $x^{T}w$ denotes the inner product of $\mathbf{x}$ and $\mathbf{w}$). The operation is equivalent to applying a linear operator defined by $\mathbf{w}$ to vectors $\mathbf{x}$, thus transforming the original, probably highly-dimensional, input to vectors in a $K$-dimensional space $R^{K}$.<br>More details, see the link: <a href="https://en.wikipedia.org/wiki/Softmax_function" target="_blank" rel="noopener">Softmax Function</a>.</p>
+<h1 id="Other-Activation-Functions"><a href="#Other-Activation-Functions" class="headerlink" title="Other Activation Functions"></a>Other Activation Functions</h1><p>Like, <a href="https://en.wikipedia.org/wiki/Identity_function" target="_blank" rel="noopener">Identity</a>, <a href="https://en.wikipedia.org/wiki/Heaviside_step_function" target="_blank" rel="noopener">Binary Step</a>, <a href="https://en.wikipedia.org/wiki/Inverse_trigonometric_functions" target="_blank" rel="noopener">ArcTan</a>, SoftSign, Exponential linear unit (ELU), S-shaped rectified linear activation unit (SReLU), Adaptive piecewise linear (APL), Bent identity, SoftExponential, <a href="https://en.wikipedia.org/wiki/Sine_wave" target="_blank" rel="noopener">Sinusoid</a>, <a href="https://en.wikipedia.org/wiki/Sinc_function" target="_blank" rel="noopener">Sinc</a>, <a href="https://en.wikipedia.org/wiki/Gaussian_function" target="_blank" rel="noopener">Gaussian</a> and so forth.<br>See the Wikipedia link: <a href="https://en.wikipedia.org/wiki/Activation_function" target="_blank" rel="noopener">Activation Function</a>.</p>
+<h1 id="Choose-Activation-Functions"><a href="#Choose-Activation-Functions" class="headerlink" title="Choose Activation Functions"></a>Choose Activation Functions</h1><p>Finally, to choose an activation function, we can follow a simple rule that: “Use the ReLU non-linearity, be careful with your learning rates and possibly monitor the fraction of ‘dead’ units in a network. If this concerns you, give Leaky ReLU or Maxout a try. Never use sigmoid. Try tanh, but expect it to work worse than ReLU/Maxout.”</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="https://www.quora.com/What-is-the-role-of-the-activation-function-in-a-neural-network" target="_blank" rel="noopener">What is the role of the activation function in a neural network? – Quora</a></li>
+<li><a href="http://cs231n.github.io/neural-networks-1/" target="_blank" rel="noopener">CS231n Convolutional Neural Networks for Visual Recognition</a></li>
+<li><a href="https://theclevermachine.wordpress.com/tag/tanh-function/" target="_blank" rel="noopener">Derivation: Derivatives for Common Neural Network Activation Functions</a></li>
+<li><a href="http://www.faqs.org/faqs/ai-faq/neural-nets/part2/section-10.html" target="_blank" rel="noopener">Why use activation functions?</a></li>
+<li><a href="https://www.quora.com/What-are-the-benefits-of-using-ReLU-over-softplus-as-activation-functions" target="_blank" rel="noopener">What are the benefits of using ReLU over softplus as activation functions? – Quora</a></li>
+<li><a href="https://arxiv.org/pdf/1505.00853.pdf" target="_blank" rel="noopener">Empirical Evaluation of Rectified Activations in Convolution Network</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Rectifier_(neural_networks" target="_blank" rel="noopener">Rectifier (neural networks)</a></li>
+<li><a href="https://arxiv.org/pdf/1302.4389.pdf" target="_blank" rel="noopener">Maxout Networks</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Softmax_function" target="_blank" rel="noopener">Softmax Function</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/05/22/Activation-Functions-in-Artificial-Neural-Networks/" title="Activation Functions in Artificial Neural Networks">https://isaacchanghau.github.io/2017/05/22/Activation-Functions-in-Artificial-Neural-Networks/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/object-Object/" rel="tag"># [object Object]</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/18/word2vecf/" rel="next" title="Word2Vecf -- Dependency-Based Word Embeddings and Lexical Substitute">
+                <i class="fa fa-chevron-left"></i> Word2Vecf -- Dependency-Based Word Embeddings and Lexical Substitute
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/24/Weight-Initialization-in-Artificial-Neural-Networks/" rel="prev" title="Weight Initialization in Artificial Neural Networks">
+                Weight Initialization in Artificial Neural Networks <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Sigmoid-Units"><span class="nav-number">1.</span> <span class="nav-text">Sigmoid Units</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tanh-Units"><span class="nav-number">2.</span> <span class="nav-text">Tanh Units</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rectified-Linear-Units-ReLU"><span class="nav-number">3.</span> <span class="nav-text">Rectified Linear Units (ReLU)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Leaky-and-Parametric-ReLU"><span class="nav-number">3.1.</span> <span class="nav-text">Leaky and Parametric ReLU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Randomized-ReLU"><span class="nav-number">3.2.</span> <span class="nav-text">Randomized ReLU</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Maxout"><span class="nav-number">4.</span> <span class="nav-text">Maxout</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Softmax"><span class="nav-number">5.</span> <span class="nav-text">Softmax</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Other-Activation-Functions"><span class="nav-number">6.</span> <span class="nav-text">Other Activation Functions</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Choose-Activation-Functions"><span class="nav-number">7.</span> <span class="nav-text">Choose Activation Functions</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">8.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

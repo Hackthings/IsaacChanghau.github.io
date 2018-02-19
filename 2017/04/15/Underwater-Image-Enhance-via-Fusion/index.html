@@ -1,0 +1,1218 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="image processing,java,opencv," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="This paper “Enhancing Underwater Images and Videos by Fusion”, published by Ancuti et al. on CVPR, describes a novel strategy, built on the fusion principles, to enhance underwater videos and images.">
+<meta name="keywords" content="image processing,java,opencv">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Underwater Image Enhance via Fusion and Its Java Implementation">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/04/15/Underwater-Image-Enhance-via-Fusion/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="This paper “Enhancing Underwater Images and Videos by Fusion”, published by Ancuti et al. on CVPR, describes a novel strategy, built on the fusion principles, to enhance underwater videos and images.">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/schema.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/weights.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/fish.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/two-diver1.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/two-diver2.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/one-diver1.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/one-diver2.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/divers.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/underwater.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/fishes.png">
+<meta property="og:updated_time" content="2017-11-01T09:07:59.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Underwater Image Enhance via Fusion and Its Java Implementation">
+<meta name="twitter:description" content="This paper “Enhancing Underwater Images and Videos by Fusion”, published by Ancuti et al. on CVPR, describes a novel strategy, built on the fusion principles, to enhance underwater videos and images.">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/imageprocessing/imagefusion/schema.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/04/15/Underwater-Image-Enhance-via-Fusion/"/>
+
+
+
+
+
+  <title>Underwater Image Enhance via Fusion and Its Java Implementation | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/04/15/Underwater-Image-Enhance-via-Fusion/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Underwater Image Enhance via Fusion and Its Java Implementation</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-15T14:23:47+08:00">
+                2017-04-15
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2017-11-01T17:07:59+08:00" content="2017-11-01">
+                  2017-11-01
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 3,239 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 20 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Image-Processing/" itemprop="url" rel="index">
+                    <span itemprop="name">Image Processing</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>This paper “Enhancing Underwater Images and Videos by Fusion”, published by <em>Ancuti et al.</em> on <a href="https://en.wikipedia.org/wiki/Conference_on_Computer_Vision_and_Pattern_Recognition" target="_blank" rel="noopener">CVPR</a>, describes a novel strategy, built on the fusion principles, to enhance underwater videos and images.<a id="more"></a> Here I implement this algorithm by Java, and summerize the main idea in this paper.</p>
+<h1 id="General-Schema"><a href="#General-Schema" class="headerlink" title="General Schema"></a>General Schema</h1><p>The enhancing approach starts from a single distorted underwater image, first of all, applying white balance to this image to generate the first input of fusion process, denotes as $img_{1}$, and applying a temporal coherent noise reduction method to this $img_{1}$ to derive another input of fusion process, denotes as $img_{2}$; then, obtaining the weights of these two inputs, where Laplacian contrast weight ($W_{L}$), local contrast weight ($W_{LC}$), Saliency weight ($W_{S}$) and exposedness weight ($W_{E}$) are used in this process; finally, the multi-scale fusion process is applied to generate the restored image.<br><img src="/images/imageprocessing/imagefusion/schema.png" alt="Schema"></p>
+<h1 id="Fusion-Materials-Generation"><a href="#Fusion-Materials-Generation" class="headerlink" title="Fusion Materials Generation"></a>Fusion Materials Generation</h1><p>The general idea of this fusion process is that the processed result, combines several input images by preserving only the most significant features of them. Here, the author choose to use two inputs, and the enhancing solution does not search to derive the inputs based on the physical model of the scene, only aims for a fast and simple technique that works generally. The first derived input is represented by the color corrected version of the image while the second is computed as a contrast enhanced version of the underwater image after a noise reduction operation is performed.</p>
+<h2 id="White-Balance"><a href="#White-Balance" class="headerlink" title="White Balance"></a>White Balance</h2><p>White balancing aims to enhance the image appearance by discarding unwanted color casts, due to various illuminants. Since, for underwater images, different components of light suffer from different degree of attenuation. In water deeper than 30 ft, white balancing suffers from noticeable effects since the absorbed colors are difficult to be restored. Additionally, underwater scenes present significant lack of contrast due to the poor light propagation in this type of medium. To deal with this problem, the author intorduces a modified balancing method according to <a href="https://en.wikipedia.org/wiki/Grayscale" target="_blank" rel="noopener">Shades-of-Grey</a> hypothesis, where  the illumination is estimated by the value $\mu_{I}$ that is computed from the average of the scene $\mu_{ref}$ and adjusted by the parameter $\lambda$:$$\mu_{I}=0.5+\lambda\centerdot\mu_{ref}$$The average color $\mu_{ref}$ is used to estimate the illuminant color and can be obtained based on <a href="https://en.wikipedia.org/wiki/Lp_space#The_p-norm_in_finite_dimensions" target="_blank" rel="noopener">Minkowski norm</a> when $p=1$. Practically, the first input is computed by this straightforward white balancing operation. Since the white balancing solely is not able to solve the problem of visibility, thus, an additional input is required in order to enhance the contrast of the degraded image.</p>
+<p>To implement the color balance, I found that among different methods (including the method provided by the author), the <a href="http://www.ipol.im/pub/art/2011/llmps-scb/" target="_blank" rel="noopener">Simplest Color Balance</a>, which performs color balancing via histogram bormalization, is a better way to handle such process, since it is fast and the restoring performance is better. Below is the Java codes I implemented for the Simplest Color Balance:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Simplest Color Balance. Performs color balancing via histogram normalization.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> img input color or gray scale image</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> percent controls the percentage of pixels to clip to white and black. (normally, choose 1~10)</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> Balanced image in CvType.CV_32F</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Mat <span class="title">SimplestColorBalance</span><span class="params">(Mat img, <span class="keyword">int</span> percent)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (percent &lt;= <span class="number">0</span>) percent = <span class="number">5</span>;</span><br><span class="line">	img.convertTo(img, CvType.CV_32F);</span><br><span class="line">	List&lt;Mat&gt; channels = <span class="keyword">new</span> ArrayList&lt;Mat&gt;();</span><br><span class="line">	<span class="keyword">int</span> rows = img.rows(); <span class="comment">// number of rows of image</span></span><br><span class="line">	<span class="keyword">int</span> cols = img.cols(); <span class="comment">// number of columns of image</span></span><br><span class="line">	<span class="keyword">int</span> chnls = img.channels(); <span class="comment">//  number of channels of image</span></span><br><span class="line">	<span class="keyword">double</span> halfPercent = percent / <span class="number">200.0</span>;</span><br><span class="line">	<span class="keyword">if</span> (chnls == <span class="number">3</span>) &#123; Core.split(img, channels); &#125;</span><br><span class="line">	<span class="keyword">else</span> &#123; channels.add(img); &#125;</span><br><span class="line">	List&lt;Mat&gt; results = <span class="keyword">new</span> ArrayList&lt;Mat&gt;();</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; chnls; i++) &#123;</span><br><span class="line">		<span class="comment">// find the low and high precentile values (based on the input percentile)</span></span><br><span class="line">		Mat flat = <span class="keyword">new</span> Mat();</span><br><span class="line">		channels.get(i).reshape(<span class="number">1</span>, <span class="number">1</span>).copyTo(flat);</span><br><span class="line">		Core.sort(flat, flat, Core.SORT_ASCENDING);</span><br><span class="line">		<span class="keyword">double</span> lowVal = flat.get(<span class="number">0</span>, (<span class="keyword">int</span>) Math.floor(flat.cols() * halfPercent))[<span class="number">0</span>];</span><br><span class="line">		<span class="keyword">double</span> topVal = flat.get(<span class="number">0</span>, (<span class="keyword">int</span>) Math.ceil(flat.cols() * (<span class="number">1.0</span> - halfPercent)))[<span class="number">0</span>];</span><br><span class="line">		<span class="comment">// saturate below the low percentile and above the high percentile</span></span><br><span class="line">		Mat channel = channels.get(i);</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> m = <span class="number">0</span>; m &lt; rows; m++) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> n = <span class="number">0</span>; n &lt; cols; n++) &#123;</span><br><span class="line">				<span class="keyword">if</span> (channel.get(m, n)[<span class="number">0</span>] &lt; lowVal) channel.put(m, n, lowVal);</span><br><span class="line">				<span class="keyword">if</span> (channel.get(m, n)[<span class="number">0</span>] &gt; topVal) channel.put(m, n, topVal);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		Core.normalize(channel, channel, <span class="number">0</span>, <span class="number">255</span>, Core.NORM_MINMAX);</span><br><span class="line">		channel.convertTo(channel, CvType.CV_32F);</span><br><span class="line">		results.add(channel);</span><br><span class="line">	&#125;</span><br><span class="line">	Mat outval = <span class="keyword">new</span> Mat();</span><br><span class="line">	Core.merge(results, outval);</span><br><span class="line">	<span class="keyword">return</span> outval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Temporal-Coherent-Noise-Reduction"><a href="#Temporal-Coherent-Noise-Reduction" class="headerlink" title="Temporal Coherent Noise Reduction"></a>Temporal Coherent Noise Reduction</h2><p>The temporal coherent noise reduction process is introduced, since underwater images are noisy due to the impurities and the special illumination conditions. To remove noise while preserve edges (for videos, also need to take both spatial and temporal coherence into consideration), The bilateral filter is commonly used, by considering the domain $\Omega$ of the spatial filter kernel $f$ (Gaussian with standard deviation $\sigma_{f}$), the bilateral filter blends the center pixel $s$ of the kernel with the neighboring pixels $p$ that are similar to $s$:$$J_{s}=\frac{1}{k(s)}\sum_{p\in\Omega}f\big(p-s,\sigma_{f}\big)\centerdot g\big(D(p,s),\sigma_{g}\big)\centerdot I_{p}$$where $D(p,s)=I_{p}-I_{s}$ is the difference in intensities, the normailization term$$k(s)=\sum_{p\in\Omega}f\big(p-s,\sigma_{f}\big)\centerdot g\big(D(p,s),\sigma_{g}\big)$$$g$ is the range kernel that is a Gaussian with standard deviation $\sigma_{g}$ that penalizes pixels across edges that have large intensity differences. However, the bilateral filter does not guarantee the preservation of the temporal coherence for videos, thus, the author proposed a temporal bilateral filter,which instead of comparing the intensities as $D(p,s)=I_{p}-I_{s}$ directly, they compute the sum of squared differences between small spatial neighborhood $\Psi$ around $s$ and $p$ weighted by a Gaussian $\Gamma(x,y)$:$$D(p,s)=\sum_{x}^{\Psi}\sum_{y}^{\Psi}\Gamma(x,y)(I_{p}-I_{s})^{2}$$Typically, the size of neighborhood $\Psi$ is $3\times 3$ or $5\times 5$. Practically, the second input is computed from the noise-free and color corrected version of the original image. This input is designed in order to reduce the degradation due to volume scattering. To achieve an optimal contrast level of the image, the second input is obtained by applying the classical contrast local adaptive histogram equalization. And the Java Implementation is shown below:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// color balance</span></span><br><span class="line">Mat img1 = ColorBalance.SimplestColorBalance(image, <span class="number">5</span>);</span><br><span class="line">img1.convertTo(img1, CvType.CV_8UC1);</span><br><span class="line"><span class="comment">// Perform sRGB to CIE Lab color space conversion</span></span><br><span class="line">Mat LabIm1 = <span class="keyword">new</span> Mat();</span><br><span class="line">Imgproc.cvtColor(img1, LabIm1, Imgproc.COLOR_BGR2Lab);</span><br><span class="line">Mat L1 = <span class="keyword">new</span> Mat();</span><br><span class="line">Core.extractChannel(LabIm1, L1, <span class="number">0</span>);</span><br><span class="line"><span class="comment">// apply CLAHE</span></span><br><span class="line">Mat[] result = applyCLAHE(LabIm1, L1);</span><br><span class="line">Mat img2 = result[<span class="number">0</span>];</span><br><span class="line">Mat L2 = result[<span class="number">1</span>];</span><br></pre></td></tr></table></figure></p>
+<p>where <code>applyCLAHE</code> is implemented as:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Mat[] applyCLAHE(Mat img, Mat L) &#123;</span><br><span class="line">	Mat[] result = <span class="keyword">new</span> Mat[<span class="number">2</span>];</span><br><span class="line">	CLAHE clahe = Imgproc.createCLAHE();</span><br><span class="line">	clahe.setClipLimit(<span class="number">2.0</span>);</span><br><span class="line">	Mat L2 = <span class="keyword">new</span> Mat();</span><br><span class="line">	clahe.apply(L, L2);</span><br><span class="line">	Mat LabIm2 = <span class="keyword">new</span> Mat();</span><br><span class="line">	List&lt;Mat&gt; lab = <span class="keyword">new</span> ArrayList&lt;Mat&gt;();</span><br><span class="line">	Core.split(img, lab);</span><br><span class="line">	Core.merge(<span class="keyword">new</span> ArrayList&lt;Mat&gt;(Arrays.asList(L2, lab.get(<span class="number">1</span>), lab.get(<span class="number">2</span>))), LabIm2);</span><br><span class="line">	Mat img2 = <span class="keyword">new</span> Mat();</span><br><span class="line">	Imgproc.cvtColor(LabIm2, img2, Imgproc.COLOR_Lab2BGR);</span><br><span class="line">	result[<span class="number">0</span>] = img2;</span><br><span class="line">	result[<span class="number">1</span>] = L2;</span><br><span class="line">	<span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="Weights-of-Fusion-Process"><a href="#Weights-of-Fusion-Process" class="headerlink" title="Weights of Fusion Process"></a>Weights of Fusion Process</h1><p>The author mentioned that the design of the weight measures needs to consider the desired appearance of the restored output. Image restoration is tightly correlated with the color appearance, and as a result the measurable values such as salient features, local and global contrast or exposedness are difficult to integrate by naive per pixel blending, without risking to introduce artifacts, thus, the fusion technique is used, which will be introduced later.<br><img src="/images/imageprocessing/imagefusion/weights.png" alt="Weights"></p>
+<h2 id="Laplacian-Contrast-Weight"><a href="#Laplacian-Contrast-Weight" class="headerlink" title="Laplacian Contrast Weight"></a>Laplacian Contrast Weight</h2><p>Laplacian contrst weight deals with global contrast by applying a Laplacian filter on each input luminance channel and computing the absolute value of the filter result.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Mat <span class="title">LaplacianContrast</span><span class="params">(Mat img)</span> </span>&#123;</span><br><span class="line">	Mat laplacian = <span class="keyword">new</span> Mat();</span><br><span class="line">	Imgproc.Laplacian(img, laplacian, img.depth());</span><br><span class="line">	Core.convertScaleAbs(laplacian, laplacian);</span><br><span class="line">	<span class="keyword">return</span> laplacian;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>It assigns high values to edges and texture. For the underwater restoration task, however, this weight is not sufficient to recover the contrast, mainly because it can not distinguish between a ramp and flat regions. To handle this problem, we searched for an additional contrast measurement that independently assess the local distribution.</p>
+<h2 id="Local-Contrast-Weight"><a href="#Local-Contrast-Weight" class="headerlink" title="Local Contrast Weight"></a>Local Contrast Weight</h2><p>Local contrast weight comprises the relation between each pixel and its neighborhoods average. It is computed as the standard deviation between pixel luminance level and the local average of its surrounding region:$$W_{LC}(x,y)=\Vert I^{k}-I_{\omega_{hc}}^{k}\Vert$$where $I^{k}$ represents the luminance channel of the input and $I_{\omega_{hc}}^{k}$ denotes the low-passed version of it. This filtered version is obtained by employing a small $5\times 5$ ($\frac{1}{16}[1,4,6,4,1]$) separable binomial kernel with the high frequency cut-off value $\omega_{hc}=\frac{\pi}{2.75}$. For small kernels the binomial kernel is a good approximation of its Gaussian counterpart, and it can be computed more effectively.<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Mat <span class="title">LocalContrast</span><span class="params">(Mat img)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">double</span>[] h = &#123; <span class="number">1.0</span> / <span class="number">16.0</span>, <span class="number">4.0</span> / <span class="number">16.0</span>, <span class="number">6.0</span> / <span class="number">16.0</span>, <span class="number">4.0</span> / <span class="number">16.0</span>, <span class="number">1.0</span> / <span class="number">16.0</span> &#125;;</span><br><span class="line">	Mat mask = <span class="keyword">new</span> Mat(h.length, h.length, img.type());</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; h.length; i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; h.length; j++) &#123; mask.put(i, j, h[i] * h[j]); &#125;</span><br><span class="line">	&#125;</span><br><span class="line">	Mat localContrast = <span class="keyword">new</span> Mat();</span><br><span class="line">	Imgproc.filter2D(img, localContrast, img.depth(), mask);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; localContrast.rows(); i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; localContrast.cols(); j++) &#123;</span><br><span class="line">			<span class="keyword">if</span> (localContrast.get(i, j)[<span class="number">0</span>] &gt; Math.PI / <span class="number">2.75</span>) localContrast.put(i, j, Math.PI / <span class="number">2.75</span>);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	Core.subtract(img, localContrast, localContrast);</span><br><span class="line">	<span class="keyword">return</span> localContrast.mul(localContrast);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The impact of this measure is to strengthen the local contrast appearance since it advantages the transitions mainly in the highlighted and shadowed parts of the second input.</p>
+<h2 id="Saliency-Weight"><a href="#Saliency-Weight" class="headerlink" title="Saliency Weight"></a>Saliency Weight</h2><p>Saliency weight aims to emphasize the discriminating objects that lose their prominence in the underwater scene. The saliency detection method used in this paper is <a href="https://infoscience.epfl.ch/record/135217/files/1708.pdf" target="_blank" rel="noopener">Frequency-tuned Salient Region Detection</a> proposed by <em>Achanta et al.</em>, which is a computationally efficient saliency algorithm:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Mat <span class="title">Saliency</span><span class="params">(Mat img)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// blur image with a 3x3 or 5x5 Gaussian filter</span></span><br><span class="line">	Mat gfbgr = <span class="keyword">new</span> Mat();</span><br><span class="line">	Imgproc.GaussianBlur(img, gfbgr, <span class="keyword">new</span> Size(<span class="number">3</span>, <span class="number">3</span>), <span class="number">3</span>);</span><br><span class="line">	<span class="comment">// Perform sRGB to CIE Lab color space conversion</span></span><br><span class="line">	Mat LabIm = <span class="keyword">new</span> Mat();</span><br><span class="line">	Imgproc.cvtColor(gfbgr, LabIm, Imgproc.COLOR_BGR2Lab);</span><br><span class="line">	<span class="comment">// Compute Lab average values (note that in the paper this average is found from the un-blurred original image, but the results are quite similar)</span></span><br><span class="line">	List&lt;Mat&gt; lab = <span class="keyword">new</span> ArrayList&lt;Mat&gt;();</span><br><span class="line">	Core.split(LabIm, lab);</span><br><span class="line">	Mat l = lab.get(<span class="number">0</span>);</span><br><span class="line">	l.convertTo(l, CvType.CV_32F);</span><br><span class="line">	Mat a = lab.get(<span class="number">1</span>);</span><br><span class="line">	a.convertTo(a, CvType.CV_32F);</span><br><span class="line">	Mat b = lab.get(<span class="number">2</span>);</span><br><span class="line">	b.convertTo(b, CvType.CV_32F);</span><br><span class="line">	<span class="keyword">double</span> lm = Core.mean(l).val[<span class="number">0</span>];</span><br><span class="line">	<span class="keyword">double</span> am = Core.mean(a).val[<span class="number">0</span>];</span><br><span class="line">	<span class="keyword">double</span> bm = Core.mean(b).val[<span class="number">0</span>];</span><br><span class="line">	<span class="comment">// Finally compute the saliency map</span></span><br><span class="line">	Mat sm = Mat.zeros(l.rows(), l.cols(), l.type());</span><br><span class="line">	Core.subtract(l, <span class="keyword">new</span> Scalar(lm), l);</span><br><span class="line">	Core.subtract(a, <span class="keyword">new</span> Scalar(am), a);</span><br><span class="line">	Core.subtract(b, <span class="keyword">new</span> Scalar(bm), b);</span><br><span class="line">	Core.add(sm, l.mul(l), sm);</span><br><span class="line">	Core.add(sm, a.mul(a), sm);</span><br><span class="line">	Core.add(sm, b.mul(b), sm);</span><br><span class="line">	<span class="keyword">return</span> sm;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>However, the saliency map tends to favor highlighted areas. To increase the accuracy of results, the author introduces the exposedness map to protect the mid tones that might be altered in some specific cases.</p>
+<h2 id="Exposedness-Weight"><a href="#Exposedness-Weight" class="headerlink" title="Exposedness Weight"></a>Exposedness Weight</h2><p>Exposedness weight evaluates how well a pixel is exposed. This assessed quality provides an estimator to preserve a constant appearance of the local contrast, that ideally is neither exaggerated nor understated. Commonly, the pixels tend to have a higher exposed appearance when their normalized values are close to the average value of 0.5. This weight map is expressed as a Gaussian-modeled distance to the average normalized range value (0.5):$$W_{E}(x,y)=exp\bigg(-\frac{(I^{k}(x,y)-0.5)^{2}}{2\sigma^{2}}\bigg)$$where $I^{k}(x,y)$ represents the value of the pixel location $(x,y)$ of input image $I^{k}$, while the standard deviation is set to $\sigma=0.25$, the Java implementation is shown below:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Mat <span class="title">Exposedness</span><span class="params">(Mat img)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">double</span> sigma = <span class="number">0.25</span>;</span><br><span class="line">	<span class="keyword">double</span> average = <span class="number">0.5</span>;</span><br><span class="line">	<span class="keyword">int</span> rows = img.rows();</span><br><span class="line">	<span class="keyword">int</span> cols = img.cols();</span><br><span class="line">	Mat exposedness = Mat.zeros(rows, cols, img.type());</span><br><span class="line">	<span class="comment">// W = exp(-(img - aver).^2 / (2*sigma^2));</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; rows; i++) &#123;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; cols; j++) &#123;</span><br><span class="line">			<span class="keyword">double</span> value = Math.exp(-<span class="number">1.0</span> * Math.pow(img.get(i, j)[<span class="number">0</span>] - average, <span class="number">2.0</span>) / (<span class="number">2</span> * Math.pow(sigma, <span class="number">2.0</span>)));</span><br><span class="line">			exposedness.put(i, j, value);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> exposedness;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>This weight map will assign higher values to those tones with a distance close to zero, while pixels that are characterized by larger distances, are associated with the over-exposed and under-exposed regions. In consequence, this weight tempers the result of the saliency map and produces a well preserved appearance of the fused image.</p>
+<h1 id="Multi-scale-Fusion"><a href="#Multi-scale-Fusion" class="headerlink" title="Multi-scale Fusion"></a>Multi-scale Fusion</h1><p>To yield consistent results, the author employs the normalized weight values $\bar{W}$ by constraining taht the sum at ecach pixel location of weight maps $W$ equals to one:$$\bar{W}^{k}=\frac{W^{k}}{\sum_{k=1}^{K}W^{k}}$$Then, generally, the enhanced image version $\mathcal{R}(x,y)$ is computed by fusing the defined inputs with the weight measures at every pixel location $(x,y)$:$$\mathcal{R}(x,y)=\sum_{k=1}^{K}\bar{W}^{k}(x,y)\centerdot I^{k}(x,y)$$where $k$ is the index of the inputs, and $K=2$ in this paper. However, the naive approach to directly fuse the inputs and the weights introduces undesirable halos. To deal with this issue, the author introduces the Gaussian pyramid decomposition for weight maps and Laplacian pyramid decomposition for inputs. Considering that both Gaussian and Laplacian pyramids have same levels, the mixing process is performed at each level independently yielding the fused pyramid:$$\mathcal{R}^{l}(x,y)=\sum_{k=1}^{K}G^{l}\big\{\bar{W}^{k}(x,y)\big\}\centerdot L^{l}\big\{I^{k}(x,y)\big\}$$where $l$ denotes the number of the pyramid levels ($l=5$ in this paper), $L^{l}$ is the Laplacian version while $G^{l}$ is the Gaussian version. Below is the Java implementation of these two pyramids and the reconstruction method:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Pyramid</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> Mat[] GaussianPyramid(Mat img, <span class="keyword">int</span> level) &#123;</span><br><span class="line">		Mat[] gaussPyr = <span class="keyword">new</span> Mat[level];</span><br><span class="line">		Mat mask = filterMask(img);</span><br><span class="line">		Mat tmp = <span class="keyword">new</span> Mat();</span><br><span class="line">		Imgproc.filter2D(img, tmp, -<span class="number">1</span>, mask);</span><br><span class="line">		gaussPyr[<span class="number">0</span>] = tmp.clone();</span><br><span class="line">		Mat tmpImg = img.clone();</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; level; i++) &#123;</span><br><span class="line">			<span class="comment">// resize image</span></span><br><span class="line">			Imgproc.resize(tmpImg, tmpImg, <span class="keyword">new</span> Size(), <span class="number">0.5</span>, <span class="number">0.5</span>, Imgproc.INTER_LINEAR);</span><br><span class="line">			<span class="comment">// blur image</span></span><br><span class="line">			tmp = <span class="keyword">new</span> Mat();</span><br><span class="line">			Imgproc.filter2D(tmpImg, tmp, -<span class="number">1</span>, mask);</span><br><span class="line">			gaussPyr[i] = tmp.clone();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> gaussPyr;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> Mat[] LaplacianPyramid(Mat img, <span class="keyword">int</span> level) &#123;</span><br><span class="line">		Mat[] lapPyr = <span class="keyword">new</span> Mat[level];</span><br><span class="line">		<span class="comment">//Mat mask = filterMask(img);</span></span><br><span class="line">		lapPyr[<span class="number">0</span>] = img.clone();</span><br><span class="line">		Mat tmpImg = img.clone();</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt; level; i++) &#123;</span><br><span class="line">			<span class="comment">// resize image</span></span><br><span class="line">			Imgproc.resize(tmpImg, tmpImg, <span class="keyword">new</span> Size(), <span class="number">0.5</span>, <span class="number">0.5</span>, Imgproc.INTER_LINEAR);</span><br><span class="line">			lapPyr[i] = tmpImg.clone();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// calculate the DoG</span></span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; level - <span class="number">1</span>; i++) &#123;</span><br><span class="line">			Mat tmpPyr = <span class="keyword">new</span> Mat();</span><br><span class="line">			Imgproc.resize(lapPyr[i + <span class="number">1</span>], tmpPyr, lapPyr[i].size(), <span class="number">0</span>, <span class="number">0</span>, Imgproc.INTER_LINEAR);</span><br><span class="line">			Core.subtract(lapPyr[i], tmpPyr, lapPyr[i]);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> lapPyr;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Mat <span class="title">PyramidReconstruct</span><span class="params">(Mat[] pyramid)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">int</span> level = pyramid.length;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = level - <span class="number">1</span>; i &gt; <span class="number">0</span>; i--) &#123;</span><br><span class="line">			Mat tmpPyr = <span class="keyword">new</span> Mat();</span><br><span class="line">			Imgproc.resize(pyramid[i], tmpPyr, pyramid[i - <span class="number">1</span>].size(), <span class="number">0</span>, <span class="number">0</span>, Imgproc.INTER_LINEAR);</span><br><span class="line">			Core.add(pyramid[i - <span class="number">1</span>], tmpPyr, pyramid[i - <span class="number">1</span>]);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> pyramid[<span class="number">0</span>];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Mat <span class="title">filterMask</span><span class="params">(Mat img)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">double</span>[] h = &#123; <span class="number">1.0</span> / <span class="number">16.0</span>, <span class="number">4.0</span> / <span class="number">16.0</span>, <span class="number">6.0</span> / <span class="number">16.0</span>, <span class="number">4.0</span> / <span class="number">16.0</span>, <span class="number">1.0</span> / <span class="number">16.0</span> &#125;;</span><br><span class="line">		Mat mask = <span class="keyword">new</span> Mat(h.length, h.length, img.type());</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; h.length; i++) &#123;</span><br><span class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; h.length; j++) &#123; mask.put(i, j, h[i] * h[j]); &#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> mask;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>And the fusion process codes is shown here:<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// construct the gaussian pyramid for weight</span></span><br><span class="line"><span class="keyword">int</span> level = <span class="number">5</span>;</span><br><span class="line">Mat[] weight1 = Pyramid.GaussianPyramid(w1, level);</span><br><span class="line">Mat[] weight2 = Pyramid.GaussianPyramid(w2, level);</span><br><span class="line"><span class="comment">// construct the laplacian pyramid for input image channel</span></span><br><span class="line">img1.convertTo(img1, CvType.CV_32F);</span><br><span class="line">img2.convertTo(img2, CvType.CV_32F);</span><br><span class="line">List&lt;Mat&gt; bgr = <span class="keyword">new</span> ArrayList&lt;Mat&gt;();</span><br><span class="line">Core.split(img1, bgr);</span><br><span class="line">Mat[] bCnl1 = Pyramid.LaplacianPyramid(bgr.get(<span class="number">0</span>), level);</span><br><span class="line">Mat[] gCnl1 = Pyramid.LaplacianPyramid(bgr.get(<span class="number">1</span>), level);</span><br><span class="line">Mat[] rCnl1 = Pyramid.LaplacianPyramid(bgr.get(<span class="number">2</span>), level);</span><br><span class="line">Core.split(img2, bgr);</span><br><span class="line">Mat[] bCnl2 = Pyramid.LaplacianPyramid(bgr.get(<span class="number">0</span>), level);</span><br><span class="line">Mat[] gCnl2 = Pyramid.LaplacianPyramid(bgr.get(<span class="number">1</span>), level);</span><br><span class="line">Mat[] rCnl2 = Pyramid.LaplacianPyramid(bgr.get(<span class="number">2</span>), level);</span><br><span class="line"><span class="comment">// fusion process</span></span><br><span class="line">Mat[] bCnl = <span class="keyword">new</span> Mat[level];</span><br><span class="line">Mat[] gCnl = <span class="keyword">new</span> Mat[level];</span><br><span class="line">Mat[] rCnl = <span class="keyword">new</span> Mat[level];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; level; i++) &#123;</span><br><span class="line">	Mat cn = <span class="keyword">new</span> Mat();</span><br><span class="line">	Core.add(bCnl1[i].mul(weight1[i]), bCnl2[i].mul(weight2[i]), cn);</span><br><span class="line">	bCnl[i] = cn.clone();</span><br><span class="line">	Core.add(gCnl1[i].mul(weight1[i]), gCnl2[i].mul(weight2[i]), cn);</span><br><span class="line">	gCnl[i] = cn.clone();</span><br><span class="line">	Core.add(rCnl1[i].mul(weight1[i]), rCnl2[i].mul(weight2[i]), cn);</span><br><span class="line">	rCnl[i] = cn.clone();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// reconstruct &amp; output</span></span><br><span class="line">Mat bChannel = Pyramid.PyramidReconstruct(bCnl);</span><br><span class="line">Mat gChannel = Pyramid.PyramidReconstruct(gCnl);</span><br><span class="line">Mat rChannel = Pyramid.PyramidReconstruct(rCnl);</span><br><span class="line">Mat fusion = <span class="keyword">new</span> Mat();</span><br><span class="line">Core.merge(<span class="keyword">new</span> ArrayList&lt;Mat&gt;(Arrays.asList(bChannel, gChannel, rChannel)), fusion);</span><br><span class="line">fusion.convertTo(fusion, CvType.CV_8UC1);</span><br></pre></td></tr></table></figure></p>
+<p>Moreover, you can obtain the full java codes (also Matlab codes) in my GitHub repository: <a href="https://github.com/IsaacChanghau/OptimizedImageEnhance/blob/master/src/main/java/com/isaac/models/FusionEnhance.java" target="_blank" rel="noopener">ImageEnhanceViaFusion</a> and the Matlab codes are available here: <a href="https://github.com/IsaacChanghau/OptimizedImageEnhance/tree/master/matlab/FusionEnhance" target="_blank" rel="noopener">[link]</a>. Besides, for more details about this paper, you can read about the paper: <a href="http://perso.telecom-paristech.fr/~Gousseau/ProjAnim/2015/ImageSousMarine.pdf" target="_blank" rel="noopener">Enhancing Underwater Images and Videos by Fusion</a>.</p>
+<h1 id="Experiment-Result"><a href="#Experiment-Result" class="headerlink" title="Experiment Result"></a>Experiment Result</h1><p>Heavy Distorted Fish Example<br><img src="/images/imageprocessing/imagefusion/fish.png" alt="Fish"><br>Enhancement Examples with Normalized Weight Maps of Two Divers<br><img src="/images/imageprocessing/imagefusion/two-diver1.png" alt="Two Divers"><br><img src="/images/imageprocessing/imagefusion/two-diver2.png" alt="Weight Map of Two Divers"><br>Enhancement Examples with Normalized Weight Maps of One Diver<br><img src="/images/imageprocessing/imagefusion/one-diver1.png" alt="One Diver"><br><img src="/images/imageprocessing/imagefusion/one-diver2.png" alt="Weight Map of One Diver"><br>Other Results<br><img src="/images/imageprocessing/imagefusion/divers.png" alt="Divers"><br><img src="/images/imageprocessing/imagefusion/underwater.png" alt="Underwater Scene"><br><img src="/images/imageprocessing/imagefusion/fishes.png" alt="Fishes"></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ul>
+<li><a href="http://perso.telecom-paristech.fr/~Gousseau/ProjAnim/2015/ImageSousMarine.pdf" target="_blank" rel="noopener">Enhancing Underwater Images and Videos by Fusion</a></li>
+<li><a href="http://ivrlwww.epfl.ch/supplementary_material/RK_CVPR09/" target="_blank" rel="noopener">Frequency-tuned Salient Region Detection</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/04/15/Underwater-Image-Enhance-via-Fusion/" title="Underwater Image Enhance via Fusion and Its Java Implementation">https://isaacchanghau.github.io/2017/04/15/Underwater-Image-Enhance-via-Fusion/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/image-processing/" rel="tag"># image processing</a>
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/opencv/" rel="tag"># opencv</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/11/ALTM/" rel="next" title="Adaptive Local Tone Mapping Technique for HDR Image and Java Implementation">
+                <i class="fa fa-chevron-left"></i> Adaptive Local Tone Mapping Technique for HDR Image and Java Implementation
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/20/Removing-Backscatter-to-Enhance-the-Visibility-of-Underwater-Object/" rel="prev" title="Removing Backscatter to Enhance the Visibility of Underwater Object">
+                Removing Backscatter to Enhance the Visibility of Underwater Object <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#General-Schema"><span class="nav-number">1.</span> <span class="nav-text">General Schema</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Fusion-Materials-Generation"><span class="nav-number">2.</span> <span class="nav-text">Fusion Materials Generation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#White-Balance"><span class="nav-number">2.1.</span> <span class="nav-text">White Balance</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Temporal-Coherent-Noise-Reduction"><span class="nav-number">2.2.</span> <span class="nav-text">Temporal Coherent Noise Reduction</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Weights-of-Fusion-Process"><span class="nav-number">3.</span> <span class="nav-text">Weights of Fusion Process</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Laplacian-Contrast-Weight"><span class="nav-number">3.1.</span> <span class="nav-text">Laplacian Contrast Weight</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Local-Contrast-Weight"><span class="nav-number">3.2.</span> <span class="nav-text">Local Contrast Weight</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Saliency-Weight"><span class="nav-number">3.3.</span> <span class="nav-text">Saliency Weight</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Exposedness-Weight"><span class="nav-number">3.4.</span> <span class="nav-text">Exposedness Weight</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Multi-scale-Fusion"><span class="nav-number">4.</span> <span class="nav-text">Multi-scale Fusion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Experiment-Result"><span class="nav-number">5.</span> <span class="nav-text">Experiment Result</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

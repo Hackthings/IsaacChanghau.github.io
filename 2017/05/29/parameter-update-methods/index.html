@@ -1,0 +1,1231 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="deep learning,machine learning,deeplearning4j," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Gradient descent optimization algorithms are very popular to perform optimization and by far the most common way">
+<meta name="keywords" content="deep learning,machine learning,deeplearning4j">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Parameter Update Algorithms in Artificial Neural Networks">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/05/29/parameter-update-methods/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="Gradient descent optimization algorithms are very popular to perform optimization and by far the most common way">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/parameterupdate/nesterov.png">
+<meta property="og:updated_time" content="2018-01-30T08:33:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Parameter Update Algorithms in Artificial Neural Networks">
+<meta name="twitter:description" content="Gradient descent optimization algorithms are very popular to perform optimization and by far the most common way">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/deeplearning/parameterupdate/nesterov.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/05/29/parameter-update-methods/"/>
+
+
+
+
+
+  <title>Parameter Update Algorithms in Artificial Neural Networks | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/05/29/parameter-update-methods/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Parameter Update Algorithms in Artificial Neural Networks</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-05-29T19:00:03+08:00">
+                2017-05-29
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:33:04+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 3,007 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 19 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Gradient descent optimization algorithms are very popular to perform optimization and by far the most common way<a id="more"></a> to optimize neural networks. However, there are also many other algorithms, like <a href="http://andrew.gibiansky.com/blog/machine-learning/hessian-free-optimization/" target="_blank" rel="noopener">Hessian Free</a>, <a href="https://en.wikipedia.org/wiki/Conjugate_gradient_method" target="_blank" rel="noopener">Conjugate Gradient</a>, <a href="https://en.wikipedia.org/wiki/BFGS_method" target="_blank" rel="noopener">BFGS</a>, <a href="http://mlworks.cn/posts/introduction-to-l-bfgs/" target="_blank" rel="noopener">L-BFGS</a> and etc., are proposed to deal with optimization tasks, here we only take those gradient descent methods into account. And we will discuss the drawbacks among those gradient algorithms and the methods to solve these blemishes.</p>
+<h1 id="Gradient-Descent-Optimization-Algorithm"><a href="#Gradient-Descent-Optimization-Algorithm" class="headerlink" title="Gradient Descent Optimization Algorithm"></a>Gradient Descent Optimization Algorithm</h1><h2 id="Vanilla-Gradient-Descent"><a href="#Vanilla-Gradient-Descent" class="headerlink" title="Vanilla Gradient Descent"></a>Vanilla Gradient Descent</h2><p>Consider an objective $\mathcal{L}(\boldsymbol{\theta})$, and our goal is aiming to mimimize it. Here, the $\boldsymbol{\theta}\in\mathbb{R}^{n}$ is the set of parameters for entire dataset. Using <strong>(vanilla/batch) gradient descent</strong>, to minimize the objective, we need to update $\boldsymbol{\theta}$ by$$\boldsymbol{\theta}:=\boldsymbol{\theta}-\eta\centerdot\nabla_{\boldsymbol{\theta}}\mathcal{L}(\boldsymbol{\theta})$$where $\eta$ denotes learning rate, which determines the size of the steps we take to reach a (local) minimum, $\nabla_{\boldsymbol{\theta}}$ represents the partial derivative of $\mathcal{L}(\boldsymbol{\theta})$ with respect to $\boldsymbol{\theta}$, we can derive from the formula above that, for each update, the gradients for whole dataset need to be computed, which is extraordinarily time consuming and heavy memory occupation. Moreover, the batch gradient descent does not allow online training. Other drawbacks:</p>
+<ul>
+<li>It is relatively slow close to the minimum: technically, its asymptotic rate of convergence is inferior to many other methods. For poorly conditioned convex problems, gradient descent increasingly ‘zigzags’ as the gradients point nearly orthogonally to the shortest direction to a minimum point$.^{4}$</li>
+<li>It is only guaranteed to converge to the global minimum for convex error surfaces and to a local minimum for non-convex surfaces$.^{1}$</li>
+</ul>
+<p>In deeplearning4j, Vanilla Gradient Descent is <code>OptimizationAlgorithm.LINE_GRADIENT_DESCENT</code>.</p>
+<h2 id="Stochastic-Gradient-Descent"><a href="#Stochastic-Gradient-Descent" class="headerlink" title="Stochastic Gradient Descent"></a>Stochastic Gradient Descent</h2><p>Stochastic gradient descent (often shortened in SGD), also known as incremental gradient descent, is a stochastic approximation of the gradient descent optimization method for minimizing an objective function$.^{5}$ Unlike vanilla gradient descent, which performs redundant computations (since it may recompute gradients for similar examples before each parameter updates), SGD performs parameter update for each sample $(\mathbf{x}^{(i)},y^{(i)})$, i.e., it computes one update a time$$\boldsymbol{\theta}:=\boldsymbol{\theta}-\eta\centerdot\nabla_{\boldsymbol{\theta}}\mathcal{L}_{i}(\boldsymbol{\theta})$$Thus, it is much faster than vanilla gradient descent and is capable of training online. Moreover, becasue of updating by one sample each time, SGD always perform frequent updates with a high variance that cause the objective function to fluctuate heavily. For SGD’s fluctuation, it may enable it to jump from a local minimum to new and potentially better local (even global) minima, however, this ultimately complicates convergence to the exact minimum, as SGD will keep overshooting. Besides, when the learning rate is slowly decreased, SGD shows the same convergence behaviour as batch gradient descent, almost certainly converging to a local or the global minimum for non-convex and convex optimization respectively.<br>In deeplearning4j, Stochastic Gradient Descent is <code>OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT</code>.</p>
+<h2 id="Mini-batch-Stochastic-Gradient-Descent"><a href="#Mini-batch-Stochastic-Gradient-Descent" class="headerlink" title="Mini-batch (Stochastic) Gradient Descent"></a>Mini-batch (Stochastic) Gradient Descent</h2><p>Mini-batch (Stochastic) Gradient Descent performs an update for every $n$ training sample ($n=1$, it becomes an online method)$$\boldsymbol{\theta}:=\boldsymbol{\theta}-\eta\centerdot\nabla_{\boldsymbol{\theta}}\mathcal{L}_{i:i+n}(\boldsymbol{\theta})$$y, it reduces the variance of the parameter updates, which can lead to more stable convergence and is able to make use of highly optimized matrix optimizations that make computing the gradient with respect to a mini-batch very efficient. Mini-batch gradient descent is typically the algorithm of choice when training a neural network and the term SGD usually is employed also when mini-batches are used.<br>In deeplearning4j, by using mini-batch, set <code>.miniBatch(true)</code> and the batch size is defined by data processor.</p>
+<p>Albeit improvements are made to ameliorate gradient descent methods, there are still some challanges:</p>
+<ul>
+<li>Choosing a proper learning rate can be difficult. A learning rate that is too small leads to painfully slow convergence, while a learning rate that is too large can hinder convergence and cause the loss function to fluctuate around the minimum or even to diverge$.^{1}$</li>
+<li>Learning rate schedules try to adjust the learning rate during training by e.g. annealing, i.e. reducing the learning rate according to a pre-defined schedule or when the change in objective between epochs falls below a threshold. These schedules and thresholds, however, have to be defined in advance and are thus unable to adapt to a dataset’s characteristics$.^{1}$</li>
+<li>Additionally, the same learning rate applies to all parameter updates. If our data is sparse and our features have very different frequencies, we might not want to update all of them to the same extent, but perform a larger update for rarely occurring features$.^{1}$</li>
+<li>Another key challenge of minimizing highly non-convex error functions common for neural networks is avoiding getting trapped in their numerous suboptimal local minima. some argue that the difficulty arises in fact not from local minima but from saddle points, i.e. points where one dimension slopes up and another slopes down. These saddle points are usually surrounded by a plateau of the same error, which makes it notoriously hard for SGD to escape, as the gradient is close to zero in all dimensions$.^{1}$</li>
+</ul>
+<h1 id="Parameter-Update-Methods"><a href="#Parameter-Update-Methods" class="headerlink" title="Parameter Update Methods"></a>Parameter Update Methods</h1><p>Here I summarize some methods that are widely used in neural networks to deal with the aforementioned challanges.</p>
+<h2 id="Momentum"><a href="#Momentum" class="headerlink" title="Momentum"></a>Momentum</h2><p>Since SGD has trouble navigating ravines, which are common around local optima. In these scenarios, SGD oscillates across the slopes of the ravine while only making hesitant progress along the bottom towards the local optimum. Momentum is a method, which appeared in Rumelhart, Hinton and Williams’ seminal paper on backpropagation learning, that helps to acclerate SGD in the relevant direction and dampens oscillations. Momentum remembers the update $\Delta w$ at each iteration, and determines the next update as a convex combination of the gradient and the previous update$$\Delta w_{t}:=\alpha\Delta w_{t-1}+\eta\nabla_{\boldsymbol{\theta}}\mathcal{L}(\boldsymbol{\theta})\\\boldsymbol{\theta}:=\boldsymbol{\theta}-\Delta w_{t}$$where, $\alpha$ is a hyperparameter, which controls the contribution of the update vector of the past time step to the current update vector. The momentum term increases for dimensions whose gradients point in the same directions and reduces updates for dimensions whose gradients change directions. As a result, we gain faster convergence and reduced oscillation. Normally, the momentum term $\alpha$ is usually set to 0.9 or a similar value.</p>
+<p>In deeplearning4j, using momentum by setting <code>.momentum(0.9)</code>.</p>
+<h2 id="Nesterov-Momentum"><a href="#Nesterov-Momentum" class="headerlink" title="Nesterov Momentum"></a>Nesterov Momentum</h2><p>Nesterov momentum, also know as Nesterov accelerated gradient (NAG), is a way to give the momentum term a kind of prescience that prevents the gradient blindly following the slope and let it knows where to go and then to slow down before the hill slopes up again.$$\Delta w_{t}:=\alpha\Delta w_{t-1}+\eta\nabla_{\boldsymbol{\theta}}\mathcal{L}(\boldsymbol{\theta}-\alpha\Delta w_{t-1})\\\boldsymbol{\theta}:=\boldsymbol{\theta}-\Delta w_{t}$$where the $\eta$ denotes the learning rate, $\alpha$ denotes the momentum, computing $\boldsymbol{\theta}-\alpha\Delta w_{t-1}$ is to obtain an approximation of the next position of the parameters (the gradient is missing for the full update), a rough idea where the parameters are going to be.<br><img src="/images/deeplearning/parameterupdate/nesterov.png" alt="Nesterov"><br>See from the graph, while Momentum first computes the current gradient (<em>small blue vector</em>) and then takes a big jump in the direction of the updated accumulated gradient (<em>big blue vector</em>), NAG first makes a big jump in the direction of the previous accumulated gradient (<em>brown vector</em>), measures the gradient and then makes a correction (<em>green vector</em>). This anticipatory update prevents us from going too fast and results in increased responsiveness, which has significantly increased the performance of RNNs on a number of tasks$.^{[1]}$</p>
+<p>In deeplearning4j, Nesterov is <code>.updater(Updater.NESTEROVS).momentum(0.9)</code>.</p>
+<h2 id="AdaGrad"><a href="#AdaGrad" class="headerlink" title="AdaGrad"></a>AdaGrad</h2><p>AdaGrad (also know as adaptive gradient algorithm) is a modified stochastic gradient descent with per-parameter learning rate, it increases the learning rate (lager updates) for more sparse parameters and decreases the learning rate (smaller updates) for less sparse ones. This strategy often improves convergence performance over standard stochastic gradient descent for dealing with sparse data. In practice, AdaGrad greatly improved the robustness of SGD and it is often used for training large-scale neural nets, besides, GloVe model also use the AdaGrad.</p>
+<p>Different from the above methods, who updates all parameters $\boldsymbol{\theta}$ at once and use the same learning rate for every parameter, however, AdaGrad uses a different learning rate for every parameter $\theta_{i}$ at every time step $t$. Denote $g_{t,i}$ to be the gradient of the objective function with respect to the parameter $\theta_{i}$ at time step $t$, then we have $g_{t,i}=\nabla_{\boldsymbol{\theta}}\mathcal{L}(\theta_{i})$, AdaGrad modifies the general learning rate $\eta$ at each time step $t$ for every parameter $\theta_{i}$ based on the previous gradients that have been computed for $\theta_{i}$:$$\theta_{t,i}:=\theta_{t-1,i}-\frac{\eta\centerdot g_{t-1,i}}{\sqrt{G_{t-1,ii}+\epsilon}}:=\theta_{t-1,i}-\frac{\eta\centerdot\nabla_{\boldsymbol{\theta}}\mathcal{L}(\theta_{i-1})}{\sqrt{G_{t-1,ii}+\epsilon}}$$where $G_{t}\in\mathbb{R}^{n\times n}$ is a diagonal matrix where each diagonal element is the sum of the squares of the gradients with respect to $\theta_{i}$ up to time step $t$, while $\epsilon$ is a smoothing term that avoids division by zero (usually takes $1e-8$). Thus, for $G_{t}$, which contains the sum of the squares of the past gradients with respect to all parameters $\boldsymbol{\theta}$ along its diagonal, so we have$$\boldsymbol{\theta}_{t}:=\boldsymbol{\theta}_{t-1}-\frac{\eta\centerdot\nabla_{\boldsymbol{\theta}}\mathcal{L}(\theta)}{\sqrt{G_{t-1}+\epsilon}}$$Adagrad’s main benefits is that it eliminates the need to manually tune the learning rate. While, its main weakness is its accumulation of the squared gradients in the denominator, since every added term is positive, the accumulated sum keeps growing during training. This in turn causes the learning rate to shrink and eventually become infinitesimally small, at which point the algorithm is no longer able to acquire additional knowledge.</p>
+<p>In deeplearning4j, AdaGrad is <code>Updater.ADAGRAD</code>.</p>
+<h2 id="AdaDelta"><a href="#AdaDelta" class="headerlink" title="AdaDelta"></a>AdaDelta</h2><p>AdaDelta is an extension of AdaGrad that seeks to reduce the aggressive, monotonically decreasing learning rate of AdaGrad. Instead of accumulating all past squared gradients, Adadelta restricts the window of accumulated past gradients to some fixed size $win$.</p>
+<p>Instead of inefficiently storing $win$ previous squared gradients, the sum of gradients is recursively defined as a decaying average of all past squared gradients. The running average $E[g^{2}]_{t}$ at time step $t$ then depends (as a fraction $\alpha$ similarly to the Momentum term) only on the previous average and the current gradient:$$E[g^{2}]_{t}=\alpha E[g^{2}]_{t-1}+(1-\alpha^{2})g_{t}^{2}$$From AdaGrad, we have$$\Delta w_{t}=-\frac{\eta\centerdot g_{t}}{\sqrt{G_{t}+\epsilon}}$$Now, simply replace the diagonal matrix $G_{t}$ with the decaying average over past squared gradients $E[g^{2}]_{t}$:$$\Delta w_{t}=-\frac{\eta\centerdot g_{t}}{\sqrt{E[g^{2}]_{t}+\epsilon}}=-\frac{\eta\centerdot g_{t}}{RMS[g]_{t}}$$The authors note that the units in this update (as well as in SGD, Momentum, or Adagrad) do not match, i.e. the update should have the same hypothetical units as the parameter. To realize this, they first define another exponentially decaying average, this time not of squared gradients but of squared parameter updates:$$E[\Delta w^{2}]_{t}=\alpha\centerdot E[\Delta w^{2}]_{t-1}+(1-\alpha)\Delta w_{t}^{2}$$The root mean squared error of parameter updates is thus:$$RMS[\Delta w]_{t}=\sqrt{E[\Delta w^{2}]_{t}+\epsilon}$$Since $RMS[\Delta w]_{t}$ is unknown, it is approximated with the RMS of parameter updates until the previous time step, replacing the learning rate $\eta$ in the previous update rule with $RMS[\Delta w]_{t-1}$, yields the Adadelta update rule:$$\Delta w_{t}=-\frac{RMS[\Delta w]_{t-1}}{RMS[g]_{t}}\centerdot g_{t}\\\boldsymbol{\theta}_{t+1}=\boldsymbol{\theta}_{t}+\Delta w_{t}$$With Adadelta, we do not even need to set a default learning rate, as it has been eliminated from the update rule. In deeplearning4j, AdaDelta is <code>Updater.ADADELTA</code>.</p>
+<h2 id="RMSProp"><a href="#RMSProp" class="headerlink" title="RMSProp"></a>RMSProp</h2><p>RMSProp is another alternative to resolve AdaGrad’s radically diminishing learning rates, it is identical to the first update vector of AdaDelta$$E[g^{2}]_{t}:=0.9\centerdot E[g^{2}]_{t-1}+0.1\centerdot g_{t}^{2}\\\boldsymbol{\theta}_{t+1}:=\boldsymbol{\theta}_{t}-\frac{\eta\centerdot g_{t}}{\sqrt{E[g^{2}]_{t}+\epsilon}}$$RMSprop as well divides the learning rate by an exponentially decaying average of squared gradients. In practice, $\alpha$ equals to 0.9, and $\eta$ equals to 0.001 are good default values.</p>
+<p>In deeplearning4j, RMSProp is <code>Updater.RMSPROP</code>.</p>
+<h2 id="Adam"><a href="#Adam" class="headerlink" title="Adam"></a>Adam</h2><p>Adaptive Moment Estimation (Adam) is another method that computes adaptive learning rates for each parameter. In addition to storing an exponentially decaying average of past squared gradients $v_{t}$, Adam also keeps an exponentially decaying average of past gradients $m_{t}$:$$m_{t}=\beta_{1}m_{t-1}+(1-\beta_{1})g_{t}\\v_{t}=\beta_{2}v_{t-1}+(1-\beta_{2})g_{t}^{2}$$where $m_{t}$ and $v_{t}$ are estimates of the first moment (the mean) and the second moment (the uncentered variance) of the gradients respectively, then correcting the biaes by computing bias-corrected first and second moment estimates:$$\hat{m}_{t}=\frac{m_{t}}{1-\beta_{1}^{t}}\\\hat{v}_{t}=\frac{v_{t}}{1-\beta_{2}^{t}}$$then use these to update the parameter yield the Adam update rule:$$\boldsymbol{\theta}_{t+1}=\boldsymbol{\theta}_{t}-\frac{\eta\centerdot\hat{m}_{t}}{\sqrt{\hat{v}_{t}+\epsilon}}$$Normally, in practice, $\beta_{1}=0.9$, $\beta_{2}=0.999$ and $\epsilon=10^{-8}$. In deeplearning4j, Adam is <code>Updater.ADAM</code>.</p>
+<h2 id="kSGD"><a href="#kSGD" class="headerlink" title="kSGD"></a>kSGD</h2><p>Kalman-based Stochastic Gradient Descent (kSGD) is an online and offline algorithm for learning parameters from statistical problems from quasi-likelihood models, which include linear models, non-linear models, generalized linear models, and neural networks with squared error loss as special cases. The benefits of kSGD is not sensitive to the condition number of the problem and as a robust choice of hyperparameters as well as has a stopping condition. The drawbacks of kSGD is that the algorithm requires storing a dense covariance matrix between iterations, and requires a matrix-vector product at each iteration. More details please visit its Wikipedia – <a href="https://en.wikipedia.org/wiki/Stochastic_gradient_descent#kSGD" target="_blank" rel="noopener">[link]</a></p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>Generally, SGD is totally depends on the gradient of current batch, so it is hard to choose a reasonable learning rate, and it uses the same learning rate for all parameters, which is not suitable for sparse data/features. Moreover, SGD can be captured by local minimum easily or be trapped in saddle point.</p>
+<p>Momentum is a way to speed up SGD, reduce oscillation and gain faster convergence. In the initial period, it uses the update parameter of last stage to keep the same descent diretion, and speed up by multiple a large $\alpha$ (momentum factor); In the middle and later periods, when the value osillates around the local minimum, and gradient tends to zero, it enlarges the update amplitude to jump out of the trap; What’s more, when the gradient changes the direction, it inhibits the update.</p>
+<p>Nesterov plays a role of correction function when the gradient updates, which avoids the gradient goes forward too fast and increases the sensitivity.</p>
+<p>AdaGrad acts as a constraint for learning rate. when the gradient is small in the initial period, the constraint term is large, which is able to magnify the gradient, and when the gradient is large in the later period, the constraint term is small, which restrains the gradient. And it is suitable for handling sparse gradient. However, it relys on the pre-set learning rate $\eta$, if the $\eta$ is too large, which makes contraint term hypersensitive, overamplifies the gradient in the initial period, and makes the gradient tends to zero in the later period and causes the training process terminates early.</p>
+<p>AdaDelta is an improvement of AdaGrad, which has good acceleration effect in the prelimilary and middle periods, while in the later period, it ossilates at local minimum.</p>
+<p>RMSProp can be treated as a particular case of AdaDelta, but it relys on the global learning rate. RMSProp is suitable for non-stationary target and performs well on RNNs.</p>
+<p>Adam combines the merit of AdaGrad, which is good at dealing with sparse gradient, and the merit of RMSProp, which is good at handling non-stationary target, it uses different adaptive learning rates for different parameters. So it is suitable in most non-convex optimization and also appropriate for big dataset and high-dimensional space.</p>
+<p>In summary, RMSprop is an extension of Adagrad that deals with its radically diminishing learning rates. It is identical to Adadelta, except that Adadelta uses the RMS of parameter updates in the numinator update rule. Adam, finally, adds bias-correction and momentum to RMSprop. Insofar, RMSprop, Adadelta, and Adam are very similar algorithms that do well in similar circumstances. Some researchers show that its bias-correction helps Adam slightly outperform RMSprop towards the end of optimization as gradients become sparser. Insofar, Adam might be the best overall choice (AdaMax and NAdam are two variants of Adam, which asserts that the performance is better than Adam).</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="https://arxiv.org/pdf/1609.04747.pdf" target="_blank" rel="noopener">An overview of gradient descent optimization algorithms</a></li>
+<li><a href="http://cs231n.github.io/neural-networks-3/" target="_blank" rel="noopener">CS231n – Neural Networks Part 3: Learning and Evaluation</a></li>
+<li><a href="http://sebastianruder.com/optimizing-gradient-descent/index.html" target="_blank" rel="noopener">Sebastian Ruder’s Blog</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Gradient_descent" target="_blank" rel="noopener">Gradient Descent – Wikipedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Stochastic_gradient_descent" target="_blank" rel="noopener">Stochastic Gradient Descent – Wikipedia</a></li>
+<li><a href="http://blog.csdn.net/u012759136/article/details/52302426" target="_blank" rel="noopener">深度学习优化方法总结比较</a></li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/05/29/parameter-update-methods/" title="Parameter Update Algorithms in Artificial Neural Networks">https://isaacchanghau.github.io/2017/05/29/parameter-update-methods/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/deeplearning4j/" rel="tag"># deeplearning4j</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/24/Weight-Initialization-in-Artificial-Neural-Networks/" rel="next" title="Weight Initialization in Artificial Neural Networks">
+                <i class="fa fa-chevron-left"></i> Weight Initialization in Artificial Neural Networks
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/07/Loss-Functions-in-Artificial-Neural-Networks/" rel="prev" title="Loss Functions in Artificial Neural Networks">
+                Loss Functions in Artificial Neural Networks <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Gradient-Descent-Optimization-Algorithm"><span class="nav-number">1.</span> <span class="nav-text">Gradient Descent Optimization Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vanilla-Gradient-Descent"><span class="nav-number">1.1.</span> <span class="nav-text">Vanilla Gradient Descent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stochastic-Gradient-Descent"><span class="nav-number">1.2.</span> <span class="nav-text">Stochastic Gradient Descent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mini-batch-Stochastic-Gradient-Descent"><span class="nav-number">1.3.</span> <span class="nav-text">Mini-batch (Stochastic) Gradient Descent</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Parameter-Update-Methods"><span class="nav-number">2.</span> <span class="nav-text">Parameter Update Methods</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Momentum"><span class="nav-number">2.1.</span> <span class="nav-text">Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nesterov-Momentum"><span class="nav-number">2.2.</span> <span class="nav-text">Nesterov Momentum</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AdaGrad"><span class="nav-number">2.3.</span> <span class="nav-text">AdaGrad</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AdaDelta"><span class="nav-number">2.4.</span> <span class="nav-text">AdaDelta</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RMSProp"><span class="nav-number">2.5.</span> <span class="nav-text">RMSProp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adam"><span class="nav-number">2.6.</span> <span class="nav-text">Adam</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kSGD"><span class="nav-number">2.7.</span> <span class="nav-text">kSGD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Conclusion"><span class="nav-number">2.8.</span> <span class="nav-text">Conclusion</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">3.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

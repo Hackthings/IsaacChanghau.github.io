@@ -1,0 +1,1236 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="deep learning,machine learning,deeplearning4j,loss functions," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Loss function is an important part in artificial neural networks, which is used to measure the inconsistency between">
+<meta name="keywords" content="deep learning,machine learning,deeplearning4j,loss functions">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Loss Functions in Artificial Neural Networks">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/06/07/Loss-Functions-in-Artificial-Neural-Networks/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="Loss function is an important part in artificial neural networks, which is used to measure the inconsistency between">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-01-30T08:32:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Loss Functions in Artificial Neural Networks">
+<meta name="twitter:description" content="Loss function is an important part in artificial neural networks, which is used to measure the inconsistency between">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/06/07/Loss-Functions-in-Artificial-Neural-Networks/"/>
+
+
+
+
+
+  <title>Loss Functions in Artificial Neural Networks | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/06/07/Loss-Functions-in-Artificial-Neural-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Loss Functions in Artificial Neural Networks</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-07T11:03:29+08:00">
+                2017-06-07
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:32:09+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 2,709 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 17 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Loss function is an important part in artificial neural networks, which is used to measure the inconsistency between<a id="more"></a> predicted value ($\hat{y}$) and actual label ($y$). It is a non-negative value, where the robustness of model increases along with the decrease of the value of loss function. Loss function is the hard core of empirical risk function as well as a significant component of structural risk function. Generally, the structural risk function of a model is consist of empirical risk term and regularization term, which can be represented as$$\boldsymbol{\theta}^{*}=\arg\min_{\boldsymbol{\theta}}\boldsymbol{\mathcal{L}}(\boldsymbol{\theta})+\lambda\centerdot\Phi(\boldsymbol{\theta})=\arg\min_{\boldsymbol{\theta}}\frac{1}{n}\sum_{i=1}^{n}L\big(y^{(i)},\hat{y}^{(i)}\big)+\lambda\centerdot\Phi(\boldsymbol{\theta})\\=\arg\min_{\boldsymbol{\theta}}\frac{1}{n}\sum_{i=1}^{n}L\big(y^{(i)},f(\mathbf{x}^{(i)},\boldsymbol{\theta})\big)+\lambda\centerdot\Phi(\boldsymbol{\theta})$$where $\Phi(\boldsymbol{\theta})$ is the regularization term or penalty term, $\boldsymbol{\theta}$ is the parameters of model to be learned, $f(\centerdot)$ represents the activation function and $\mathbf{x}^{(i)}=\{x_{1}^{(i)},x_{2}^{(i)},\dots ,x_{m}^{(i)}\}\in\mathbb{R}^{m}$ denotes the a training sample.</p>
+<p>Here we only concentrate on the empirical risk term (loss function)$$\boldsymbol{\mathcal{L}}(\boldsymbol{\theta})=\frac{1}{n}\sum_{i=1}^{n}L\big(y^{(i)},f(\mathbf{x}^{(i)},\boldsymbol{\theta})\big)$$and introduce the mathematical expressions of several commonly-used loss functions as well as the corresponding expression in DeepLearning4J.</p>
+<h2 id="Mean-Squared-Error"><a href="#Mean-Squared-Error" class="headerlink" title="Mean Squared Error"></a>Mean Squared Error</h2><p>Mean Squared Error (MSE), or quadratic, loss function is widely used in <strong>linear regression</strong> as the performance measure, and the method of minimizing MSE is called <a href="https://www.google.com.sg/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;cad=rja&amp;uact=8&amp;ved=0ahUKEwiN-NPR9KrUAhULLY8KHQUoA78QFgggMAA&amp;url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FOrdinary_least_squares&amp;usg=AFQjCNGjRFY81dNPzK-FdcrrRmcRn1mknA" target="_blank" rel="noopener">Ordinary Least Squares (OSL)</a>, the basic principle of OSL is that the optimized fitting line should be a line which minimizes the sum of distance of each point to the regression line, i.e., minimizes the quadratic sum. The standard form of MSE loss function is defined as$$\boldsymbol{\mathcal{L}}=\frac{1}{n}\sum_{i=1}^{n}(y^{(i)}-\hat{y}^{(i)})^{2}$$where $(y^{(i)}-\hat{y}^{(i)})$ is named as residual, and the target of MSE loss function is to minimize the residual sum of squares. In DeepLearning4J, it is <code>LossFunctions.LossFunction.MSE</code> or <code>LossFunctions.LossFunction.SQUARED_LOSS</code> (they are same in DL4J). However, if using <a href="https://isaacchanghau.github.io/2017/05/12/Activation-Functions-in-Artificial-Neural-Networks/#Sigmoid-Units">Sigmoid</a> as the activation function, the quadratic loss function would suffer the problem of slow convergence (learning speed), for other activation funtions, it would not have such problem.</p>
+<p>For example, by using Sigmoid, $\hat{y}^{(i)}=\sigma(\mathbf{z}^{(i)})=\sigma(\boldsymbol{\theta}^{T}\mathbf{x}^{(i)})$, simply, we only consider one sample, say, $(y-\sigma(\mathbf{z}))^{2}$, and it derivative is computed by$$\frac{\partial\boldsymbol{\mathcal{L}}}{\partial\boldsymbol{\theta}}=-(y-\sigma(\mathbf{z}))\centerdot\sigma’(\mathbf{z})\centerdot\mathbf{x}$$according to the shape and feature of Sigmoid (see my another blog: <a href="https://isaacchanghau.github.io/2017/05/12/Activation-Functions-in-Artificial-Neural-Networks/">Activation Functions in Artificial Neural Networks</a>), when $\sigma(\mathbf{z})$ tends to 0 or 1, $\sigma’(\mathbf{z})$ is close to zero, and when $\sigma(\mathbf{z})$ close to 0.5, $\sigma’(\mathbf{z})$ will reach it maximum. In this case, when the difference between predicted value and true label $(y-\sigma(\mathbf{z}))$ is large, $\sigma’(\mathbf{z})$ will close to 0, which decreases the convergence speed, this is improper, since we expect that the learning speed should be fast when the error is large.</p>
+<h2 id="Mean-Squared-Logarithmic-Error"><a href="#Mean-Squared-Logarithmic-Error" class="headerlink" title="Mean Squared Logarithmic Error"></a>Mean Squared Logarithmic Error</h2><p>Mean Squared Logarithmic Error (MSLE) loss function is a variant of MSE, which is defined as$$\boldsymbol{\mathcal{L}}=\frac{1}{n}\sum_{i=1}^{n}\big(\log(y^{(i)}+1)-\log(\hat{y}^{(i)}+1)\big)^{2}$$MSLE is also used to measure the different between actual and predicted. By taking the log of the predictions and actual values, what changes is the variance that you are measuring. <strong>It is usually used when you do not want to penalize huge differences in the predicted and the actual values when both predicted and true values are huge numbers</strong>. Another thing is that MSLE penalizes under-estimates more than over-estimates.</p>
+<ol>
+<li>If both predicted and actual values are small: MSE and MSLE is same.</li>
+<li>If either predicted or the actual value is big: $MSE &gt; MSLE$.</li>
+<li>If both predicted and actual values are big: $MSE &gt; MSLE$ (MSLE becomes almost negligible).</li>
+</ol>
+<p>In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.MEAN_SQUARED_LOGARITHMIC_ERROR</code>.</p>
+<h2 id="L2"><a href="#L2" class="headerlink" title="L2"></a>L2</h2><p>L2 loss function is the square of the L2 norm of the difference between actual value and predicted value. It is mathematically similar to MSE, only do not have division by $n$, it is computed by$$\boldsymbol{\mathcal{L}}=\sum_{i=1}^{n}(y^{(i)}-\hat{y}^{(i)})^{2}$$For more details, typically in mathematic, please read the paper: <a href="https://www.google.com.sg/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;uact=8&amp;ved=0ahUKEwiBuM6-n6vUAhWKchQKHcJSC1QQFggmMAE&amp;url=https%3A%2F%2Farxiv.org%2Fpdf%2F1702.05659&amp;usg=AFQjCNGQljo6wRaMCbNSQKyMvepxGInZIQ" target="_blank" rel="noopener">On Loss Functions for Deep Neural Networks in Classification</a>, which gives comprehensive explanation about several commomly-used loss functions, including L2, L1 loss function.</p>
+<p>In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.L2</code>.</p>
+<h2 id="Mean-Absolute-Error"><a href="#Mean-Absolute-Error" class="headerlink" title="Mean Absolute Error"></a>Mean Absolute Error</h2><p>Mean Absolute Error (MAE) is a quantity used to measure how close forecasts or predictions are to the eventual outcomes, which is computed by$$\boldsymbol{\mathcal{L}}=\frac{1}{n}\sum_{i=1}^{n}\big\lvert y^{(i)}-\hat{y}^{(i)}\big\rvert$$where $\lvert\centerdot\rvert$ denotes the absolute value. Albeit, both MSE and MAE are used in predictive modeling, there are several differences between them. MSE has nice mathematical properties which makes it easier to compute the gradient. However, MAE requires more complicated tools such as linear programming to compute the gradient. Because of the square, large errors have relatively greater influence on MSE than do the smaller error. Therefore, MAE is more robust to outliers since it does not make use of square. On the other hand, MSE is more useful if concerning about large errors whose consequences are much bigger than equivalent smaller ones. MSE also corresponds to maximizing the likelihood of Gaussian random variables.</p>
+<p>In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.MEAN_ABSOLUTE_ERROR</code>.</p>
+<h2 id="Mean-Absolute-Percentage-Error"><a href="#Mean-Absolute-Percentage-Error" class="headerlink" title="Mean Absolute Percentage Error"></a>Mean Absolute Percentage Error</h2><p>Mean Absolute Percentage Error (MAPE) is a variant of MAE, it is computed by$$\boldsymbol{\mathcal{L}}=\frac{1}{n}\sum_{i=1}^{n}\bigg\lvert\frac{y^{(i)}-\hat{y}^{(i)}}{y^{(i)}}\bigg\rvert\centerdot100$$Although the concept of MAPE sounds very simple and convincing, it has major drawbacks in practical application:</p>
+<ol>
+<li>It cannot be used if there are zero values (which sometimes happens for example in demand data) because there would be a division by zero.</li>
+<li>For forecasts which are too low the percentage error cannot exceed $100%$, but for forecasts which are too high there is no upper limit to the percentage error.</li>
+<li>When MAPE is used to compare the accuracy of prediction methods it is biased in that it will systematically select a method whose forecasts are too low. This little-known but serious issue can be overcome by using an accuracy measure based on the ratio of the predicted to actual value (called the Accuracy Ratio), this approach leads to superior statistical properties and leads to predictions which can be interpreted in terms of the geometric mean.</li>
+</ol>
+<p>In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.MEAN_ABSOLUTE_PERCENTAGE_ERROR</code>.</p>
+<h2 id="L1"><a href="#L1" class="headerlink" title="L1"></a>L1</h2><p>L1 loss function is sum of absolute errors of the difference between actual value and predicted value. Similar to the relation between MSE and L2, L1 is mathematically similar to MAE, only do not have division by $n$, and it is defined as$$\boldsymbol{\mathcal{L}}=\sum_{i=1}^{n}\big\lvert y^{(i)}-\hat{y}^{(i)}\big\rvert$$In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.L1</code>.</p>
+<h2 id="Kullback-Leibler-KL-Divergence"><a href="#Kullback-Leibler-KL-Divergence" class="headerlink" title="Kullback Leibler (KL) Divergence"></a>Kullback Leibler (KL) Divergence</h2><p>KL Divergence, also known as relative entropy, information divergence/gain, is a measure of how one probability distribution diverges from a second expected probability distribution. KL divergence loss function is computed by$$\boldsymbol{\mathcal{L}}=\frac{1}{n}\sum_{i=1}^{n}\mathcal{D}_{KL}(y^{(i)}||\hat{y}^{(i)})=\frac{1}{n}\sum_{i=1}^{n}\big[y^{(i)}\centerdot\log\big(\frac{y^{(i)}}{\hat{y}^{(i)}}\big)\big]\\=\underbrace{\frac{1}{n}\sum_{i=1}^{n}\big(y^{(i)}\centerdot\log(y^{(i)})\big)}_{\boldsymbol{entropy}}\underbrace{-\frac{1}{n}\sum_{i=1}^{n}\big(y^{(i)}\centerdot\log(\hat{y}^{(i)})\big)}_{\boldsymbol{cross-entropy}}$$where the first term is <strong>entropy</strong> and another is <strong>cross entropy</strong> (another kind of loss function which will be introduced later). KL divergence is a distribution-wise asymmetric measure and thus does not qualify as a statistical metric of spread. In the simple case, a KL divergence of 0 indicates that we can expect similar, if not the same, behavior of two different distributions, while a KL divergence of 1 indicates that the two distributions behave in such a different manner that the expectation given the first distribution approaches zero. For more details, please visit the wikipedia: <a href="https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence" target="_blank" rel="noopener">[link]</a>.</p>
+<p>In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.KL_DIVERGENCE</code>. Moreover, the implementation of <a href="https://en.wikipedia.org/wiki/Cross_entropy" target="_blank" rel="noopener">Reconstruction Cross Entropy</a> in DeepLearning4J is same as Kullback Leibler (KL) Divergence, thus, you can also use <code>LossFunctions.LossFunction.RECONSTRUCTION_CROSSENTROPY</code>.</p>
+<h2 id="Cross-Entropy"><a href="#Cross-Entropy" class="headerlink" title="Cross Entropy"></a>Cross Entropy</h2><p>Cross Entropy is commonly-used in <strong>binary classification</strong> (labels are assumed to take values 0 or 1) as a loss function (For multi-classification, use <strong>Multi-class Cross Entropy</strong>), which is computed by$$\boldsymbol{\mathcal{L}}=-\frac{1}{n}\sum_{i=1}^{n}\big[y^{(i)}\log(\hat{y}^{(i)})+(1-y^{(i)})\log(1-\hat{y}^{(i)})\big]$$Cross entropy measures the divergence between two probability distribution, if the cross entropy is large, which means that the difference between two distribution is large, while if the cross entropy is small, which means that two distribution is similar to each other. As we have mentioned in MSE that it suffers slow divergence when using Sigmoid as activation function, here the cross entropy does not have such problem. Samely, $\hat{y}^{(i)}=\sigma(\mathbf{z}^{(i)})=\sigma(\boldsymbol{\theta}^{T}\mathbf{x}^{(i)})$, and we only consider one training sample, by using Sigmoid, we have $\boldsymbol{\mathcal{L}}=y\log(\sigma(\mathbf{z}))+(1-y)\log(1-\sigma(\mathbf{z}))$, and compute it derivative as$$\frac{\partial\boldsymbol{\mathcal{L}}}{\partial\boldsymbol{\theta}}=(y-\sigma(\mathbf{z}))\centerdot\mathbf{x}$$compare to the derivative in MSE, it eliminates the term $\sigma’(\mathbf{z})$, where the learning speed is only controlled by $(y-\sigma(\mathbf{z}))$. In this case, when the difference between predicted value and actual value is large, the learning speed, i.e., convergence speed, is fast, otherwise, the difference is small, the learning speed is small, this is our expectation. Generally, comparing to quadratic cost function, cross entropy cost function has the advantages that fast convergence and is more likely to reach the global optimization (like the <a href="https://isaacchanghau.github.io/2017/05/29/parameter-update-methods/#Momentum">momentum</a>, it increases the update step). For the mathematical details, see wikipedia: <a href="https://en.wikipedia.org/wiki/Cross_entropy" target="_blank" rel="noopener">[link]</a>.</p>
+<p>In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.XENT</code>. For multi-classification, it is better use <code>LossFunctions.LossFunction.MCXENT</code>.</p>
+<h2 id="Negative-Logarithmic-Likelihood"><a href="#Negative-Logarithmic-Likelihood" class="headerlink" title="Negative Logarithmic Likelihood"></a>Negative Logarithmic Likelihood</h2><p>Negative Log Likelihood loss function is widely used in neural networks, it measures the accuracy of a classifier. It is used when the model outputs a probability for each class, rather than just the most likely class. It  is a “soft” measurement of accuracy that incorporates the idea of probabilistic confidence. It is intimately tied to information theory. And it is similar to cross entropy (in binary classification) or multi-class cross entropy (in multi-classification) mathematically. Negative log likelihood is computed by$$\boldsymbol{\mathcal{L}}=-\frac{1}{n}\sum_{i=1}^{n}\log(\hat{y}^{(i)})$$More details about Negative Log Likelihood and the relation of KL Divergence, Cross Entropy and Negative Log Likelihood, you can visit this post: <a href="https://quantivity.wordpress.com/2011/05/23/why-minimize-negative-log-likelihood/" target="_blank" rel="noopener">[link]</a>.</p>
+<p>In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD</code>. Actually, in DL4J, the implementation of <code>MCXENT</code> and <code>NEGATIVELOGLIKELIHOOD</code> is same, since they have almost the mathematically samilar expressions.</p>
+<h2 id="Poisson"><a href="#Poisson" class="headerlink" title="Poisson"></a>Poisson</h2><p>Poisson loss function is a measure of how the predicted distribution diverges from the expected distribution, the poisson as loss function is a variant from <a href="https://en.wikipedia.org/wiki/Poisson_regression" target="_blank" rel="noopener">Poisson Distribution</a>, where the poisson distribution is widely used for modeling count data. It can be shown to be the limiting distribution for a normal approximation to a binomial where the number of trials goes to infinity and the probability goes to zero and both happen at such a rate that np is equal to some mean frequency for the process. In DL4J, the poisson loss function is computed by$$\boldsymbol{\mathcal{L}}=\frac{1}{n}\sum_{i=1}^{n}\big(\hat{y}^{(i)}-y^{(i)}\centerdot\log(\hat{y}^{(i)})\big)$$</p>
+<p>In DL4J, it is expressed as <code>LossFunctions.LossFunction.POISSON</code>. Moreover, the implementation of <a href="https://math.stackexchange.com/questions/101481/calculating-maximum-likelihood-estimation-of-the-exponential-distribution-and-pr" target="_blank" rel="noopener">Exponential Log Likelihood</a> in DeepLearning4J is same as Poisson, so you can also use <code>LossFunctions.LossFunction.EXPLL</code>.</p>
+<h2 id="Cosine-Proximity"><a href="#Cosine-Proximity" class="headerlink" title="Cosine Proximity"></a>Cosine Proximity</h2><p>Cosine Proximity loss function computes the cosine proximity between predicted value and actual value, which is defined as$$\boldsymbol{\mathcal{L}}=-\frac{\mathbf{y}\centerdot\mathbf{\hat{y}}}{||\mathbf{y}||_{2}\centerdot||\mathbf{\hat{y}}||_{2}}=-\frac{\sum_{i=1}^{n}y^{(i)}\centerdot\hat{y}^{(i)}}{\sqrt{\sum_{i=1}^{n}\big(y^{(i)}\big)^{2}}\centerdot\sqrt{\sum_{i=1}^{n}\big(\hat{y}^{(i)}\big)^{2}}}$$where $\mathbf{y}=\{y^{(1)},y^{(2)},\dots,y^{(n)}\}\in\mathbb{R}^{n}$, and $\mathbf{\hat{y}}=\{\hat{y}^{(1)},\hat{y}^{(2)},\dots,\hat{y}^{(n)}\}\in\mathbb{R}^{n}$. It is same as <a href="https://en.wikipedia.org/wiki/Cosine_similarity" target="_blank" rel="noopener">Cosine Similarity</a>, which is a measure of similarity between two non-zero vectors of an inner product space that measures the cosine of the angle between them. In this case, note that unit vectors are maximally “similar” if they’re parallel and maximally “dissimilar” if they’re orthogonal (perpendicular). This is analogous to the cosine, which is unity (maximum value) when the segments subtend a zero angle and zero (uncorrelated) when the segments are perpendicular.</p>
+<p>In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.COSINE_PROXIMITY</code>.</p>
+<h2 id="Hinge"><a href="#Hinge" class="headerlink" title="Hinge"></a>Hinge</h2><p>Hinge Loss, also known as max-margin objective, is a loss function used for training classifiers. The hinge loss is used for “maximum-margin” classification, most notably for <a href="https://en.wikipedia.org/wiki/Support_vector_machine" target="_blank" rel="noopener">support vector machines (SVMs)</a>. For an intended output $y^{(i)}=\pm 1$, i.e., binary classification and a classifier score $\hat{y}^{(i)}$, the hinge loss of the prediction y is defined as$$\boldsymbol{\mathcal{L}}=\frac{1}{n}\sum_{i=1}^{n}\max(0,1-y^{(i)}\centerdot\hat{y}^{(i)})$$Note that $\hat{y}^{(i)}$ should be the “raw” output of the classifier’s decision function, not the predicted class label. It can be seen that when $y^{(i)}$ and $\hat{y}^{(i)}$ have the same sign (meaning $\hat{y}^{(i)}$ predicts the right class) and $|\hat{y}^{(i)}|&gt;1$, the hinge loss equals to zero, but when they have opposite sign, hinge loss increases linearly with $\hat{y}^{(i)}$ (one-sided error). And in DeepLearning4J, this formula is expressed as <code>LossFunctions.LossFunction.HINGE</code> (in ND4J codes, the <code>HINGE</code> loss function is implemented by the formula above). However, there is a more general expression$$\boldsymbol{\mathcal{L}}=\frac{1}{n}\sum_{i=1}^{n}\max(0,m-y^{(i)}\centerdot\hat{y}^{(i)})$$where $m$ (margin) is a customized value. More details about extending to multi-classification, optimization, you can visit Hinge loss’s wikipedia: <a href="https://en.wikipedia.org/wiki/Hinge_loss" target="_blank" rel="noopener">[link]</a>.</p>
+<h2 id="Squared-Hinge"><a href="#Squared-Hinge" class="headerlink" title="Squared Hinge"></a>Squared Hinge</h2><p><a href="http://ntu.csie.org/~cjlin/papers/l2mcsvm/l2mcsvm.pdf" target="_blank" rel="noopener">Squared Hinge Loss function</a> is a variant of Hinge Loss, it solves the problem in hinge loss that the derivative of hinge loss has a discontinuity at $y^{(i)}\centerdot\hat{y}^{(i)}=1$. Squared Hinge Loss is computed by$$\boldsymbol{\mathcal{L}}=\frac{1}{n}\sum_{i=1}^{n}\big(\max(0,1-y^{(i)}\centerdot\hat{y}^{(i)})\big)^{2}$$ as the definition in DL4J. In DeepLearning4J, it is expressed as <code>LossFunctions.LossFunction.SQUARED_HINGE</code>.</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a href="https://www.google.com.sg/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=2&amp;cad=rja&amp;uact=8&amp;ved=0ahUKEwiBuM6-n6vUAhWKchQKHcJSC1QQFggmMAE&amp;url=https%3A%2F%2Farxiv.org%2Fpdf%2F1702.05659&amp;usg=AFQjCNGQljo6wRaMCbNSQKyMvepxGInZIQ" target="_blank" rel="noopener">On Loss Functions for Deep Neural Networks in Classification</a></li>
+<li><a href="http://courses.cms.caltech.edu/cs253/slides/cs253-14-GPs.pdf" target="_blank" rel="noopener">Loss functions</a></li>
+<li><a href="https://github.com/deeplearning4j/nd4j/tree/master/nd4j-backends/nd4j-api-parent/nd4j-api/src/main/java/org/nd4j/linalg/lossfunctions" target="_blank" rel="noopener">ND4J Loss Functions</a></li>
+<li><a href="https://keras.io/losses/" target="_blank" rel="noopener">Losses - Keras Documentation</a></li>
+<li><a href="https://www.quora.com/What-is-the-difference-between-an-RMSE-and-RMSLE-logarithmic-error-and-does-a-high-RMSE-imply-low-RMSLE" target="_blank" rel="noopener">What is the difference between an RMSE and RMSLE</a></li>
+<li><a href="http://www.csuldw.com/2016/03/26/2016-03-26-loss-function/" target="_blank" rel="noopener">Machine Learning-Loss Function</a></li>
+<li><a href="http://blog.csdn.net/xmdxcsj/article/details/50210451" target="_blank" rel="noopener">Neural Network-Loss Function</a></li>
+<li><a href="https://hit-scir.gitbooks.io/neural-networks-and-deep-learning-zh_cn/content/chap3/c3s1.html" target="_blank" rel="noopener">Cross Entropy Cost Function</a></li>
+<li><a href="https://www.quora.com/What-is-the-difference-between-squared-error-and-absolute-error" target="_blank" rel="noopener">What is the difference between squared error and absolute error?</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Mean_absolute_percentage_error" target="_blank" rel="noopener">Mean Absolute Percentage Error</a></li>
+<li><a href="http://timvieira.github.io/blog/post/2014/10/06/kl-divergence-as-an-objective-function/" target="_blank" rel="noopener">KL-divergence as an objective function</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Poisson_regression" target="_blank" rel="noopener">Poisson regression</a></li>
+<li><a href="http://ntu.csie.org/~cjlin/papers/l2mcsvm/l2mcsvm.pdf" target="_blank" rel="noopener">A Study on L2-Loss (Squared Hinge-Loss) Multi-Class SVM</a></li>
+<li><a href="https://quantivity.wordpress.com/2011/05/23/why-minimize-negative-log-likelihood/" target="_blank" rel="noopener">Why Minimize Negative Log Likelihood?</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/06/07/Loss-Functions-in-Artificial-Neural-Networks/" title="Loss Functions in Artificial Neural Networks">https://isaacchanghau.github.io/2017/06/07/Loss-Functions-in-Artificial-Neural-Networks/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/deeplearning4j/" rel="tag"># deeplearning4j</a>
+          
+            <a href="/tags/loss-functions/" rel="tag"># loss functions</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/29/parameter-update-methods/" rel="next" title="Parameter Update Algorithms in Artificial Neural Networks">
+                <i class="fa fa-chevron-left"></i> Parameter Update Algorithms in Artificial Neural Networks
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/13/Understanding-LSTM-Networks/" rel="prev" title="Understanding LSTM Networks [Reprinted]">
+                Understanding LSTM Networks [Reprinted] <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mean-Squared-Error"><span class="nav-number">1.</span> <span class="nav-text">Mean Squared Error</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mean-Squared-Logarithmic-Error"><span class="nav-number">2.</span> <span class="nav-text">Mean Squared Logarithmic Error</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#L2"><span class="nav-number">3.</span> <span class="nav-text">L2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mean-Absolute-Error"><span class="nav-number">4.</span> <span class="nav-text">Mean Absolute Error</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mean-Absolute-Percentage-Error"><span class="nav-number">5.</span> <span class="nav-text">Mean Absolute Percentage Error</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#L1"><span class="nav-number">6.</span> <span class="nav-text">L1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kullback-Leibler-KL-Divergence"><span class="nav-number">7.</span> <span class="nav-text">Kullback Leibler (KL) Divergence</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cross-Entropy"><span class="nav-number">8.</span> <span class="nav-text">Cross Entropy</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Negative-Logarithmic-Likelihood"><span class="nav-number">9.</span> <span class="nav-text">Negative Logarithmic Likelihood</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Poisson"><span class="nav-number">10.</span> <span class="nav-text">Poisson</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cosine-Proximity"><span class="nav-number">11.</span> <span class="nav-text">Cosine Proximity</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hinge"><span class="nav-number">12.</span> <span class="nav-text">Hinge</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Squared-Hinge"><span class="nav-number">13.</span> <span class="nav-text">Squared Hinge</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reference"><span class="nav-number">14.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1297 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="machine learning,python,boosting,random forest,bagging,decision tree," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="第八章-集成学习 (Ensemble Learning)">
+<meta name="keywords" content="machine learning,python,boosting,random forest,bagging,decision tree">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习(周志华)--学习笔记(四) 集成学习(Ensemble Learning)">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/08/08/机器学习-周志华-学习笔记-4/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="第八章-集成学习 (Ensemble Learning)">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/machinelearning/ensemble/1.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/machinelearning/ensemble/2.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/machinelearning/ensemble/3.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/machinelearning/ensemble/4.png">
+<meta property="og:updated_time" content="2017-09-21T09:04:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="机器学习(周志华)--学习笔记(四) 集成学习(Ensemble Learning)">
+<meta name="twitter:description" content="第八章-集成学习 (Ensemble Learning)">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/machinelearning/ensemble/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/08/08/机器学习-周志华-学习笔记-4/"/>
+
+
+
+
+
+  <title>机器学习(周志华)--学习笔记(四) 集成学习(Ensemble Learning) | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/08/08/机器学习-周志华-学习笔记-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">机器学习(周志华)--学习笔记(四) 集成学习(Ensemble Learning)</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-08T15:18:38+08:00">
+                2017-08-08
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2017-09-21T17:04:33+08:00" content="2017-09-21">
+                  2017-09-21
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 8,643 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 37 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>第八章-集成学习 (Ensemble Learning)<a id="more"></a></p>
+<h1 id="个体与集成"><a href="#个体与集成" class="headerlink" title="个体与集成"></a>个体与集成</h1><p>集成学习 (ensemble learning) 通过构建并结合多个学习器来完成学习任务，也被称为多分类器系统 (multi-classifier system)、基于委员会的学习 (committee-based learning) 等。 下图展示了集成学习的一般结构：先产生一组“个体学习器” (individual learner)，再用某种策略将它们结合。若集成中只包含同种类型的个体学习器，这样的集成是“同质的” (homogeneous)，同质集成中的个体学习器称为“基学习器” (base learner)，相应的学习算法称为“基学习算法” (base learning algorithm)。集成也可以包含不同类型的个体学习器，即“异质的” (heterogenous)。异质集成中的个体学习器由不同的学习算法生成，此时不再有基学习算法，而个体学习器也常称为“组件学习器” (component learner)。<br><img src="/images/machinelearning/ensemble/1.png" alt="1.png"><br>集成学习通过将多个学习器进行结合，通常可以获得比单一学习器显著优越的泛化性能。这对“弱学习器” (weak learner) 尤为明显。实际中，要获得好的集成，个体学习器通常应该“好二不同”，即个体学习器要有一定的“准确性”，并且要有“多样性”，即学习器间具有差异。如下图所示<br><img src="/images/machinelearning/ensemble/2.png" alt="2.png"><br>举个例子，考虑二分类问题 $y\in\{-1,+1\}$ 和真实函数 $\boldsymbol{f}$，假设基分类器的错误率为 $\epsilon$，即对每个基分类器 $h_{i}$ 有$$<br>P(h_{i}(\boldsymbol{x})\neq\boldsymbol{f}(\boldsymbol{x}))=\epsilon\tag{1}<br>$$假设集成通过简单投票法结合 $T$ 个基分类器，若有超过半数的基分类器正确，则集成分类就正确：$$<br>H(\boldsymbol{x})=sign\bigg(\sum_{i=1}^{T}h_{i}(\boldsymbol{x})\bigg)\tag{2}<br>$$假设基分类器的错误率相互独立，则由 <a href="https://en.wikipedia.org/wiki/Hoeffding%27s_inequality" target="_blank" rel="noopener">Hoeffding</a> 不等式可知，集成的错误率为$$<br>P(H(\boldsymbol{x})\neq\boldsymbol{f}(\boldsymbol{x}))=\sum_{k=0}^{\lfloor T/2\rfloor}{T\choose k}(1-\epsilon)^{k}\epsilon^{T-k}\leq\exp\big(-\frac{1}{2}T(1-2\epsilon)^{2}\big)\tag{3}<br>$$由上式可得，随着个体集成中个体分类器数目 $T$ 的增大，集成的错误率将指数级下降，最终趋向于零。上面的分析有一个关键假设：<strong><em>基学习器的误差相互独立</em></strong>。实际上，个体学习器是为解决同一个问题训练出来的，显然不能相互独立。而“准确性”和“多样性”本身就存在冲突，当准确性很高之后，增加多样性就需要牺牲准确性。<br>根据个体学习器的生成方式，集成学习大致分为两类：</p>
+<ul>
+<li>个体学习器间存在强依赖关系、必须串行生成的序列化方法，如 Boosting。</li>
+<li>个体学习器不存在强依赖关系、可同时生成的并行化方法，如 Bagging 和“随即森林” (Random Forest)。</li>
+</ul>
+<h1 id="Boosting"><a href="#Boosting" class="headerlink" title="Boosting"></a>Boosting</h1><p>Boosting 是一族可将弱学习器提升为强学习器的算法，其工作机制类似：先从初始训练集训练出一个基学习器，再根据基学习器的表现对训练样本进行调整，使得先前基学习器做错的训练样本在后续受到更多的关注，然后基于调整后的样本训练下一个基学习器，如此重复进行，直至基学习器达到事先指定的值 $T$，最终将这 $T$ 个基学习器进行加权结合。如 AdaBoost 算法，</p>
+<blockquote>
+<p>AdaBoost 算法<br>输入：训练集 $D=\{(\boldsymbol{x}_{1},y_{1}),\dots,(\boldsymbol{x}_{m},y_{m})\}$，$y\in\{-1,+1\}$；基学习算法 $\mathfrak{L}$；训练轮数 $T$。<br>过程：<br>$\qquad$$\mathcal{D}_{1}(\boldsymbol{x})=\frac{1}{m}$<br>$\qquad$<strong>for</strong> $t=1,2,\dots,T$ <strong>do</strong><br>$\qquad$$\qquad$$h_{t}=\mathfrak{L}(D,\mathcal{D}_{t})$<br>$\qquad$$\qquad$$\epsilon_{t}=P_{\boldsymbol{x}\sim\mathcal{D}_{t}}\big(h_{t}(\boldsymbol{x})\neq\boldsymbol{f}(\boldsymbol{x})\big)$<br>$\qquad$$\qquad$<strong>if</strong> $\epsilon_{t}&gt;0.5$ <strong>then break</strong>$\qquad$ (检测是否优于随机猜测)<br>$\qquad$$\qquad$$\alpha_{t}=\frac{1}{2}\ln\big(\frac{1-\epsilon_{t}}{\epsilon_{t}}\big)$<br>$\qquad$$\qquad$$\mathcal{D}_{t+1}(\boldsymbol{x})=\frac{\mathcal{D}_{t}(\boldsymbol{x})}{Z_{t}}\times\begin{cases}\exp(-\alpha_{t}), &amp; h_{t}(\boldsymbol{x})=\boldsymbol{f}(\boldsymbol{x})\\\exp(\alpha_{t}), &amp; h_{t}(\boldsymbol{x})\neq\boldsymbol{f}(\boldsymbol{x})\end{cases}=\frac{\mathcal{D}_{t}(\boldsymbol{x})\exp\big(-\alpha_{t}\boldsymbol{f}(\boldsymbol{x})h_{t}(\boldsymbol{x})\big)}{Z_{t}}$ ($Z_{t}$是规范化因子，确保$\mathcal{D}_{t+1}$是一个分布)<br>$\qquad$<strong>end for</strong><br>输出：$H(\boldsymbol{x})=sign\big(\sum_{t=1}^{T}\alpha_{t}h_{t}(\boldsymbol{x})\big)$</p>
+</blockquote>
+<p>AdaBoost 可以理解为一个“加性模型” (additive model)，即基学习器的线性组合$$<br>H(\boldsymbol{x})=\sum_{t=1}^{T}\alpha_{t}h_{t}(\boldsymbol{x})\tag{4}<br>$$来最小化指数损失函数 (exponential loss function)$$<br>\ell_{\exp}(H|\mathcal{D})=\mathbb{E}_{\boldsymbol{x}\sim\mathcal{D}}\big[e^{-\boldsymbol{f}(\boldsymbol{x})H(\boldsymbol{x})}\big]\tag{5}<br>$$若 $H(\boldsymbol{x})$ 能令指数损失函数最小化，则考虑式(5)对 $H(\boldsymbol{x})$ 的偏导，并令导数为零，可得$$<br>H(\boldsymbol{x})=\frac{1}{2}\ln\frac{P\big(\boldsymbol{f}(\boldsymbol{x})=1|\boldsymbol{x}\big)}{P\big(\boldsymbol{f}(\boldsymbol{x})=-1|\boldsymbol{x}\big)}\tag{6}<br>$$因此有$$<br>sign\big(H(\boldsymbol{x})\big)<br>=sign\bigg(\frac{1}{2}\ln\frac{P\big(\boldsymbol{f}(\boldsymbol{x})=1|\boldsymbol{x}\big)}{P\big(\boldsymbol{f}(\boldsymbol{x})=-1|\boldsymbol{x}\big)}\bigg)<br>=\dots<br>=\arg\max_{y\in\{-1,1\}}P\big(\boldsymbol{f}(\boldsymbol{x})=y|\boldsymbol{x}\big)\tag{7}<br>$$这意味着 $sign\big(H(\boldsymbol{x})\big)$ 达到零贝叶斯最优错误率。换言之，若指数损失函数最小化，则分类错误率也将最小化；说明指数损失函数式分类任务原本 $0/1$ 损失函数的一致 (consistent) 替代损失函数。<br>在AdaBoost算法中，第一个基分类器 $h_{1}$ 是通过直接将基学习算法用于初始数据分布而得；此后迭代生成 $h_{t}$ 和 $\alpha_{t}$，当基分类器 $h_{t}$ 基于分布 $\mathcal{D}_{t}$ 产生后，该基分类器的权重 $\alpha_{t}$应使得 $\alpha_{t}h_{t}$ 最小化指数损失函数$$<br>\ell_{\exp}(\alpha_{t}h_{t}|\mathcal{D}_{t})=\mathbb{E}_{\boldsymbol{x}\sim\mathcal{D}_{t}}\big[e^{-f(\boldsymbol{x})\alpha_{t}h_{t}(\boldsymbol{x})}\big]=\dots=e^{-\alpha_{t}}(1-\epsilon_{t})+e^{\alpha_{t}}\epsilon_{t}\tag{8}<br>$$其中 $\epsilon_{t}=P_{\boldsymbol{x}\sim\mathcal{D}_{t}}\big(h_{t}(\boldsymbol{x})\neq f(\boldsymbol{x})\big)$。考虑指数损失函数关于 $\alpha_{t}$ 的导数并令导数为零可得$$<br>\alpha_{t}=\frac{1}{2}\ln\bigg(\frac{1-\epsilon_{t}}{\epsilon_{t}}\bigg)\tag{9}<br>$$这就是分类器权重更新公式，而 AdaBoost 算法在获得 $H_{t-1}$ 之后样本分布将进行调整，使下一轮的基学习器 $h_{t}$ 能纠正 $H_{t-1}$ 的一些错误，即最小化 $\ell_{\exp}(H_{t-1}+h_{t}|\mathcal{D})$。通过泰勒展开，数学期望定义等一系列变化和相关关系 (具体请参照书中推导) 可得到理想基学习器$$<br>h_{t}(\boldsymbol{x})=\arg\min_{h}\mathbb{E}_{\boldsymbol{x}\sim\mathcal{D}_{t}}\big[\Pi(f(\boldsymbol{x})\neq h(\boldsymbol{x}))\big]\tag{10}<br>$$由此可见，理想的 $h_{t}$ 将在分布 $\mathcal{D}_{t}$ 下最小化分类误差。因此，弱分类器将基于分布 $\mathcal{D}_{t}$ 来训练，且针对 $\mathcal{D}_{t}$ 的分类误差应小于0.5，这在一定程度上类似“残差逼近”的思想。考虑到 $\mathcal{D}_{t}$ 和 $\mathcal{D}_{t+1}$ 的关系，有$$<br>\mathcal{D}_{t+1}(\boldsymbol{x})=\mathcal{D}_{t}(\boldsymbol{x})\centerdot e^{-f(\boldsymbol{x})\alpha_{t}h_{t}(\boldsymbol{x})}\frac{\mathbb{E}_{\boldsymbol{x}\sim\mathcal{D}}\big[e^{-f(\boldsymbol{x})H_{t-1}(\boldsymbol{x})}\big]}{\mathbb{E}_{\boldsymbol{x}\sim\mathcal{D}}\big[e^{-f(\boldsymbol{x})H_{t}(\boldsymbol{x})}\big]}\tag{11}<br>$$这便是样本分布更新公式。以上是从基于加性模型迭代式优化指数损失函数的角度推导出了AdaBoost算法。<br>Boosting算法要求基学习器能对特定的数据分布进行学习，这可通过“重赋权法” (re-weighting) 实施，即在训练过程的每一轮中，根据样本分布为每一个训练样本重新赋予一个权重。对无法接受带权样本的基学习算法，则可通过“重采样法” (re-sampling) 来处理，即每一轮学习中，根据样本分布对训练数据重新进行采样，在用重采样而得的样本集对基学习器进行训练。两种方法没有显著优劣差别。但是，若采用重采样法，则面对学习过程停止问题 (流程图中检测是否优于随机猜测，否抛弃当前基学习器，学习过程停止)，可获得“重启动”机会以避免训练过程过早停止。<br>从偏差-方差分解角度看，Boosting主要关注降低偏差，因此Boosting能基于泛化性能相当弱的学习器构建很强的集成。</p>
+<h1 id="Bagging与随机森林"><a href="#Bagging与随机森林" class="headerlink" title="Bagging与随机森林"></a>Bagging与随机森林</h1><p>欲得到泛化能力强的集成，集成中的个体学习器应尽可能相互独立，，虽然在实际中无法做到，但可以设法使基学习器尽可能具有较大的差异。给定一个数据集，一种方法是对样本进行采样，产生若干不同的子集，再从每个子集中训练出一个基学习器。为了避免因为采样导致每个基学习器训练数据不足，常采用相互有交叠的采样子集。</p>
+<h2 id="Bagging"><a href="#Bagging" class="headerlink" title="Bagging"></a>Bagging</h2><p>Bagging 是并行式集成学习的代表，它直接基于自助采样法 (<a href="https://en.wikipedia.org/wiki/Bootstrapping_(statistics" target="_blank" rel="noopener">bootstrap sampling</a>))。给定包含 $m$ 个样本的数据集，先随机取出一个样本放入采样集，再把该样本放回初始数据集，使得下次采样时该样本仍有可能被选中，经过 $m$ 次随机采样，得到含 $m$ 个样本的采样集，初始训练集中有的样本在采样集多次出现，有的则从未出现。极限状态下 ($m\mapsto\infty$)，初始训练集中约有 $63.2%$ 的样本出现在采样集中。这样可采样出 $T$ 个含 $m$ 个训练样本的采样集，然后基于每个采样集训练出一个基学习器，再将这些基学习器结合。这就是 Bagging 的基本流程。在对预测输出进行结合时，Bagging 通常对分类任务使用简单投票法，对回归任务使用简单平均法。若分类预测时出现两个类收到同样票数的情形，则最简单的方法是随机选择一个，也可进一步考察学习器投票的置信度来确定最终胜者。Bagging 算法流程如下：</p>
+<blockquote>
+<p>输入：训练集 $D=\{(\boldsymbol{x}_{1},y_{1}),\dots,(\boldsymbol{x}_{m},y_{m})\}$，$y\in\{-1,+1\}$；基学习算法 $\mathfrak{L}$；训练轮数 $T$。<br>过程：<br>$\qquad$<strong>for</strong> $t=1,2,\dots,T$ <strong>do</strong><br>$\qquad$$\qquad$$h_{t}=\mathfrak{L}(D,\mathcal{D}_{bs})$<br>$\qquad$<strong>end for</strong><br>输出：$H(\boldsymbol{x})=\arg\max_{y\in\mathcal{Y}}\sum_{t=1}^{T}\Pi\big(h_{t}(\boldsymbol{x})=y\big)$</p>
+</blockquote>
+<p>假设基学习器的计算复杂度为 $\mathcal{O}(m)$，则 Bagging 的复杂度大致为 $T\big(\mathcal{O}(m)+\mathcal{O}(s)\big)$，考虑到采样与投票/平均过程的复杂度 $\mathcal{O}(s)$ 很小，而 $T$ 通常是一个不太大的常数，因此训练一个 Bagging 集成与直接使用基学习器训练一个学习器的复杂度同阶。此外，与标准 AdaBoost 只适用于二分类任务不同，Bagging能不经修改的用于多分类、回归任务。而自助采样过程还给 Bagging 带来了另一个优点：由于每个基学习器只使用了初始训练集中约 $63.2%$ 的样本，剩下的样本可用作验证集来对泛化性能进行“包外估计” (<a href="https://en.wikipedia.org/wiki/Out-of-bag_error" target="_blank" rel="noopener">out-of-bag estimate</a>)。<br>令 $D_{t}$ 表示 $h_{t}$ 实际使用的训练集，令 $H^{oob}(\boldsymbol{x})$ 表示对样本 $\boldsymbol{x}$ 的包外预测，即仅考虑那些未使用 $\boldsymbol{x}$ 训练的基学习器在 $\boldsymbol{x}$ 上的预测，有$$<br>H^{oob}(\boldsymbol{x})=\arg\max_{y\in\mathcal{Y}}\sum_{t=1}^{T}\Pi\big(h_{t}(\boldsymbol{x})=y\big)\centerdot\Pi(\boldsymbol{x}\notin D_{t})<br>$$则 Bagging 泛化误差的包外估计为$$<br>\epsilon^{oob}=\frac{1}{\vert D\vert}\sum_{(\boldsymbol{x},y)\in D}\Pi\big(H^{oob}(\boldsymbol{x})\neq y\big)<br>$$当基学习器是决策树时，包外样本还可以用于辅助剪枝，或用于估计决策树中各结点的后验概率以辅助对零训练样本结点的处理；当基学习器是神经网络时，可使用包外样本辅助早期停止以减小过拟合风险。从偏差-方差分解角度看， Bagging 主要关注<strong><em>降低方差</em></strong>，因此它在不剪枝决策树、神经网络等易受样本扰动的学习器中效用更为明显。</p>
+<h2 id="随机森林"><a href="#随机森林" class="headerlink" title="随机森林"></a>随机森林</h2><p>随机森林 (Random Forset，RF) 是 Bagging 的一个扩展。RF 在以决策树为基学习器构建 Bagging 集成的基础上，在决策树的训练过程中引入随机属性选择。传统决策树在选择划分属性时是在当前节点的属性集合 (假定有 $d$ 个属性) 中选择一个最优属性；而在 RF 中，对基决策树的每个结点，先从该结点的属性集合中随机选择一个包含 $k$ 个属性的子集，然后再从这个子集中选择一个最优属性用于划分。参数 $k$ 控制了随机性的引入程度：</p>
+<ul>
+<li>若令 $k=d$，则基决策树的构建与传统决策树相同；</li>
+<li>若令 $k=1$，则是随机选择一个属性划分；</li>
+<li>一般情况下，推荐 $k=\log_{2}d$。</li>
+</ul>
+<p>与 Bagging 中基学习器的“多样性”仅通过样本扰动而来不同，随机森林中基学习器的多样性不仅来自样本扰动，还来自属性扰动，这使得最终集成的泛化性能可通过个体学习器之间异度的增加而进一步提升。此外，随机森林的收敛性与 Bagging 相似，随机森林的起始性能往往相对较差，特别是在集成中只包含一个基学习器时，因为通过引入属性扰动，随机森林中个体学习器的性能往往有所降低。然而，随着个体学习器数目的增加，随机森林通常会收敛到更低的泛化误差。值得一提的是，随机森林的训练效率常优于 Bagging，因为在个体决策树的构建过程中，Bagging 使用的是“确定型“决策树，在选择划分属性时要对结点的所有属性进行考察，而随机森林shiyongde”随机型“决策树则只需考察一个属性子集。</p>
+<h1 id="结合策略"><a href="#结合策略" class="headerlink" title="结合策略"></a>结合策略</h1><p>学习器结合可能会从三个方面带来好处：</p>
+<ul>
+<li>从统计方面，由于学习任务的假设空间往往很大，可能有多个假设在训练集上达到同等性能，此时若使用单学习器可能因误选而导致泛化性能不佳，结合多个学习器则会减小这一风险；</li>
+<li>从计算方面，学习算法往往会陷入局部极小，有的局部极小点对应的泛化性能可能很糟糕，而通过多次运行之后进行结合，可降低陷入糟糕局部极小点的风险；</li>
+<li>从表示方面，某些学习任务的真实假设可能不在当前学习算法所考虑的假设空间中，此时若使用单学习器则肯定无效，而通过结合多个学习器，由于假设空间有所扩大，有可能学得更好的近似。</li>
+</ul>
+<p><img src="/images/machinelearning/ensemble/3.png" alt="3.png"><br>假定集成包含 $T$ 个基学习器 $\{h_{1},h_{2},\dots,h_{T}\}$，其中 $h_{i}$ 在示例 $\boldsymbol{x}$ 上的输出为 $h_{i}(\boldsymbol{x})$。</p>
+<h2 id="平均法"><a href="#平均法" class="headerlink" title="平均法"></a>平均法</h2><ul>
+<li><strong><em>简单平均法</em></strong> (simple averaging)：$$H(\boldsymbol{x})=\frac{1}{T}\sum_{i=1}^{T}h_{i}(\boldsymbol{x})$$</li>
+<li><strong><em>加权平均法</em></strong> (weighted averaging)：$$H(\boldsymbol{x})=\sum_{i=1}^{T}w_{i}h_{i}(\boldsymbol{x})$$其中 $w_{i}$ 是个体学习器 $h_{i}$ 的权重，通常要求 $w_{i}\geq 0$，$\sum_{i=1}^{T}w_{i}=1$。</li>
+</ul>
+<p>加权平均法的权重一般从训练数据中学习而得，但由于样本不充分或噪声，通常学习的权重并不完全可靠，对于规模较大的集成，由于权重较多，甚至可能导致过拟合。一般而言，<strong><em>在个体学习器性能相差较大时宜使用加权平均法，而在个体学习器性能相近时宜使用简单平均法。</em></strong></p>
+<h2 id="投票法"><a href="#投票法" class="headerlink" title="投票法"></a>投票法</h2><p>对分类任务，学习器 $h_{i}$ 将从类别标记集合 $\{c_{1},\dots,c_{N}\}$ 中预测出一个标记。将 $h_{i}$ 的预测输出表示为一个 $N$ 维向量 $\big(h_{i}^{1}(\boldsymbol{x}),\dots,h_{i}^{N}(\boldsymbol{x})\big)$，其中 $h_{i}^{j}(\boldsymbol{x})$ 表示 $h_{i}$ 在类别标记 $c_{j}$ 上的输出。</p>
+<ul>
+<li><strong><em>绝对多数投票法</em></strong> (majority voting)：$$H(\boldsymbol{x})=\begin{cases}<br>c_{j}, &amp; \sum_{i=1}^{T}h_{i}^{j}(\boldsymbol{x})&gt;0.5\sum_{k=1}^{N}\sum_{i=1}^{T}h_{i}^{k}(\boldsymbol{x});\\<br>reject, &amp; otherwise.<br>\end{cases}$$即若某标记得票过半数，则预测为该标记；否则拒绝预测。</li>
+<li><strong><em>相对多数投票法</em></strong> (plurality voting)：$$H(\boldsymbol{x})=c_{\arg\max_{j}\sum_{i=1}^{T}h_{i}^{j}(\boldsymbol{x})}$$即预测为的票最多的标记，若同时有多个标记获最高票，则从中随机选择一个。</li>
+<li><strong><em>加权投票法</em></strong> (weighted voting)：$$H(\boldsymbol{x})=c_{\arg\max_{j}\sum_{i=1}^{T}w_{i}h_{i}^{j}(\boldsymbol{x})}$$与加权平均法类似，$w_{i}$ 是 $h_{i}$ 的权重，通常 $w_{i}\geq 0$，$\sum_{i=1}^{T}w_{i}=1$。</li>
+</ul>
+<p>以上没有限制个体学习器输出值的类型，实际中，不同类型的个体学习器可能产生不同类型的输出值，常见的有：</p>
+<ul>
+<li>类标记：$h_{i}^{j}(\boldsymbol{x})\in\{0,1\}$，若 $h_{i}$ 将样本 $\boldsymbol{x}$ 预测为类别 $c_{j}$ 则取值为1，否则为0.使用类标记的投票亦称“硬投票” (hard voting)。</li>
+<li>类概率：$h_{i}^{j}(\boldsymbol{x})\in[0,1]$，相当于对后验概率 $P(c_{j}|\boldsymbol{x})$ 的一个估计。使用概率的投票亦称“软投票” (soft voting)。</li>
+</ul>
+<p>注意：不同类型的 $h_{i}^{j}(\boldsymbol{x})$ 值不能混用。</p>
+<h2 id="学习法"><a href="#学习法" class="headerlink" title="学习法"></a>学习法</h2><p>当训练数据很多时，一种更为强大的结合策略是使用“学习法”，即通过另一个学习器来进行结合。Stacking是学习法的典型代表，这里称个体学习器为初级学习器，用于结合的学习器称为次级学习器或元学习器 (meta-learner)。<br>Stacking先从初始数据集训练出初级学习器，然后生成一个新数据集用于训练次级学习器。在这个新数据集中，初级学习器的输出被当作样例输入特征，而初始样本的标记仍被当作样例标记。Stacking算法描述如下，这里假定初级学习器使用不同学习算法产生，即初级集成是异质的。</p>
+<blockquote>
+<p>输入：训练集 $D=\{(\boldsymbol{x}_{1},y_{1}),\dots,(\boldsymbol{x}_{m},y_{m})\}$，初级学习算法 $\mathfrak{L}_{1},\mathfrak{L}_{2},\dots,\mathfrak{L}_{T}$，次级学习算法 $\mathfrak{L}$。<br>过程：<br>$\qquad$<strong>for</strong> $t=1,2,\dots,T$ <strong>do</strong><br>$\qquad\qquad h_{t}=\mathfrak{L}_{t}(D)$<br>$\qquad$<strong>end for</strong><br>$\qquad D’=\emptyset$<br>$\qquad$<strong>for</strong> $i=1,2,\dots,m$ <strong>do</strong><br>$\qquad\qquad$<strong>for</strong> $t=1,2,\dots,T$ <strong>do</strong><br>$\qquad\qquad\qquad z_{it}=h_{t}(\boldsymbol{x}_{i})$<br>$\qquad\qquad$<strong>end for</strong><br>$\qquad\qquad D’=D’\bigcup\big((z_{i1},\dots,z_{iT}),y_{i}\big)$<br>$\qquad$<strong>end for</strong><br>$\qquad h’=\mathfrak{L}(D’)$<br>输出：$H(\boldsymbol{x})=h’\big(h_{1}(\boldsymbol{x}),\dots,h_{T}(\boldsymbol{x})\big)$</p>
+</blockquote>
+<p>在训练阶段，次级训练集释利用初级学习器产生的，若直接用初级学习器的训练集来产生次级训练集，则过拟合风险比较大。因此一般通过交叉验证或留一法这样的方式，用训练初级学习器未使用的样本来产生次级学习器的训练样本。次级学习器的输入属性表示和次级学习算法对Stacking集成的泛化性能优很大影响。将初级学习器的输出类概率作为次级学习器的输入属性，用多响应线性回归 (Multi-response Linear Regression，MLR) 作为次级学习算法效果较好，在MLR中使用不同的属性集效果更佳。<br>此外，贝叶斯模型平均 (Bayes Model Averaging，BMA) 基于后验概率来为不同模型赋予权重，可视为加权平均法的一种特殊实现，理论上来说，若数据生成模型恰在当前考虑的模型中，切数据噪声很少，则BMA不差于Stacking，然而实际中很难确保这一要求。因此 Stacking 通常优于 BMA，因为其鲁棒性比 BMA好，且 BMA 对模型近似误差非常敏感。</p>
+<h1 id="多样性"><a href="#多样性" class="headerlink" title="多样性"></a>多样性</h1><h2 id="误差-分歧分解"><a href="#误差-分歧分解" class="headerlink" title="误差-分歧分解"></a>误差-分歧分解</h2><p>设集成泛化误差为 $E$，令 $\bar{E}=\sum_{i=1}^{T}w_{i}E_{i}$ 表示个体学习器泛化误差的加权均值，$\bar{A}=\sum_{i=1}^{T}w_{i}A_{i}$ 表示个体学习器的加权分歧值，有$$<br>E=\bar{E}-\bar{A}<br>$$这个式子明确提示出：<strong><em>个体学习器准确性越高、多样性越大，则集成越好</em></strong>。(推导此处省略，书中推导过程只适用于回归学习，难以直接推广到分类学习任务。)</p>
+<h2 id="多样性度量"><a href="#多样性度量" class="headerlink" title="多样性度量"></a>多样性度量</h2><p>多样性度量 (diversity measure) 是用于度量集成中个体分类器的多样性，即估算个体学习器的多样化程度。典型做法是考虑个体分类器两两相似/不相似性。对二分类任务，分类器 $h_{i}$ 与 $h_{j}$ 的预测结果列联表 (contingency table) 为</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">$h_{i}=+1$</th>
+<th style="text-align:center">$h_{i}=-1$ </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">$h_{j}=+1$</td>
+<td style="text-align:center">a</td>
+<td style="text-align:center">c </td>
+</tr>
+<tr>
+<td style="text-align:center">$h_{j}=-1$</td>
+<td style="text-align:center">b</td>
+<td style="text-align:center">d</td>
+</tr>
+</tbody>
+</table>
+<p>其中，a表示 $h_{i}$ 与 $h_{j}$ 均预测为正类的样本数目；b、c、d 含义类推；$a+b+c+d=m$。基于此列联遍，给出以下常见多样性度量。</p>
+<ul>
+<li><strong><em>不合度量</em></strong> (disafreement measure)：$$dis_{ij}=\frac{b+c}{m}$$$dis_{ij}\in[0,1]$，值越大多样性越大。</li>
+<li><strong><em>相关系数</em></strong> (correlation coefficient)：$$\rho_{ij}=\frac{ad-bc}{\sqrt{(a+b)(a+c)(c+d)(b+d)}}$$$\rho_{ij}\in[-1,1]$，若 $h_{i}$ 与 $h_{j}$ 无关，则值为0；若 $h_{i}$ 与 $h_{j}$ 正相关则值为正，否则为负。</li>
+<li><strong><em>$Q$-统计量</em></strong> ($Q$-statistic)：$$Q_{ij}=\frac{ad-bc}{ad+bc}$$$Q_{ij}$ 与相关系数 $\rho_{ij}$的符号相同，且 $\vert Q_{ij}\vert\leq\vert\rho_{ij}\vert$。</li>
+<li><strong><em>$\kappa$-统计量</em></strong> ($\kappa$-statistic)：$$\kappa=\frac{p_{1}-p_{2}}{1-p_{2}}$$其中，$p_{1}$ 是两个分类器取得一致的概率；$p_{2}$ 是两个分类器偶然达成一致的概率，它们可由数据集 $D$ 估算：$$p_{1}=\frac{a+d}{m}$$$$p_{2}=\frac{(a+b)(a+c)+(c+d)(b+d)}{m^{2}}$$若分类器 $h_{i}$ 与 $h_{j}$ 在 $D$ 上完全一致，则 $\kappa=1$；若它们仅是偶然达成一致，则 $\kappa=0$。$\kappa$ 通常非负，仅在 $h_{i}$ 与 $h_{j}$ 达成一致的概率甚至低于偶然性的情况下取负值。</li>
+</ul>
+<p>以上都是“成对型” (pairwise) 多样性度量，可以通过二维图绘制出来，如著名的“$\kappa$-误差图”，如下面的示例<br><img src="/images/machinelearning/ensemble/4.png" alt="4.png"><br>其中横坐标是这对分类器的 $\kappa$ 值，纵坐标是它们的平均误差，显然，数据点云的位置越高，则个体分类器准确性越低；点云的位置越靠右，则个体学习器的多样性越小。</p>
+<h2 id="多样性增强"><a href="#多样性增强" class="headerlink" title="多样性增强"></a>多样性增强</h2><p>集成学习中需有效地生成多样性大的个体学习器，一般方法是在学习过程中引入随机性，常见方法是对数据样本、输入属性、输出表示、算法参数进行扰动。</p>
+<ul>
+<li><strong><em>样本数据扰动</em></strong>：给定初始数据集，可从中残生不同数据子集，再利用不同的数据子集训练处不同的个体学习器。数据样本扰动通常基于采样法，简单高效。这种方法对“不稳定基学习器”，如决策树、神经网络等很有效，但对于对数据样本扰动不敏感的基学习器 (稳定基学习器)，如线性学习器、支持向量机、朴素贝叶斯、$k$-近邻学习器等效果不明显。</li>
+<li><strong><em>输入属性扰动</em></strong>：训练样本通常由一组属性描述，不同的“子空间”提供了不同的数据观察视角。显然，从不同子空间训练出的个体学习器必然有所不同。随机子空间 (random subspace) 算法是一种代表性方法。</li>
+<li><strong><em>输出表示扰动</em></strong>：通过对输出表示进行操纵以增强多样性。可对训练样本的类标记稍作变动，如“翻转法” (Flipping Output) 随机改变一些训练样本标记；也可对输出表示进行转化，如“输出调制法” (Output Smearing) 将分类输出转化为回归输出后构建个体学习器；还可将原任务拆解为多个可同时求解的子任务，如ECOC法利用纠错输出码将多分类任务拆解为一系列二分类任务来训练基学习器。</li>
+<li><strong><em>算法参数扰动</em></strong>：基学习算法一般都有参数需要进行设置，因此可以通过随机设置不同的参数，往往可产生差别较大的个体学习器，如“负相关法” (Negative Correlation) 显式地通过正则化项来强制个体神经网络使用不同的参数。对参数较少的算法，可通过将其学习过程中某些环节用其它类似方式代替，从而达到扰动目的。</li>
+</ul>
+<h1 id="习题"><a href="#习题" class="headerlink" title="习题"></a>习题</h1><p><strong><em>8.1 假设抛硬币正面朝上的概率为 $p$，反面朝上的概率为 $1-p$，令 $H(n)$ 代表抛 $n$ 次硬币所得正面朝上的次数，则最多 $k$ 次正面朝上的概率为</em></strong>$$<br>P(H(n)\leq k)=\sum_{i=0}^{k}{n\choose i}p^{i}(1-p)^{n-i}<br>$$对 $\delta&gt;0$，$k=(p-\delta)n$，有 Hoeffding 不等式$$<br>P(H(n)\leq(p-\delta)n)\leq e^{-2\delta^{2}n}<br>$$<strong><em>试推导出式(3)</em></strong>。<br>Ans: 取$p-\delta=\frac{1}{2}$，则$\delta=p-\frac{1}{2}=\frac{1}{2}-\epsilon$，$$P(H(n)\leq\frac{n}{2})=\sum_{i=0}{\frac{n}{2}}{n \choose i}p^{i}(1-p)^{n-i}\leq e^{-2(\frac{1}{2}-\epsilon)^{2}n}=e^{-\frac{1}{2}(1-2\epsilon)^{2}n}$$</p>
+<p><strong><em>8.2 对于 $0/1$ 损失函数来说，指数损失函数并非仅有的一致替代函数。考虑式(5)，试证明：任意损失函数 $\ell\big(-\boldsymbol{f}(\boldsymbol{x})H(\boldsymbol{x})\big)$，若对于 $H(\boldsymbol{x})$ 在区间 $[-\infty,\delta]$ $(\delta&gt;0)$ 上单调递减，则 $\ell$ 是 $0/1$ 损失函数的一致替代函数。</em></strong><br>Ans: 总损失$$<br>\mathcal{L}=\ell\big(-H(x)f(x)\big)P\big(f(x)|x\big)=\ell\big(-H(x)\big)\centerdot P\big(f(x)=1|x\big)+\ell\big(H(x)\big)\centerdot P\big(f(x)=0|x\big),\quad H(x)\in\{-1,1\}<br>$$要使$\mathcal{L}$最小，当$P(f(x)=1|x)&gt;P(f(x)=0|x)$时，会希望$\ell(-H(x))&lt;\ell(H(x))$，由于$\ell$是递减的，得$H(x)&gt;H(-x)$，的$H(x)=1$。同理当$P(f(x)=1|x)&lt;P(f(x)=0|x)$时，$H(x)=−1$。$\ell(−H(x)f(x))$是对$H(x)$的单调递减函数，那么可以认为$\ell(−H(x)f(x))$是对$−H(x)$的单调递增函数。此时$H(x)=\arg\max_{y\in0,1}P(f(x)=y|x)$,即达到了贝叶斯最优错误率，说明$\ell$是$0/1$损失函数的一致替代函数。</p>
+<p><strong><em>8.3 从网上下载或自己编程实现AdaBoost，以不剪枝决策树为基学习器，在西瓜数据集3.0$\alpha$上训练一个AdaBoost集成。</em></strong><br>Ans: 由于西瓜数据集数据量太小，这里我们使用UCI数据集的Iris数据进行实验，并使用Sci-kit Learn机器学习包编程，具体细节见代码。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> AdaBoostClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split, cross_val_score</span><br><span class="line"><span class="keyword">from</span> sklearn.utils <span class="keyword">import</span> shuffle</span><br><span class="line">warnings.filterwarnings(<span class="string">'ignore'</span>)</span><br><span class="line"></span><br><span class="line">data = pd.read_csv(<span class="string">'iris.csv'</span>)</span><br><span class="line">labels = data[<span class="string">'class'</span>]  <span class="comment"># labels</span></span><br><span class="line">data.drop([<span class="string">'class'</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)  <span class="comment"># data</span></span><br><span class="line"><span class="comment"># shuffling data and labels</span></span><br><span class="line">data, labels = shuffle(data, labels, random_state=<span class="number">5</span>)</span><br><span class="line"><span class="comment"># split into train and test</span></span><br><span class="line">train_data, test_data, train_labels, test_labels = train_test_split(data, labels, test_size=<span class="number">0.1</span>, random_state=<span class="number">200</span>)</span><br><span class="line"><span class="comment"># create base learner</span></span><br><span class="line">base_learner = DecisionTreeClassifier(criterion=<span class="string">'gini'</span>, splitter=<span class="string">'best'</span>, max_depth=<span class="number">2</span>, random_state=<span class="number">100</span>,</span><br><span class="line">                                      max_leaf_nodes=<span class="number">5</span>)</span><br><span class="line"><span class="comment"># create AdaBoost classifier and fit train data</span></span><br><span class="line">ada_boost = AdaBoostClassifier(base_learner, n_estimators=<span class="number">10</span>, algorithm=<span class="string">'SAMME'</span>, learning_rate=<span class="number">0.5</span>, random_state=<span class="number">200</span>)</span><br><span class="line">print(ada_boost, <span class="string">'\n'</span>)  <span class="comment"># print AdaBoost configuration</span></span><br><span class="line"><span class="comment"># fit data</span></span><br><span class="line">ada_boost.fit(train_data, train_labels)</span><br><span class="line">print(ada_boost.base_estimator_, <span class="string">'\n'</span>)  <span class="comment"># print base learner</span></span><br><span class="line">print(<span class="string">'Base Learner error and weight:'</span>)</span><br><span class="line"><span class="keyword">for</span> idx, err, weight <span class="keyword">in</span> zip(range(<span class="number">1</span>, <span class="number">11</span>), ada_boost.estimator_errors_, ada_boost.estimator_weights_):</span><br><span class="line">    print(<span class="string">'Base Learner-%d\t'</span> % idx, err, <span class="string">'\t'</span>, weight)</span><br><span class="line">print(<span class="string">'\n'</span>)</span><br><span class="line">print(<span class="string">'Feature Importance:'</span>)</span><br><span class="line"><span class="keyword">for</span> feature, importance <span class="keyword">in</span> zip(list(train_data), ada_boost.feature_importances_):</span><br><span class="line">    print(feature, <span class="string">'\t'</span>, importance)</span><br><span class="line">print(<span class="string">'\n'</span>)</span><br><span class="line"><span class="comment"># Accuracy</span></span><br><span class="line">scores = cross_val_score(ada_boost, train_data, train_labels, cv=<span class="number">5</span>)</span><br><span class="line">print(<span class="string">"Accuracy: %0.2f (+/- %0.2f)\n"</span> % (scores.mean(), scores.std() * <span class="number">2</span>))</span><br><span class="line"><span class="comment"># predict</span></span><br><span class="line">predict_labels = ada_boost.predict(test_data)</span><br><span class="line"><span class="keyword">for</span> predict, test_label <span class="keyword">in</span> zip(predict_labels, test_labels):</span><br><span class="line">    print(predict, <span class="string">'\t'</span>, test_label)</span><br></pre></td></tr></table></figure></p>
+<p>得到结果：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">AdaBoostClassifier(algorithm=<span class="string">'SAMME'</span>,</span><br><span class="line">          base_estimator=DecisionTreeClassifier(class_weight=None, criterion=<span class="string">'gini'</span>, max_depth=2,</span><br><span class="line">            max_features=None, max_leaf_nodes=5, min_impurity_split=1e-07,</span><br><span class="line">            min_samples_leaf=1, min_samples_split=2,</span><br><span class="line">            min_weight_fraction_leaf=0.0, presort=False, random_state=100,</span><br><span class="line">            splitter=<span class="string">'best'</span>),</span><br><span class="line">          learning_rate=0.5, n_estimators=10, random_state=200) </span><br><span class="line"></span><br><span class="line">DecisionTreeClassifier(class_weight=None, criterion=<span class="string">'gini'</span>, max_depth=2,</span><br><span class="line">            max_features=None, max_leaf_nodes=5, min_impurity_split=1e-07,</span><br><span class="line">            min_samples_leaf=1, min_samples_split=2,</span><br><span class="line">            min_weight_fraction_leaf=0.0, presort=False, random_state=100,</span><br><span class="line">            splitter=<span class="string">'best'</span>) </span><br><span class="line"></span><br><span class="line">Base Learner error and weight:</span><br><span class="line">Base Learner-1   0.0296296296296     2.09102507132</span><br><span class="line">Base Learner-2   0.104626988622      1.41999302436</span><br><span class="line">Base Learner-3   0.111889828638      1.38236413421</span><br><span class="line">Base Learner-4   0.116849602012      1.3578775189</span><br><span class="line">Base Learner-5   0.136963254896      1.26694588583</span><br><span class="line">Base Learner-6   0.180878117849      1.1017783246</span><br><span class="line">Base Learner-7   0.174611689277      1.12321827288</span><br><span class="line">Base Learner-8   0.169743533665      1.14029657839</span><br><span class="line">Base Learner-9   0.273137055613      0.835955706868</span><br><span class="line">Base Learner-10  0.127787913186      1.30690391613</span><br><span class="line"></span><br><span class="line">Feature Importance:</span><br><span class="line">sepalLength      0.134583407492</span><br><span class="line">sepalWidth   0.0584706598454</span><br><span class="line">petalLength      0.382968813518</span><br><span class="line">petalWidth   0.423977119144</span><br><span class="line"></span><br><span class="line">Accuracy: 0.94 (+/- 0.04)</span><br><span class="line"></span><br><span class="line">Predict              Actual</span><br><span class="line">Iris-setosa          Iris-setosa</span><br><span class="line">Iris-virginica       Iris-virginica</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-virginica       Iris-virginica</span><br><span class="line">Iris-setosa          Iris-setosa</span><br><span class="line">Iris-setosa          Iris-setosa</span><br><span class="line">Iris-setosa          Iris-setosa</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-virginica       Iris-virginica</span><br><span class="line">Iris-virginica       Iris-virginica</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br></pre></td></tr></table></figure></p>
+<p><strong><em>8.4 <a href="https://en.wikipedia.org/wiki/Gradient_boosting" target="_blank" rel="noopener">GradientBoosting</a>是一种常用的Boosting算法，试分析其与AdaBoost的异同。</em></strong><br>Ans: GradientBoosting与AdaBoost相同的地方在于要生成多个分类器以及每个分类器都有一个权值，最后将所有分类器加权累加起来。不同在于：AdaBoost通过每个分类器的分类结果改变每个样本的权值用于新的分类器和生成权值，但不改变每个样本不会改变。GradientBoosting将每个分类器对样本的预测值与真实值的差值传入下一个分类器来生成新的分类器和权值(这个差值就是下降方向)，而每个样本的权值不变。</p>
+<p><strong><em>8.5 试编程实现Bagging，以决策树桩为基学习器，在西瓜数据集3.0$\alpha$上训练一个Bagging集成。</em></strong><br>Ans: 这里同样适用UCI数据集的Iris数据进行实验，具体细节见代码。<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line"><span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> BaggingClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.utils <span class="keyword">import</span> shuffle</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split, cross_val_score</span><br><span class="line">warnings.filterwarnings(<span class="string">'ignore'</span>)</span><br><span class="line"></span><br><span class="line">data = pd.read_csv(<span class="string">'iris.csv'</span>)</span><br><span class="line">labels = data[<span class="string">'class'</span>]  <span class="comment"># labels</span></span><br><span class="line">data.drop([<span class="string">'class'</span>], axis=<span class="number">1</span>, inplace=<span class="keyword">True</span>)  <span class="comment"># data</span></span><br><span class="line"><span class="comment"># shuffling data and labels</span></span><br><span class="line">data, labels = shuffle(data, labels, random_state=<span class="number">5</span>)</span><br><span class="line"><span class="comment"># split into train and test</span></span><br><span class="line">train_data, test_data, train_labels, test_labels = train_test_split(data, labels, test_size=<span class="number">0.1</span>, random_state=<span class="number">200</span>)</span><br><span class="line"><span class="comment"># create base learner</span></span><br><span class="line">base_learner = DecisionTreeClassifier(criterion=<span class="string">'gini'</span>, splitter=<span class="string">'best'</span>, max_depth=<span class="number">2</span>, random_state=<span class="number">100</span>,</span><br><span class="line">                                      max_leaf_nodes=<span class="number">5</span>)</span><br><span class="line"><span class="comment"># create bagging classifier</span></span><br><span class="line">bagging = BaggingClassifier(base_learner, n_estimators=<span class="number">10</span>, bootstrap=<span class="keyword">True</span>, bootstrap_features=<span class="keyword">True</span>, oob_score=<span class="keyword">True</span>,</span><br><span class="line">                            max_samples=<span class="number">0.5</span>, random_state=<span class="number">200</span>, n_jobs=<span class="number">-1</span>)</span><br><span class="line">print(bagging, <span class="string">'\n'</span>)  <span class="comment"># print bagging configuration</span></span><br><span class="line"><span class="comment"># fit data</span></span><br><span class="line">bagging.fit(train_data, train_labels)</span><br><span class="line">print(bagging.base_estimator_, <span class="string">'\n'</span>)  <span class="comment"># print base learner</span></span><br><span class="line">print(<span class="string">'Base Learner Features:'</span>)</span><br><span class="line"><span class="keyword">for</span> idx, feature <span class="keyword">in</span> zip(range(<span class="number">1</span>, <span class="number">11</span>), bagging.estimators_features_):</span><br><span class="line">    print(<span class="string">'Base Learner-%d\t'</span> % idx, feature)</span><br><span class="line">print(<span class="string">'\n'</span>)</span><br><span class="line">scores = cross_val_score(bagging, train_data, train_labels, cv=<span class="number">5</span>)</span><br><span class="line">print(<span class="string">"Accuracy: %0.2f (+/- %0.2f)\n"</span> % (scores.mean(), scores.std() * <span class="number">2</span>))</span><br><span class="line"><span class="comment"># predict</span></span><br><span class="line">predict_labels = bagging.predict(test_data)</span><br><span class="line"><span class="keyword">for</span> predict, test_label <span class="keyword">in</span> zip(predict_labels, test_labels):</span><br><span class="line">    print(predict, <span class="string">'\t'</span>, test_label)</span><br></pre></td></tr></table></figure></p>
+<p>输出结果为：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">BaggingClassifier(base_estimator=DecisionTreeClassifier(class_weight=None, criterion=<span class="string">'gini'</span>, max_depth=2,</span><br><span class="line">            max_features=None, max_leaf_nodes=5, min_impurity_split=1e-07,</span><br><span class="line">            min_samples_leaf=1, min_samples_split=2,</span><br><span class="line">            min_weight_fraction_leaf=0.0, presort=False, random_state=100,</span><br><span class="line">            splitter=<span class="string">'best'</span>),</span><br><span class="line">         bootstrap=True, bootstrap_features=True, max_features=1.0,</span><br><span class="line">         max_samples=0.5, n_estimators=10, n_jobs=-1, oob_score=True,</span><br><span class="line">         random_state=200, verbose=0, warm_start=False) </span><br><span class="line"></span><br><span class="line">DecisionTreeClassifier(class_weight=None, criterion=<span class="string">'gini'</span>, max_depth=2,</span><br><span class="line">            max_features=None, max_leaf_nodes=5, min_impurity_split=1e-07,</span><br><span class="line">            min_samples_leaf=1, min_samples_split=2,</span><br><span class="line">            min_weight_fraction_leaf=0.0, presort=False, random_state=100,</span><br><span class="line">            splitter=<span class="string">'best'</span>) </span><br><span class="line"></span><br><span class="line">Base Learner Features:</span><br><span class="line">Base Learner-1   [1 1 1 0]</span><br><span class="line">Base Learner-2   [1 2 3 0]</span><br><span class="line">Base Learner-3   [3 3 1 1]</span><br><span class="line">Base Learner-4   [2 2 1 2]</span><br><span class="line">Base Learner-5   [3 1 0 2]</span><br><span class="line">Base Learner-6   [2 2 1 2]</span><br><span class="line">Base Learner-7   [3 2 0 2]</span><br><span class="line">Base Learner-8   [3 0 2 0]</span><br><span class="line">Base Learner-9   [1 1 3 3]</span><br><span class="line">Base Learner-10  [1 0 1 3]</span><br><span class="line"></span><br><span class="line">Accuracy: 0.93 (+/- 0.03)</span><br><span class="line"></span><br><span class="line">Iris-setosa      Iris-setosa</span><br><span class="line">Iris-virginica   Iris-virginica</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-virginica   Iris-virginica</span><br><span class="line">Iris-setosa      Iris-setosa</span><br><span class="line">Iris-setosa      Iris-setosa</span><br><span class="line">Iris-setosa      Iris-setosa</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-virginica   Iris-virginica</span><br><span class="line">Iris-virginica   Iris-virginica</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br><span class="line">Iris-versicolor      Iris-versicolor</span><br></pre></td></tr></table></figure></p>
+<p><strong><em>8.6 试析Bagging通常为何难以提升朴素贝叶斯分类器的性能。</em></strong><br>Ans: Bagging主要是降低分类器的方差，而朴素贝叶斯分类器没有方差可以减小。对全训练样本生成的朴素贝叶斯分类器是最优的分类器，不能用随机抽样来提高泛化性能。</p>
+<p><strong><em>8.7 试析随机森林为何比决策树Bagging集成的训练速度更快。</em></strong><br>Ans: 随机森林不仅会随机样本，还会在所有样本属性中随机几种出来计算。这样每次生成分类器时都是对部分属性计算最优，速度会比Bagging计算全属性要快。</p>
+<p><strong><em>8.8 <a href="http://www.jmlr.org/papers/volume13/benbouzid12a/benbouzid12a.pdf" target="_blank" rel="noopener">MultiBoosting</a>算法将AdaBoost作为Bagging的基学习器，<a href="http://infochim.u-strasbg.fr/new/CS3_2010/Tutorial/Ensemble/EnsembleModeling.pdf" target="_blank" rel="noopener">Iterative Bagging</a>算法则是将Bagging作为AdaBoost的基学习器。试比较二者的优缺点。</em></strong><br>Ans: MultiBoosting由于集合了Bagging，Wagging，AdaBoost，可以有效的降低误差和方差，特别是误差。但是训练成本和预测成本都会显著增加。Iterative Bagging相比Bagging会降低误差，但是方差上升。由于Bagging本身就是一种降低方差的算法，所以Iterative Bagging相当于Bagging与单分类器的折中。</p>
+<p><strong><em>8.9 试设计一种可视的多样性度量，对8.3和8.5中得到的集成进行评估，并与 $\kappa$-误差图比较。</em></strong><br>Ans: <strong><em>TODO</em></strong></p>
+<p><strong><em>8.10 试设计一种能提升$k$近邻分类器性能的集成学习方法。</em></strong><br>Ans: 可以使用Bagging来提升k近邻分类器的性能，每次随机抽样出一个子样本，并训练一个k近邻分类器，对测试样本进行分类。最终取最多的一种分类。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/08/08/机器学习-周志华-学习笔记-4/" title="机器学习(周志华)--学习笔记(四) 集成学习(Ensemble Learning)">https://isaacchanghau.github.io/2017/08/08/机器学习-周志华-学习笔记-4/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/boosting/" rel="tag"># boosting</a>
+          
+            <a href="/tags/random-forest/" rel="tag"># random forest</a>
+          
+            <a href="/tags/bagging/" rel="tag"># bagging</a>
+          
+            <a href="/tags/decision-tree/" rel="tag"># decision tree</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/04/机器学习-周志华-学习笔记-3/" rel="next" title="机器学习(周志华)--学习笔记(三) 支持向量机(Support Vector Machine)">
+                <i class="fa fa-chevron-left"></i> 机器学习(周志华)--学习笔记(三) 支持向量机(Support Vector Machine)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/10/Seq2Seq中的Beam-Search算法过程/" rel="prev" title="Seq2Seq中的Beam Search算法过程 [转载]">
+                Seq2Seq中的Beam Search算法过程 [转载] <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#个体与集成"><span class="nav-number">1.</span> <span class="nav-text">个体与集成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Boosting"><span class="nav-number">2.</span> <span class="nav-text">Boosting</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bagging与随机森林"><span class="nav-number">3.</span> <span class="nav-text">Bagging与随机森林</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Bagging"><span class="nav-number">3.1.</span> <span class="nav-text">Bagging</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#随机森林"><span class="nav-number">3.2.</span> <span class="nav-text">随机森林</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#结合策略"><span class="nav-number">4.</span> <span class="nav-text">结合策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#平均法"><span class="nav-number">4.1.</span> <span class="nav-text">平均法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#投票法"><span class="nav-number">4.2.</span> <span class="nav-text">投票法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#学习法"><span class="nav-number">4.3.</span> <span class="nav-text">学习法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多样性"><span class="nav-number">5.</span> <span class="nav-text">多样性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#误差-分歧分解"><span class="nav-number">5.1.</span> <span class="nav-text">误差-分歧分解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多样性度量"><span class="nav-number">5.2.</span> <span class="nav-text">多样性度量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多样性增强"><span class="nav-number">5.3.</span> <span class="nav-text">多样性增强</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#习题"><span class="nav-number">6.</span> <span class="nav-text">习题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

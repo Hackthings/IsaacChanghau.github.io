@@ -1,0 +1,1208 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="deep learning,machine learning,mathematics,backpropagation," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="The article is excerpted from Andrew Ng’s CS294A Lecture notes: Sparse Autoencoder, then I add some personal understanding.">
+<meta name="keywords" content="deep learning,machine learning,mathematics,backpropagation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Backpropagation Algorithm">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/08/17/Backpropagation-Algorithm/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="The article is excerpted from Andrew Ng’s CS294A Lecture notes: Sparse Autoencoder, then I add some personal understanding.">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/backprop/1.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/backprop/2.png">
+<meta property="og:updated_time" content="2018-01-30T08:31:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Backpropagation Algorithm">
+<meta name="twitter:description" content="The article is excerpted from Andrew Ng’s CS294A Lecture notes: Sparse Autoencoder, then I add some personal understanding.">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/deeplearning/backprop/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/08/17/Backpropagation-Algorithm/"/>
+
+
+
+
+
+  <title>Backpropagation Algorithm | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/08/17/Backpropagation-Algorithm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Backpropagation Algorithm</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-08-17T19:58:15+08:00">
+                2017-08-17
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:31:36+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 2,734 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 17 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>The article is excerpted from Andrew Ng’s <a href="https://web.stanford.edu/class/cs294a/" target="_blank" rel="noopener">CS294A Lecture notes</a>: <a href="https://web.stanford.edu/class/cs294a/sparseAutoencoder_2011new.pdf" target="_blank" rel="noopener">Sparse Autoencoder</a>, then I add some personal understanding.<a id="more"></a></p>
+<p>In this article, we will let $n_{l}$ denote the number of layers in our network, label $l$ as $L_{l}$, so layer $L_{1}$ is the input layer, and layer $L_{n_{l}}$ the output layer. Neural network has parameters $(W,b)=(W^{(1)},b^{(1)},\dots,W^{(n_{l}-1)},b^{(n_{l}-1)})$, where we write $W_{ij}^{(l)}$ to denote the parameter (or weight) associated with the connection between unit $j$ in layer $l$ and unit $i$ in layer $l+1$. (Note the order of the indices). Also, $b_{i}^{(l)}$ is the bais associated with unit $i$ in layer $l+1$. We also let $s_{l}$ denote the number of nodes in layer $l$ (not counting the bias unit). Plus, we will write $a_{i}^{(l)}$ to denote the activation (meaning output value) of unit $i$ in layer $l$.<br><img src="/images/deeplearning/backprop/1.png" alt="1.png"><br>Suppose we have a fixed training set $\{(x^{(1)},y^{(1)}),\dots,(x^{(m)},y^{(m)})\}$ of $m$ training examples. We can train our neural network using batch gradient descent. In detail, for a single training example $(x,y)$, we define the cost function with respect to that single example to be$$<br>J(W,b;x,y)=\frac{1}{2}\Vert h_{W,b}(x)-y\Vert^{2}\tag{1}<br>$$This is a (one-half) <strong>squared-error cost function</strong>. Given a training set of $m$ examples, we then define the <strong>overall cost function</strong> to be$$\begin{aligned}<br>J(W,b) &amp; =\bigg[\frac{1}{m}\sum_{i=1}^{m}J(W,b;x^{(i)},y^{(i)})\bigg]+\frac{\lambda}{2}\sum_{l=1}^{n_{l}-1}\sum_{i=1}^{s_{l}}\sum_{j=1}^{s_{l}+1}\big(W_{ji}^{(l)}\big)^{2}\\<br>&amp; =\bigg[\frac{1}{m}\sum_{i=1}^{m}\big(\frac{1}{2}\Vert h_{W,b}(x^{(i)})-y^{(i)}\Vert^{2}\big)\bigg]+\frac{\lambda}{2}\sum_{l=1}^{n_{l}-1}\sum_{i=1}^{s_{l}}\sum_{j=1}^{s_{l}+1}\big(W_{ji}^{(l)}\big)^{2}<br>\end{aligned}\tag{2}$$The first term is an <strong>average sum-of-squares error term</strong>. The second term is a <strong>regularization term</strong> (also called a <strong>weight decay term</strong>) that tends to decrease the magnitude of the weights, and helps <strong>prevent overfitting</strong>.</p>
+<blockquote>
+<p>Usually weight decay is not applied to the bias terms $b_{i}^{(l)}$, as reflected in the difinition of $J(W,b)$. Applying weight decay to the bias units usually makes only a small different to the final network, however. If you took <a href="http://cs229.stanford.edu" target="_blank" rel="noopener">CS229</a>, you may also recognize weight decay this as essentially a variant of the Bayesian regularization method you saw there, where we placed a Gaussian prior on the parameters and did MAP (instead of maximum likelihood) estimation.</p>
+</blockquote>
+<p>The <strong>weight decay parameter</strong> $\lambda$ controls the relative importance of the two terms. Note also the slightly overloaded notation: $J(W,b;x,y)$ is the squared error cost with respect to a single example; $J(W,b)$ is the overall cost function, which includes the weight decay term.</p>
+<p>This cost function above is often used both for <strong>classification</strong> and for <strong>regression</strong> problems. For classification, we let $y=0$ or $1$ represent the two class labels (recall that the sigmoid activation function outputs values in $[0,1]$; if we were using a tanh activation function, we would instead use $-1$ and $+1$ to denote the labels). For regression problems, we first scale our outputs to ensure that they lie in the $[0,1]$ range (or if we were using a <code>tanh</code> activation function, then the $[−1,1]$ range).</p>
+<p>Our goal is to minimize $J(W,b)$ as a function of $W$ and $b$. To train our neural network, we will initialize each parameter $W_{ij}^{(l)}$ and each $b_{i}^{(l)}$ to a small random value near zero (say according to a $\mathfrak{N}(0,\epsilon^{2})$ distribution for some small $\epsilon$, say $0.01$), and then apply an optimization algorithm such as batch gradient descent. Since $J(W,b)$ is a <strong>non-convex function</strong>, gradient descent is susceptible to <strong>local optima</strong>; however, in practice gradient descent usually works fairly well.</p>
+<p>Finally, note that it is important to initialize the parameters randomly, rather than to all 0’s. If all the parameters start off at identical values, then all the hidden layer units will end up learning the same function of the input (more formally, $W_{ij}^{(1)}$ will be the same for all values of $i$, so that $a_{1}^{(2)}=a_{2}^{(2)}=a_{3}^{(2)}=\dots$ for any input $x$). The random initialization serves the purpose of <strong>symmetry breaking</strong>.</p>
+<p>One iteration of gradient descent updates the parameters $W$, $b$ as follows:$$<br>W_{ij}^{(l)}:=W_{ij}^{(l)}-\alpha\frac{\partial J(W,b)}{\partial W_{ij}^{(l)}}\tag{3}<br>$$$$<br>b_{i}^{(l)}:=b_{i}^{(l)}-\alpha\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}\tag{4}<br>$$where $\alpha$ is the <strong>learning rate</strong>. The key step is computing the partial derivatives above. We will now describe the <strong>backpropagation</strong> algorithm, which gives an efficient way to compute these partial derivatives.</p>
+<p>We will first describe how backpropagation can be used to compute $\frac{\partial}{\partial W_{ij}^{(l)}}J(W,b;x,y)$ and $\frac{\partial}{\partial b_{i}^{(l)}}J(W,b;x,y)$, the partial derivatives of the cost function $J(W,b;x,y)$ defined with respect to a single example $(x,y)$. Once we can compute these, then by referring to Equation (2), we see that the derivative of the overall cost function $J(W,b)$ can be computed as$$<br>\frac{\partial J(W,b)}{\partial W_{ij}^{(l)}}=\bigg[\frac{1}{m}\sum_{i=1}^{m}\frac{\partial}{\partial W_{ij}^{(l)}}J(W,b;x^{(i)},y^{(i)})\bigg]+\lambda W_{ij}^{(l)}\tag{5}<br>$$$$<br>\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}=\frac{1}{m}\sum_{i=1}^{m}\frac{\partial}{\partial b_{i}^{(l)}}J(W,b;x^{(i)},y^{(i)})\tag{6}<br>$$The two lines above differ slightly <em>because weight decay is applied to $W$ but not $b$</em>.</p>
+<p>The intuition behind the backpropagation algorithm is as follows. Given a training example $(x,y)$, we will first run a “forward pass” to compute all the activations throughout the network, including the output value of the hypothesis $h_{W,b}(x)$. Then, for each node i in layer l, we would like to compute an “<strong>error term</strong>” $\delta_{i}^{(l)}$ that measures how much that node was “responsible” for any errors in our output. For an output node, we can directly measure the difference between the network’s activation and the true target value, and use that to define $\delta_{i}^{(n_{l})}$ (where layer $n_{l}$ is the output layer). How about hidden units? For those, we will compute $\delta_{i}^{(l)}$ based on a weighted average of the error terms of the nodes that uses $a_{i}^{(l)}$ (the $i$-th activation value of $l$ layer) as an input.</p>
+<blockquote>
+<p>The reason why we need to introduce error term $\delta_{i}^{(l)}$:<br>Using the <strong>chain rule of derivation</strong>, we have$$<br>\frac{\partial J(w,b;x,y)}{\partial W_{ij}^{(l)}}=\frac{\partial J(w,b;x,y)}{\partial z_{i}^{(l+1)}}\frac{\partial z_{i}^{(l+1)}}{\partial W_{ij}^{(l)}}<br>$$$$<br>\frac{\partial J(w,b;x,y)}{\partial b_{i}^{(l)}}=\frac{\partial J(w,b;x,y)}{\partial z_{i}^{(l+1)}}\frac{\partial z_{i}^{(l+1)}}{\partial b_{i}^{(l)}}<br>$$Since $z^{(l+1)}=W^{(l)}a^{(l)}+b^{(l)}$, then$$<br>z_{i}^{(l+1)}=\sum_{k=1}^{s_{l}}W_{ik}^{(l)}a_{k}^{(l)}+b_{i}^{(l)}$$Thus we have$$\frac{\partial z_{i}^{(l+1)}}{\partial W_{ij}^{(l)}}=a_{j}^{(l)},\quad\frac{\partial z_{i}^{(l+1)}}{b_{i}^{(l)}}=1<br>$$If we let $\delta_{i}^{(l)}=\frac{\partial J(w,b;x,y)}{\partial z_{i}^{(l)}}$, then we have$$\frac{\partial J(w,b;x,y)}{\partial W_{ij}^{(l)}}=a_{i}^{(l)}\delta_{i}^{(l+1)}$$$$\frac{\partial J(w,b;x,y)}{\partial b_{i}^{(l)}}=\delta_{i}^{(l+1)}<br>$$Thus, in order to compute $\frac{\partial J(W,b)}{\partial W_{ij}^{(l)}}$ and $\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}$, the key is to compute $\delta_{i}^{(l+1)}$</p>
+</blockquote>
+<p>In detail, here is the backpropagation algorithm:</p>
+<ol>
+<li>Perform a feedforward pass, computing the activations $a_{i}^{(l)}$ for layers $L_{2}$, $L_{3}$, and so on up to the output layer $L_{n_{l}}$.</li>
+<li><p>For each output unit $i$ in layer $n_{l}$ (the output layer), set$$<br>\delta_{i}^{(n_{l})}=\frac{\partial}{\partial z_{i}^{(n_{l})}}\frac{1}{2}\Vert y-h_{W,b}(x)\Vert^{2}=-(y_{i}-a_{i}^{(n_{l})})\centerdot f’(z_{i}^{(n_{l})})\tag{7}$$</p>
+<blockquote>
+<p>Its computation process as follow:$$\begin{aligned}<br>\delta_{i}^{(n_{l})} &amp;=\frac{\partial J(W,b;x,y)}{\partial z_{i}^{(n_{l})}}=\frac{\partial}{\partial z_{i}^{(n_{l})}}\bigg(\frac{1}{2}\Vert y-h_{W,b}(x)\Vert^{2}\bigg)\quad (\textrm{The definition of }J(W,b;x,y))\\<br>&amp;=\frac{1}{2}\frac{\partial}{\partial z_{i}^{(n_{l})}}\bigg(\sum_{j=1}^{s_{n_{l}}}\big(y_{j}-a_{j}^{(n_{l})}\big)^{2}\bigg)\quad (\textrm{The definition of vector norm }\Vert\centerdot\Vert)\\<br>&amp;=\frac{1}{2}\frac{\partial}{\partial z_{i}^{(n_{l})}}\bigg(\sum_{j=1}^{s_{n_{l}}}\big(y_{j}-f(z_{j}^{(n_{l})})\big)^{2}\bigg)\quad (\textrm{Using }a_{j}^{(n_{l})}=f(z_{j}^{(n_{l})}))\\<br>&amp;=-(y_{i}-f(z_{i}^{(n_{l})}))\centerdot f’(z_{i}^{(n_{l})})\quad (\textrm{compute partial derivative of sum term wrt. }z_{i}^{(n_{l})})\\<br>&amp;=-(y_{i}-a_{i}^{(n_{l})})\centerdot f’(z_{i}^{(n_{l})})\quad (\textrm{Using }a_{j}^{(n_{l})}=f(z_{j}^{(n_{l})}))<br>\end{aligned}$$</p>
+</blockquote>
+</li>
+<li><p>For $l=n_{l}-1, n_{l}-2,\dots,2$, each node $i$ in layer $l$, set$$<br>\delta_{i}^{(l)}=\bigg(\sum_{j=1}^{s_{l}+1}W_{ji}^{(l)}\delta_{j}^{(l+1)}\bigg)f’(z_{i}^{(l)})\tag{8}$$</p>
+<blockquote>
+<p>Its computation process as follow:$$\begin{aligned}<br>\delta_{i}^{(n_{l}-1)} &amp;=\frac{\partial J(W,b;x,y)}{\partial z_{i}^{(n_{l}-1)}}=\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\bigg(\frac{1}{2}\Vert y-h_{W,b}(x)\Vert^{2}\bigg)\quad (\textrm{The definition of }J(W,b;x,y))\\<br>&amp;=\frac{1}{2}\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\bigg(\sum_{j=1}^{s_{n_{l}}}\big(y_{j}-a_{j}^{(n_{l})}\big)^{2}\bigg)\quad (\textrm{The definition of vector norm }\Vert\centerdot\Vert)\\<br>&amp;=\frac{1}{2}\sum_{j=1}^{s_{n_{l}}}\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\big(y_{j}-a_{j}^{(n_{l})}\big)^{2}\\<br>&amp;=\frac{1}{2}\sum_{j=1}^{s_{n_{l}}}\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\big(y_{j}-f(z_{j}^{(n_{l})})\big)^{2}\quad (\textrm{Using }a_{j}^{(n_{l})}=f(z_{j}^{(n_{l})}))\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}-\big(y_{j}-f(z_{j}^{(n_{l})})\big)\frac{\partial f(z_{j}^{(n_{l})})}{\partial z_{i}^{(n_{l}-1)}}\quad (\textrm{Compute partial derivative})\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}-\big(y_{j}-f(z_{j}^{(n_{l})})\big)\centerdot f’(z_{j}^{(n_{l})})\centerdot\frac{\partial z_{i}^{(n_{l})}}{\partial z_{i}^{(n_{l}-1)}}\quad (\textrm{Using Chain rule to compute }\frac{\partial f(z_{j}^{(n_{l})})}{\partial z_{i}^{(n_{l}-1)}})\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}\delta_{j}^{(n_{l})}\centerdot\frac{\partial z_{i}^{(n_{l})}}{\partial z_{i}^{(n_{l}-1)}}\quad (\textrm{Using Equation (7)})\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}\delta_{j}^{(n_{l})}\centerdot\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\bigg(\sum_{k=1}^{s_{n_{l}-1}}f(z_{k}^{(n_{l}-1)})\centerdot W_{jk}^{(n_{l}-1)}+b_{j}^{(n_{l}-1)}\bigg)\quad (\textrm{According to the definition of }z_{j}^{(n_{l})})\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}\delta_{j}^{(n_{l})}\centerdot W_{ji}^{(n_{l}-1)}\centerdot f’(z_{i}^{(n_{l}-1)})\quad (\textrm{Compute partial derivative of }z_{i}^{(n_{l}-1)})\\<br>&amp;=\bigg(\sum_{j=1}^{s_{n_{l}}}W_{ji}^{(n_{l}-1)}\centerdot\delta_{j}^{(n_{l})}\bigg)\centerdot f’(z_{i}^{(n_{l}-1)})<br>\end{aligned}$$By replacing the relationship between $n_{l}-1$ and $n_{l}$ to the relationship between $l$ and $l+1$, we can derive the Equation (8). And the above derivation process from backward to forward is the essence of “Backpropagation”.</p>
+</blockquote>
+</li>
+<li><p>Compute the desired partial derivatives, which are given as:$$\begin{aligned}<br>\frac{\partial}{\partial W_{ij}^{(l)}}J(W,b;x,y) &amp;=a_{j}^{(l)}\delta_{i}^{(l+1)}\\<br>\frac{\partial}{\partial b_{i}^{(l)}}J(W,b;x,y) &amp;=\delta_{i}^{(l+1)}<br>\end{aligned}$$</p>
+</li>
+</ol>
+<p>Below gives a graph to illustrate the above steps, we use a sample $(x,y)$ as an example.<br><img src="/images/deeplearning/backprop/2.png" alt="2.png"><br>Finally, we can also rewrite the algorithm using matrix-vectorial notation. We will use “$\bullet$” to denote the element-wise product operator (also called the Hadamard product), so that if $a=b\bullet c$, then $a_{i}=b_{i}c_{i}$. Similar to how we extended the definition of $f(\centerdot)$ to apply element-wise to vectors, we also do the same for $f’(\centerdot)$ (so that $f’([z_{1},z_{2},z_{3}])=\big[\frac{\partial f(z_{1})}{\partial z_{1}},\frac{\partial f(z_{2})}{\partial z_{2}},\frac{\partial f(z_{3})}{\partial z_{3}}\big]$). The algorithm can then be written:</p>
+<ol>
+<li>Perform a feedforward pass, computing the activations for layers $L_{2}$, $L_{3}$, up to the output layer $L_{n_{l}}$, using Equations$$\begin{aligned}<br>z^{(l+1)} &amp;=W^{(l)}a^{(l)}+b^{(l)}\\<br>a^{(l+1)} &amp;=f(z^{(l+1)})<br>\end{aligned}$$</li>
+<li>For the output layer (layer $n_{l}$), set$$<br>\delta^{(n_{l})}=-(y-a^{(n_{l})})\bullet f’(z^{(n)})<br>$$</li>
+<li>For $l=n_{l}-1, n_{l}-2,\dots,2$, set$$<br>\delta^{(l)}=\big((W^{(l)})^{T}\delta^{(l+1)}\big)\bullet f’(z^{(l)})<br>$$</li>
+<li>Compute the desired partial derivatives:$$\begin{aligned}<br>\nabla_{W^{(l)}}J(W,b;x,y) &amp;=\delta^{(l+1)}\big(a^{(l)}\big)^{T}\\<br>\nabla_{b^{(l)}}J(W,b;x,y) &amp;=\delta^{(l+1)}<br>\end{aligned}$$</li>
+</ol>
+<p><strong>Implementation note</strong>: In steps 2 and 3 above, we need to compute $f’(z^{(l)})$ for each value of $i$. Assuming $f(z)$ is the <code>sigmoid</code> activation function, we would already have $a_{i}^{(l)}$ stored away from the forward pass through the network. Thus, using the expression that we worked out earlier for $f’(z)$, we can compute this as$$<br>f’(z^{(l)})=a_{i}^{(l)}(1-a_{i}^{(l)})<br>$$Finally, we are ready to describe the full <strong>gradient descent algorithm</strong>. In the pseudo-code below, $\Delta W^{(l)}$ is a matrix (of the same dimension as $W^{(l)}$), and $\Delta b^{(l)}$ is a vector (of the same dimension as $b^{(l)}$). Note that in this notation, “$\Delta W^{(l)}$” is a matrix, and in particular it isn’t “$\Delta$ times $W^{(l)}$”. We implement one iteration of batch gradient descent as follows:</p>
+<ol>
+<li>Set $\Delta W^{(l)}:=0$, $\Delta b^{(l)}:=0$ (matrix/vector of zeros) for all $l$.</li>
+<li>For $i=1$ to $m$:<br>2a. Use backpropagation to compute $\nabla_{W^{(l)}}J(W,b;x,y)$ and $\nabla_{b^{(l)}}J(W,b;x,y)$.<br>2b. Set $\Delta W^{(l)}:=\Delta W^{(l)}+\nabla_{W^{(l)}}J(W,b;x,y)$<br>2c. Set $\Delta b^{(l)}:=\Delta b^{(l)}+\nabla_{b^{(l)}}J(W,b;x,y)$</li>
+<li>Update the parameters$$\begin{aligned}<br>W^{(l)} &amp;:= W^{(l)}-\alpha\bigg[\big(\frac{1}{m}\Delta W^{(l)}\big)+\lambda W^{(l)}\bigg]\\<br>b^{(l)} &amp;:= b^{(l)}-\alpha\bigg[\frac{1}{m}\Delta b^{(l)}\bigg]<br>\end{aligned}$$</li>
+</ol>
+<p>To train our neural network, we can now repeatedly take steps of gradient descent to reduce our cost function $J(W,b)$.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/08/17/Backpropagation-Algorithm/" title="Backpropagation Algorithm">https://isaacchanghau.github.io/2017/08/17/Backpropagation-Algorithm/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/mathematics/" rel="tag"># mathematics</a>
+          
+            <a href="/tags/backpropagation/" rel="tag"># backpropagation</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/10/Seq2Seq中的Beam-Search算法过程/" rel="next" title="Seq2Seq中的Beam Search算法过程 [转载]">
+                <i class="fa fa-chevron-left"></i> Seq2Seq中的Beam Search算法过程 [转载]
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/08/19/Autoencoder-and-Sparsity/" rel="prev" title="Autoencoder and Sparsity">
+                Autoencoder and Sparsity <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

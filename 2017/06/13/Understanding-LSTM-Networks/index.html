@@ -1,0 +1,1248 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="en">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="deep learning,machine learning,lstm,gru," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Isaac Changhau" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/tltimg.jpg?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="Declaration: This blog article is totaly not my original article. I just reproduce it from colah’s blog – Understanding LSTM Networks, since it is really an excellent article of explanation of LSTM an">
+<meta name="keywords" content="deep learning,machine learning,lstm,gru">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Understanding LSTM Networks [Reprinted]">
+<meta property="og:url" content="https://isaacchanghau.github.io/2017/06/13/Understanding-LSTM-Networks/index.html">
+<meta property="og:site_name" content="Isaac Changhau">
+<meta property="og:description" content="Declaration: This blog article is totaly not my original article. I just reproduce it from colah’s blog – Understanding LSTM Networks, since it is really an excellent article of explanation of LSTM an">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/1.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/2.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/3.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/4.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/5.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/6.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/7.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/8.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/9.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/10.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/11.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/12.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/13.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/14.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/15.png">
+<meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/16.png">
+<meta property="og:updated_time" content="2018-01-30T08:34:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Understanding LSTM Networks [Reprinted]">
+<meta name="twitter:description" content="Declaration: This blog article is totaly not my original article. I just reproduce it from colah’s blog – Understanding LSTM Networks, since it is really an excellent article of explanation of LSTM an">
+<meta name="twitter:image" content="https://isaacchanghau.github.io/images/deeplearning/lstm/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://isaacchanghau.github.io/2017/06/13/Understanding-LSTM-Networks/"/>
+
+
+
+
+
+  <title>Understanding LSTM Networks [Reprinted] | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+    
+    <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Isaac Changhau</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Stay Hungry, Stay Foolish</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            Archives
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th-list"></i> <br />
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-vcard"></i> <br />
+            
+            About
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            Search
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="Searching..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2017/06/13/Understanding-LSTM-Networks/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Understanding LSTM Networks [Reprinted]</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-06-13T17:59:12+08:00">
+                2017-06-13
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-01-30T16:34:38+08:00" content="2018-01-30">
+                  2018-01-30
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 2,447 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 15 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Declaration: <strong>This blog article is totaly not my original article</strong>. I just reproduce it from <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="noopener">colah’s blog – Understanding LSTM Networks</a>, since it is really an excellent article of explanation of LSTM and I am afraid that I may lose the link of this article or the author may change her blog address. So I put this article into my own blog… Moreover, the Chinese version of this article, translated by <a href="http://www.jianshu.com/u/696dc6c6f01c" target="_blank" rel="noopener">Not_GOD</a>, are available <a href="http://www.jianshu.com/p/9dc9f41f0b29" target="_blank" rel="noopener">here</a>.<a id="more"></a></p>
+<h1 id="Recurrent-Neural-Networks"><a href="#Recurrent-Neural-Networks" class="headerlink" title="Recurrent Neural Networks"></a>Recurrent Neural Networks</h1><p>Humans don’t start their thinking from scratch every second. As you read this essay, you understand each word based on your understanding of previous words. You don’t throw everything away and start thinking from scratch again. Your thoughts have persistence.</p>
+<p>Traditional neural networks can’t do this, and it seems like a major shortcoming. For example, imagine you want to classify what kind of event is happening at every point in a movie. It’s unclear how a traditional neural network could use its reasoning about previous events in the film to inform later ones.</p>
+<p>Recurrent neural networks address this issue. They are networks with loops in them, allowing information to persist.<br><img src="/images/deeplearning/lstm/1.png" alt="Recurrent Neural Networks have loops"><br>In the above diagram, a chunk of neural network, $A$, looks at some input $x_{t}$ and outputs a value $h_{t}$. A loop allows information to be passed from one step of the network to the next.</p>
+<p>These loops make recurrent neural networks seem kind of mysterious. However, if you think a bit more, it turns out that they aren’t all that different than a normal neural network. A recurrent neural network can be thought of as multiple copies of the same network, each passing a message to a successor. Consider what happens if we unroll the loop:<br><img src="/images/deeplearning/lstm/2.png" alt="An unrolled recurrent neural network"><br>This chain-like nature reveals that recurrent neural networks are intimately related to sequences and lists. They’re the natural architecture of neural network to use for such data.</p>
+<p>And they certainly are used! In the last few years, there have been incredible success applying RNNs to a variety of problems: speech recognition, language modeling, translation, image captioning… The list goes on. I’ll leave discussion of the amazing feats one can achieve with RNNs to Andrej Karpathy’s excellent blog post, <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/" target="_blank" rel="noopener">The Unreasonable Effectiveness of Recurrent Neural Networks</a>. But they really are pretty amazing.</p>
+<p>Essential to these successes is the use of “LSTMs”, a very special kind of recurrent neural network which works, for many tasks, much much better than the standard version. Almost all exciting results based on recurrent neural networks are achieved with them. It’s these LSTMs that this essay will explore.</p>
+<h1 id="The-Problem-of-Long-Term-Dependencies"><a href="#The-Problem-of-Long-Term-Dependencies" class="headerlink" title="The Problem of Long-Term Dependencies"></a>The Problem of Long-Term Dependencies</h1><p>One of the appeals of RNNs is the idea that they might be able to connect previous information to the present task, such as using previous video frames might inform the understanding of the present frame. If RNNs could do this, they’d be extremely useful. But can they? It depends.</p>
+<p>Sometimes, we only need to look at recent information to perform the present task. For example, consider a language model trying to predict the next word based on the previous ones. If we are trying to predict the last word in “the clouds are in the sky”, we don’t need any further context – it’s pretty obvious the next word is going to be sky. In such cases, where the gap between the relevant information and the place that it’s needed is small, RNNs can learn to use the past information.<br><img src="/images/deeplearning/lstm/3.png" alt=""><br>But there are also cases where we need more context. Consider trying to predict the last word in the text “I grew up in France… I speak fluent French”. Recent information suggests that the next word is probably the name of a language, but if we want to narrow down which language, we need the context of France, from further back. It’s entirely possible for the gap between the relevant information and the point where it is needed to become very large.</p>
+<p>Unfortunately, as that gap grows, RNNs become unable to learn to connect the information.<br><img src="/images/deeplearning/lstm/4.png" alt=""><br>In theory, RNNs are absolutely capable of handling such “long-term dependencies”. A human could carefully pick parameters for them to solve toy problems of this form. Sadly, in practice, RNNs don’t seem to be able to learn them. The problem was explored in depth by <a href="http://people.idsia.ch/~juergen/SeppHochreiter1991ThesisAdvisorSchmidhuber.pdf" target="_blank" rel="noopener">Hochreiter (1991) [German]</a> and <a href="http://www-dsi.ing.unifi.it/~paolo/ps/tnn-94-gradient.pdf" target="_blank" rel="noopener">Bengio, et al. (1994)</a>, who found some pretty fundamental reasons why it might be difficult.</p>
+<p>Thankfully, LSTMs don’t have this problem!</p>
+<h1 id="LSTM-Networks"><a href="#LSTM-Networks" class="headerlink" title="LSTM Networks"></a>LSTM Networks</h1><p>Long Short Term Memory networks – usually just called “LSTMs” – are a special kind of RNN, capable of learning long-term dependencies. They were introduced by <a href="http://deeplearning.cs.cmu.edu/pdfs/Hochreiter97_lstm.pdf" target="_blank" rel="noopener">Hochreiter &amp; Schmidhuber (1997)</a>, and were refined and popularized by many people in following work. (In addition to the original authors, a lot of people contributed to the modern LSTM. A non-comprehensive list is: Felix Gers, Fred Cummins, Santiago Fernandez, Justin Bayer, Daan Wierstra, Julian Togelius, Faustino Gomez, Matteo Gagliolo, and <a href="https://scholar.google.com/citations?user=DaFHynwAAAAJ&amp;hl=en" target="_blank" rel="noopener">Alex Graves</a>) They work tremendously well on a large variety of problems, and are now widely used.</p>
+<p>LSTMs are explicitly designed to avoid the long-term dependency problem. Remembering information for long periods of time is practically their default behavior, not something they struggle to learn!</p>
+<p>All recurrent neural networks have the form of a chain of repeating modules of neural network. In standard RNNs, this repeating module will have a very simple structure, such as a single tanh layer.<br><img src="/images/deeplearning/lstm/5.png" alt="The repeating module in a standard RNN contains a single layer"><br>LSTMs also have this chain like structure, but the repeating module has a different structure. Instead of having a single neural network layer, there are four, interacting in a very special way.<br><img src="/images/deeplearning/lstm/6.png" alt="The repeating module in an LSTM contains four interacting layers"><br>Don’t worry about the details of what’s going on. We’ll walk through the LSTM diagram step by step later. For now, let’s just try to get comfortable with the notation we’ll be using.<br><img src="/images/deeplearning/lstm/7.png" alt=""><br>In the above diagram, each line carries an entire vector, from the output of one node to the inputs of others. The pink circles represent pointwise operations, like vector addition, while the yellow boxes are learned neural network layers. Lines merging denote concatenation, while a line forking denote its content being copied and the copies going to different locations.</p>
+<h1 id="The-Core-Idea-Behind-LSTMs"><a href="#The-Core-Idea-Behind-LSTMs" class="headerlink" title="The Core Idea Behind LSTMs"></a>The Core Idea Behind LSTMs</h1><p>The key to LSTMs is the cell state, the horizontal line running through the top of the diagram.</p>
+<p>The cell state is kind of like a conveyor belt. It runs straight down the entire chain, with only some minor linear interactions. It’s very easy for information to just flow along it unchanged.<br><img src="/images/deeplearning/lstm/8.png" alt=""><br>The LSTM does have the ability to remove or add information to the cell state, carefully regulated by structures called gates.</p>
+<p>Gates are a way to optionally let information through. They are composed out of a sigmoid neural net layer and a pointwise multiplication operation.<br><img src="/images/deeplearning/lstm/9.png" alt=""><br>The sigmoid layer outputs numbers between zero and one, describing how much of each component should be let through. A value of zero means “let nothing through”, while a value of one means “let everything through”!</p>
+<p>An LSTM has three of these gates, to protect and control the cell state.</p>
+<h1 id="Step-by-Step-LSTM-Walk-Through"><a href="#Step-by-Step-LSTM-Walk-Through" class="headerlink" title="Step-by-Step LSTM Walk Through"></a>Step-by-Step LSTM Walk Through</h1><p>The first step in our LSTM is to decide what information we’re going to throw away from the cell state. This decision is made by a sigmoid layer called the “forget gate layer”. It looks at $h_{t-1}$ and $x_{t}$, and outputs a number between $0$ and $1$ for each number in the cell state $C_{t-1}$. A $1$ represents “completely keep this” while a $0$ represents “completely get rid of this”.</p>
+<p>Let’s go back to our example of a language model trying to predict the next word based on all the previous ones. In such a problem, the cell state might include the gender of the present subject, so that the correct pronouns can be used. When we see a new subject, we want to forget the gender of the old subject.<br><img src="/images/deeplearning/lstm/10.png" alt=""><br>The next step is to decide what new information we’re going to store in the cell state. This has two parts. First, a sigmoid layer called the “input gate layer” decides which values we’ll update. Next, a tanh layer creates a vector of new candidate values, $\tilde{C}_{t}$, that could be added to the state. In the next step, we’ll combine these two to create an update to the state.</p>
+<p>In the example of our language model, we’d want to add the gender of the new subject to the cell state, to replace the old one we’re forgetting.<br><img src="/images/deeplearning/lstm/11.png" alt=""><br>It’s now time to update the old cell state, $C_{t-1}$, into the new cell state $C_{t}$. The previous steps already decided what to do, we just need to actually do it.</p>
+<p>We multiply the old state by $f_{t}$, forgetting the things we decided to forget earlier. Then we add $i_{t}*\tilde{C}_{t}$. This is the new candidate values, scaled by how much we decided to update each state value.</p>
+<p>In the case of the language model, this is where we’d actually drop the information about the old subject’s gender and add the new information, as we decided in the previous steps.<br><img src="/images/deeplearning/lstm/12.png" alt=""><br>Finally, we need to decide what we’re going to output. This output will be based on our cell state, but will be a filtered version. First, we run a sigmoid layer which decides what parts of the cell state we’re going to output. Then, we put the cell state through $tanh$ (to push the values to be between $-1$ and $1$) and multiply it by the output of the sigmoid gate, so that we only output the parts we decided to.</p>
+<p>For the language model example, since it just saw a subject, it might want to output information relevant to a verb, in case that’s what is coming next. For example, it might output whether the subject is singular or plural, so that we know what form a verb should be conjugated into if that’s what follows next.<br><img src="/images/deeplearning/lstm/13.png" alt=""></p>
+<h1 id="Variants-on-Long-Short-Term-Memory"><a href="#Variants-on-Long-Short-Term-Memory" class="headerlink" title="Variants on Long Short Term Memory"></a>Variants on Long Short Term Memory</h1><p>What I’ve described so far is a pretty normal LSTM. But not all LSTMs are the same as the above. In fact, it seems like almost every paper involving LSTMs uses a slightly different version. The differences are minor, but it’s worth mentioning some of them.</p>
+<p>One popular LSTM variant, introduced by <a href="ftp://ftp.idsia.ch/pub/juergen/TimeCount-IJCNN2000.pdf" target="_blank" rel="noopener">Gers &amp; Schmidhuber (2000)</a>, is adding “peephole connections”. This means that we let the gate layers look at the cell state.<br><img src="/images/deeplearning/lstm/14.png" alt=""><br>The above diagram adds peepholes to all the gates, but many papers will give some peepholes and not others.</p>
+<p>Another variation is to use coupled forget and input gates. Instead of separately deciding what to forget and what we should add new information to, we make those decisions together. We only forget when we’re going to input something in its place. We only input new values to the state when we forget something older.<br><img src="/images/deeplearning/lstm/15.png" alt=""><br>A slightly more dramatic variation on the LSTM is the Gated Recurrent Unit, or GRU, introduced by <a href="http://arxiv.org/pdf/1406.1078v3.pdf" target="_blank" rel="noopener">Cho, et al. (2014)</a>. It combines the forget and input gates into a single “update gate”. It also merges the cell state and hidden state, and makes some other changes. The resulting model is simpler than standard LSTM models, and has been growing increasingly popular.<br><img src="/images/deeplearning/lstm/16.png" alt=""><br>These are only a few of the most notable LSTM variants. There are lots of others, like Depth Gated RNNs by <a href="http://arxiv.org/pdf/1508.03790v2.pdf" target="_blank" rel="noopener">Yao, et al. (2015)</a>. There’s also some completely different approach to tackling long-term dependencies, like Clockwork RNNs by <a href="http://arxiv.org/pdf/1402.3511v1.pdf" target="_blank" rel="noopener">Koutnik, et al. (2014)</a>.</p>
+<p>Which of these variants is best? Do the differences matter? <a href="http://arxiv.org/pdf/1503.04069.pdf" target="_blank" rel="noopener">Greff, et al. (2015)</a> do a nice comparison of popular variants, finding that they’re all about the same. <a href="http://jmlr.org/proceedings/papers/v37/jozefowicz15.pdf" target="_blank" rel="noopener">Jozefowicz, et al. (2015)</a> tested more than ten thousand RNN architectures, finding some that worked better than LSTMs on certain tasks.</p>
+<h1 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h1><p>Earlier, I mentioned the remarkable results people are achieving with RNNs. Essentially all of these are achieved using LSTMs. They really work a lot better for most tasks!</p>
+<p>Written down as a set of equations, LSTMs look pretty intimidating. Hopefully, walking through them step by step in this essay has made them a bit more approachable.</p>
+<p>LSTMs were a big step in what we can accomplish with RNNs. It’s natural to wonder: is there another big step? A common opinion among researchers is: “Yes! There is a next step and it’s attention!” The idea is to let every step of an RNN pick information to look at from some larger collection of information. For example, if you are using an RNN to create a caption describing an image, it might pick a part of the image to look at for every word it outputs. In fact, <a href="http://arxiv.org/pdf/1502.03044v2.pdf" target="_blank" rel="noopener">Xu, et al. (2015)</a> do exactly this – it might be a fun starting point if you want to explore attention! There’s been a number of really exciting results using attention, and it seems like a lot more are around the corner…</p>
+<p>Attention isn’t the only exciting thread in RNN research. For example, Grid LSTMs by <a href="http://arxiv.org/pdf/1507.01526v1.pdf" target="_blank" rel="noopener">Kalchbrenner, et al. (2015)</a> seem extremely promising. Work using RNNs in generative models – such as <a href="http://arxiv.org/pdf/1502.04623.pdf" target="_blank" rel="noopener">Gregor, et al. (2015)</a>, <a href="http://arxiv.org/pdf/1506.02216v3.pdf" target="_blank" rel="noopener">Chung, et al. (2015)</a>, or <a href="http://arxiv.org/pdf/1411.7610v3.pdf" target="_blank" rel="noopener">Bayer &amp; Osendorfer (2015)</a> – also seems very interesting. The last few years have been an exciting time for recurrent neural networks, and the coming ones promise to only be more so!</p>
+<h1 id="Acknowledgments"><a href="#Acknowledgments" class="headerlink" title="Acknowledgments"></a>Acknowledgments</h1><p>I’m grateful to a number of people for helping me better understand LSTMs, commenting on the visualizations, and providing feedback on this post.</p>
+<p>I’m very grateful to my colleagues at Google for their helpful feedback, especially <a href="http://research.google.com/pubs/OriolVinyals.html" target="_blank" rel="noopener">Oriol Vinyals</a>, <a href="http://research.google.com/pubs/GregCorrado.html" target="_blank" rel="noopener">Greg Corrado</a>, <a href="http://research.google.com/pubs/JonathonShlens.html" target="_blank" rel="noopener">Jon Shlens</a>, <a href="http://people.cs.umass.edu/~luke/" target="_blank" rel="noopener">Luke Vilnis</a>, and <a href="http://www.cs.toronto.edu/~ilya/" target="_blank" rel="noopener">Ilya Sutskever</a>. I’m also thankful to many other friends and colleagues for taking the time to help me, including <a href="https://www.linkedin.com/pub/dario-amodei/4/493/393" target="_blank" rel="noopener">Dario Amodei</a>, and <a href="http://cs.stanford.edu/~jsteinhardt/" target="_blank" rel="noopener">Jacob Steinhardt</a>. I’m especially thankful to <a href="http://www.kyunghyuncho.me/" target="_blank" rel="noopener">Kyunghyun Cho</a> for extremely thoughtful correspondence about my diagrams.</p>
+<p>Before this post, I practiced explaining LSTMs during two seminar series I taught on neural networks. Thanks to everyone who participated in those for their patience with me, and for their feedback.</p>
+<h1 id="Reference-amp-Some-LSTM-Information"><a href="#Reference-amp-Some-LSTM-Information" class="headerlink" title="Reference &amp; Some LSTM Information"></a>Reference &amp; Some LSTM Information</h1><ul>
+<li><a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/" target="_blank" rel="noopener">colah’s blog – Understanding LSTM Networks</a></li>
+<li><a href="http://futureai.media.mit.edu/wp-content/uploads/sites/40/2015/09/GRID-LSTM.pptx_.pdf" target="_blank" rel="noopener">Grid-LSTM Slides</a></li>
+<li><a href="https://arxiv.org/pdf/1507.01526.pdf" target="_blank" rel="noopener">Grid Long Short-Term Memory</a></li>
+<li><a href="https://pdfs.semanticscholar.org/1154/0131eae85b2e11d53df7f1360eeb6476e7f4.pdf" target="_blank" rel="noopener">Learning to Forget: Continual Prediction with LSTM</a></li>
+<li><a href="http://www.felixgers.de/papers/phd.pdf" target="_blank" rel="noopener">LSTM in Recurrent Neural Networks</a></li>
+<li><a href="http://www.cs.toronto.edu/~graves/phd.pdf" target="_blank" rel="noopener">Supervised Sequence Labelling with Recurrent Neural Networks</a></li>
+<li><a href="https://web.eecs.utk.edu/~itamar/courses/ECE-692/Bobby_paper1.pdf" target="_blank" rel="noopener">Long Short-Term Memory</a></li>
+<li><a href="https://arxiv.org/pdf/1502.04681.pdf" target="_blank" rel="noopener">Unsupervised Learning of Video Representations using LSTMs</a></li>
+<li><a href="https://github.com/emansim/unsupervised-videos" target="_blank" rel="noopener">Unsupervised Learning of Video Representations using LSTMs – GitHub</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2017/06/13/Understanding-LSTM-Networks/" title="Understanding LSTM Networks [Reprinted]">https://isaacchanghau.github.io/2017/06/13/Understanding-LSTM-Networks/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/deep-learning/" rel="tag"># deep learning</a>
+          
+            <a href="/tags/machine-learning/" rel="tag"># machine learning</a>
+          
+            <a href="/tags/lstm/" rel="tag"># lstm</a>
+          
+            <a href="/tags/gru/" rel="tag"># gru</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/06/07/Loss-Functions-in-Artificial-Neural-Networks/" rel="next" title="Loss Functions in Artificial Neural Networks">
+                <i class="fa fa-chevron-left"></i> Loss Functions in Artificial Neural Networks
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/06/17/Mathematical-Derivation-of-Covariance/" rel="prev" title="Mathematical Derivation of Covariance Matrix">
+                Mathematical Derivation of Covariance Matrix <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Isaac Changhau" />
+          <p class="site-author-name" itemprop="name">Isaac Changhau</p>
+           
+              <p class="site-description motion-element" itemprop="description">Stay Hungry, Stay Foolish</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">41</span>
+                <span class="site-state-item-name">posts</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">categories</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">40</span>
+                <span class="site-state-item-name">tags</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="mailto:isaac.changhau@gmail.com" target="_blank" title="Email">
+                  
+                    <i class="fa fa-fw fa-envelope"></i>
+                  
+                  Email
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://www.linkedin.com/in/isaac-changhau" target="_blank" title="Linkedin">
+                  
+                    <i class="fa fa-fw fa-linkedin"></i>
+                  
+                  Linkedin
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/IsaacChanghau" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Recurrent-Neural-Networks"><span class="nav-number">1.</span> <span class="nav-text">Recurrent Neural Networks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Problem-of-Long-Term-Dependencies"><span class="nav-number">2.</span> <span class="nav-text">The Problem of Long-Term Dependencies</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LSTM-Networks"><span class="nav-number">3.</span> <span class="nav-text">LSTM Networks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Core-Idea-Behind-LSTMs"><span class="nav-number">4.</span> <span class="nav-text">The Core Idea Behind LSTMs</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Step-by-Step-LSTM-Walk-Through"><span class="nav-number">5.</span> <span class="nav-text">Step-by-Step LSTM Walk Through</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Variants-on-Long-Short-Term-Memory"><span class="nav-number">6.</span> <span class="nav-text">Variants on Long Short Term Memory</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Conclusion"><span class="nav-number">7.</span> <span class="nav-text">Conclusion</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Acknowledgments"><span class="nav-number">8.</span> <span class="nav-text">Acknowledgments</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference-amp-Some-LSTM-Information"><span class="nav-number">9.</span> <span class="nav-text">Reference &amp; Some LSTM Information</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2017 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-star"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Isaac Changhau</span>
+</div>
+
+
+<div class="powered-by">
+  Powered by <a class="theme-link" href="https://hexo.io">Hexo</a>
+</div>
+
+<div class="theme-info">
+  Theme -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
