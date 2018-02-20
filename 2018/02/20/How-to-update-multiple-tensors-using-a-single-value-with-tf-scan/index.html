@@ -77,7 +77,7 @@
 <link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="python,tensorflow," />
 
 
 
@@ -95,16 +95,18 @@
 
 
 
-<meta name="description" content="Stay Hungry, Stay Foolish">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Isaac Changhau">
-<meta property="og:url" content="https://isaacchanghau.github.io/archives/page/2/index.html">
+<meta name="description" content="This post is reprinted from Wilka Carvalho · How to update multiple tensors using a single value with tf.scan.">
+<meta name="keywords" content="python,tensorflow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to update multiple tensors using a single value with tf.scan [Reprinted]">
+<meta property="og:url" content="https://isaacchanghau.github.io/2018/02/20/How-to-update-multiple-tensors-using-a-single-value-with-tf-scan/index.html">
 <meta property="og:site_name" content="Isaac Changhau">
-<meta property="og:description" content="Stay Hungry, Stay Foolish">
+<meta property="og:description" content="This post is reprinted from Wilka Carvalho · How to update multiple tensors using a single value with tf.scan.">
 <meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-02-20T09:03:29.182Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Isaac Changhau">
-<meta name="twitter:description" content="Stay Hungry, Stay Foolish">
+<meta name="twitter:title" content="How to update multiple tensors using a single value with tf.scan [Reprinted]">
+<meta name="twitter:description" content="This post is reprinted from Wilka Carvalho · How to update multiple tensors using a single value with tf.scan.">
 
 
 
@@ -132,13 +134,13 @@
 
 
 
-  <link rel="canonical" href="https://isaacchanghau.github.io/archives/page/2/"/>
+  <link rel="canonical" href="https://isaacchanghau.github.io/2018/02/20/How-to-update-multiple-tensors-using-a-single-value-with-tf-scan/"/>
 
 
 
 
 
-  <title>Archive | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  <title>How to update multiple tensors using a single value with tf.scan [Reprinted] | Isaac Changhau</title><!-- hexo-inject:begin --><!-- hexo-inject:end -->
   
 
 
@@ -163,7 +165,7 @@
     
   
 
-  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right  page-archive  ">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-right page-post-detail ">
     <div class="headband"></div>
     
     <!--<a href="https://github.com/IsaacChanghau"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
@@ -303,587 +305,222 @@
           <div id="content" class="content">
             
 
-  <section id="posts" class="posts-collapse">
-    <span class="archive-move-on"></span>
+  <div id="posts" class="posts-expand">
+    
 
-    <span class="archive-page-counter">
-      
-      
-       
-      
-      OK! 44 posts in total. Keep on posting.
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://isaacchanghau.github.io/2018/02/20/How-to-update-multiple-tensors-using-a-single-value-with-tf-scan/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Isaac Changhau">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Isaac Changhau">
     </span>
 
     
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">How to update multiple tensors using a single value with tf.scan [Reprinted]</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-20T16:55:02+08:00">
+                2018-02-20
+              </time>
+            
+
+            
+              <span class="post-updated">
+                &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
+                <time itemprop="dateUpdated" datetime="2018-02-20T17:03:29+08:00" content="2018-02-20">
+                  2018-02-20
+                </time>
+              </span>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-letters-count">
+              &nbsp; | &nbsp;
+              <i class="fa fa-file-word-o"></i>
+            <span>Count 630 words</span>
+              <!--&nbsp; | &nbsp;
+              <i class="fa fa-clock-o"></i>
+            <span>Reading 4 min</span>-->
+            </span>
+          
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
 
       
       
-      
 
+      
+        <p>This post is reprinted from <a href="https://wcarvalho.github.io/tutorial/2017/06/30/tf_scan/" target="_blank" rel="noopener">Wilka Carvalho · How to update multiple tensors using a single value with tf.scan</a>.<a id="more"></a></p>
+<p><a href="https://github.com/wcarvalho/jupyter_notebooks/blob/master/tf.scan/Tensorflow%20Scan.ipynb" target="_blank" rel="noopener"><strong>Corresponding Jupyter Notebook</strong></a></p>
+<p>I assume that you have a set of Tensors that you want to update with a sequence iteratively. E.g. you have a neural network that you’d like to update with a point at time <code>t</code> in a sequence and values from the network at time <code>t-1</code>. If you want to see this in full-fledged use, look at my jupyter notebook where I recreate the Variational Recurrent Neural Network!</p>
+<p>This is <a href="https://www.tensorflow.org/api_docs/python/tf/scan" target="_blank" rel="noopener">the definition of scan</a>: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">tf.scan(</span><br><span class="line">    fn,</span><br><span class="line">    elems,</span><br><span class="line">    initializer=<span class="keyword">None</span>,</span><br><span class="line">    parallel_iterations=<span class="number">10</span>,</span><br><span class="line">    back_prop=<span class="keyword">True</span>,</span><br><span class="line">    swap_memory=<span class="keyword">False</span>,</span><br><span class="line">    infer_shape=<span class="keyword">True</span>,</span><br><span class="line">    name=<span class="keyword">None</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p><code>fn</code> should follow the form <code>fn(parameter_that_changes,parameter_you_change_with)</code>. This means that you can assume that your input from elem will always go to parameter_you_change_with, and that what you return should be <code>parameter_that_changes</code>. Writing it like a function looks something like the following <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fn</span><span class="params">(x, elem)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> new_x</span><br></pre></td></tr></table></figure></p>
+<p>where <code>new_x</code> will be <code>x</code> the next time <code>fn</code> is called. That took me some time to figure out. <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># Super Simple scan example as per: https://stackoverflow.com/questions/43841782/scan-function-in-theano-and-tensorflow</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">(x, ys)</span>:</span></span><br><span class="line">  (y1, y2) = ys</span><br><span class="line">  <span class="keyword">return</span> x + y1 * y2</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">a = tf.constant([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>])</span><br><span class="line">b = tf.constant([<span class="number">2</span>, <span class="number">3</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">1</span>])</span><br><span class="line">c = tf.scan(f, (a, b), initializer=<span class="number">0</span>)</span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">      print(sess.run(c))</span><br></pre></td></tr></table></figure></p>
+<p>output: <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ 2  8 14 22 27]</span><br></pre></td></tr></table></figure></p>
+<p>Another example: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># updating 3 tensors with a single sequence</span></span><br><span class="line">a1 = tf.Variable([<span class="number">0</span>,<span class="number">0</span>])</span><br><span class="line">a2 = tf.Variable([<span class="number">1</span>,<span class="number">1</span>])</span><br><span class="line">a3 = tf.Variable([<span class="number">2</span>,<span class="number">2</span>])</span><br><span class="line"></span><br><span class="line">sequence = tf.Variable([<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># using tf.multiply istead of '*', e.g. tf.multiply(x,2) instead of 2*x was key to this compiling...</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">replace_one</span><span class="params">(old, x)</span>:</span></span><br><span class="line">    a1, a2, a3 = old</span><br><span class="line">    a1 = tf.add(a1,tf.multiply(x,<span class="number">1</span>))</span><br><span class="line">    a2 = tf.add(a2,tf.multiply(x,<span class="number">2</span>))</span><br><span class="line">    a3 = tf.add(a3,tf.multiply(x,<span class="number">3</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> [a1,a2,a3]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># key things that worked: initializer needed to match output. </span></span><br><span class="line"><span class="comment"># dumb mistake I can see tripping up many people</span></span><br><span class="line">update = tf.scan(replace_one, sequence, initializer=[a1, a2, a3])</span><br><span class="line"></span><br><span class="line">a1 = a1.assign(a2)</span><br><span class="line"><span class="keyword">with</span> tf.Session() <span class="keyword">as</span> sess:</span><br><span class="line">    sess.run(tf.global_variables_initializer())</span><br><span class="line">    print(sess.run(update))</span><br></pre></td></tr></table></figure></p>
+<p>outputs: <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[array([[1, 1],</span><br><span class="line">       [3, 3],</span><br><span class="line">       [6, 6]], dtype=int32), array([[ 3,  3],</span><br><span class="line">       [ 7,  7],</span><br><span class="line">       [13, 13]], dtype=int32), array([[ 5,  5],</span><br><span class="line">       [11, 11],</span><br><span class="line">       [20, 20]], dtype=int32)]</span><br></pre></td></tr></table></figure></p>
+<p><strong>A few notes</strong> So this ws more difficult to implement than I expected. I had to get all the ingredients perfectly right.</p>
+<ul>
+<li><p>While I can assign outside of scan, for some reason the tensors <code>a1, a2, a3</code> couldn’t be assigned, i.e. <code>a1.assign(tf.add(a1,tf.multiply(x,1)))</code>, inside of scan</p></li>
+<li><p>You can have all your values inside a single tensor for the initializer and update them via indexing. This also doesn’t work. i.e. with <code>T=tf.concat([a1,a2,a3])</code>, you can’t do <code>T[0]=x</code></p></li>
+<li><p>I spent a long time trying to manually concatonate the values so that I could track them in the future only to learn that scan does this by default!! E.g., for <code>a1</code>, the corresponding output vector is <code>[a1+1, a1+1+2, a1+1+2+3]</code> since the elements were <code>[1,2,3]</code>.</p></li>
+</ul>
+<p>Hope you found this useful !!</p>
+
+      
+    </div>
+
+    <div>
       
         
-        <div class="collection-title">
-          <h2 class="archive-year motion-element" id="archive-year-2017">2017</h2>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>Author:</strong>
+      Isaac Changhau
+    </li>
+    <li class="post-copyright-link">
+      <strong>Link:</strong>
+      <a href="https://isaacchanghau.github.io/2018/02/20/How-to-update-multiple-tensors-using-a-single-value-with-tf-scan/" title="How to update multiple tensors using a single value with tf.scan [Reprinted]">https://isaacchanghau.github.io/2018/02/20/How-to-update-multiple-tensors-using-a-single-value-with-tf-scan/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>Notice: </strong>
+      All articles are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> unless stating additionally. Contact me via email for questions or discussion.
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+            <a href="/tags/tensorflow/" rel="tag"># tensorflow</a>
+          
         </div>
       
+
+      
+      
       
 
       
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/19/python魔术方法-让自定义类更像内置类型/" rel="next" title="python魔术方法 - 让自定义类更像内置类型 [转载]">
+                <i class="fa fa-chevron-left"></i> python魔术方法 - 让自定义类更像内置类型 [转载]
+              </a>
+            
+          </div>
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+          <span class="post-nav-divider"></span>
 
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/07/22/LSTM-and-GRU-Formula-Summary/" itemprop="url">
-              
-                <span itemprop="name">LSTM and GRU -- Formula Summary</span>
-              
-            </a>
-        
-      </h2>
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-07-22T16:04:41+08:00"
-              content="2017-07-22" >
-          07-22
-        </time>
-      </div>
-
-    </header>
+      
+      
+    </footer>
   </article>
 
 
 
-    
-
+    <div class="post-spread">
       
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/07/19/Neural-Responding-Machine-for-Short-Text-Conversation/" itemprop="url">
-              
-                <span itemprop="name">Neural Responding Machine for Short-Text Conversation (STC) -- Summary</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-07-19T16:09:37+08:00"
-              content="2017-07-19" >
-          07-19
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/07/14/新加坡两年/" itemprop="url">
-              
-                <span itemprop="name">Singapore, Two Years</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-07-14T22:22:09+08:00"
-              content="2017-07-14" >
-          07-14
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/07/10/House-Price-Advanced-Regression-Techniques-2/" itemprop="url">
-              
-                <span itemprop="name">House Prices Advanced Regression Techniques -- Training and Prediction</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-07-10T12:45:46+08:00"
-              content="2017-07-10" >
-          07-10
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/07/08/House-Price-Advanced-Regression-Techniques-1/" itemprop="url">
-              
-                <span itemprop="name">House Prices Advanced Regression Techniques -- Data Analysis Exploration</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-07-08T22:08:02+08:00"
-              content="2017-07-08" >
-          07-08
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/06/28/Spark-Installation-on-Mac-OS-X/" itemprop="url">
-              
-                <span itemprop="name">Spark Installation on Mac OS X</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-06-28T11:33:51+08:00"
-              content="2017-06-28" >
-          06-28
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/06/27/Hadoop-Installation-on-Mac-OS-X/" itemprop="url">
-              
-                <span itemprop="name">Hadoop Installation on Mac OS X</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-06-27T16:58:37+08:00"
-              content="2017-06-27" >
-          06-27
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/06/20/Install-XGBoost-on-Mac-OS-X/" itemprop="url">
-              
-                <span itemprop="name">Install XGBoost on Mac OS X</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-06-20T14:52:50+08:00"
-              content="2017-06-20" >
-          06-20
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/06/17/Mathematical-Derivation-of-Covariance/" itemprop="url">
-              
-                <span itemprop="name">Mathematical Derivation of Covariance Matrix</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-06-17T18:34:16+08:00"
-              content="2017-06-17" >
-          06-17
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/06/13/Understanding-LSTM-Networks/" itemprop="url">
-              
-                <span itemprop="name">Understanding LSTM Networks [Reprinted]</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-06-13T17:59:12+08:00"
-              content="2017-06-13" >
-          06-13
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/06/07/Loss-Functions-in-Artificial-Neural-Networks/" itemprop="url">
-              
-                <span itemprop="name">Loss Functions in Artificial Neural Networks</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-06-07T11:03:29+08:00"
-              content="2017-06-07" >
-          06-07
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/29/parameter-update-methods/" itemprop="url">
-              
-                <span itemprop="name">Parameter Update Algorithms in Artificial Neural Networks</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-29T19:00:03+08:00"
-              content="2017-05-29" >
-          05-29
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/24/Weight-Initialization-in-Artificial-Neural-Networks/" itemprop="url">
-              
-                <span itemprop="name">Weight Initialization in Artificial Neural Networks</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-24T15:44:09+08:00"
-              content="2017-05-24" >
-          05-24
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/22/Activation-Functions-in-Artificial-Neural-Networks/" itemprop="url">
-              
-                <span itemprop="name">Activation Functions in Artificial Neural Networks</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-22T11:21:55+08:00"
-              content="2017-05-22" >
-          05-22
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-      
-      
-      
-
-      
-      
-
-      
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <h2 class="post-title">
-        
-            <a class="post-title-link" href="/2017/05/18/word2vecf/" itemprop="url">
-              
-                <span itemprop="name">Word2Vecf -- Dependency-Based Word Embeddings and Lexical Substitute</span>
-              
-            </a>
-        
-      </h2>
-
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2017-05-18T21:49:56+08:00"
-              content="2017-05-18" >
-          05-18
-        </time>
-      </div>
-
-    </header>
-  </article>
-
-
-
-    
-
-  </section>
-
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/page/3/">3</a><a class="extend next" rel="next" href="/archives/page/3/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
-
+    </div>
+  </div>
 
 
           </div>
@@ -891,6 +528,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -1124,11 +765,9 @@
   
 
   
-  
-    <script type="text/javascript" id="motion.page.archive">
-      $('.archive-year').velocity('transition.slideLeftIn');
-    </script>
-  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
 
 
   
@@ -1488,39 +1127,7 @@
         onPopupClose();
       }
     });
-  </script>
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-        }
-      });
-    </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config("");
 </script>
@@ -1538,6 +1145,18 @@
 </script>
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->
+
+
+
+
+
+  
+
+  
+
+  
+
+  
   
 
 

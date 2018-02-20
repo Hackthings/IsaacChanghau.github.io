@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[How to update multiple tensors using a single value with tf.scan [Reprinted]]]></title>
+    <url>%2F2018%2F02%2F20%2FHow-to-update-multiple-tensors-using-a-single-value-with-tf-scan%2F</url>
+    <content type="text"><![CDATA[This post is reprinted from Wilka Carvalho · How to update multiple tensors using a single value with tf.scan. Corresponding Jupyter Notebook I assume that you have a set of Tensors that you want to update with a sequence iteratively. E.g. you have a neural network that you’d like to update with a point at time t in a sequence and values from the network at time t-1. If you want to see this in full-fledged use, look at my jupyter notebook where I recreate the Variational Recurrent Neural Network! This is the definition of scan: 12345678910tf.scan( fn, elems, initializer=None, parallel_iterations=10, back_prop=True, swap_memory=False, infer_shape=True, name=None) fn should follow the form fn(parameter_that_changes,parameter_you_change_with). This means that you can assume that your input from elem will always go to parameter_you_change_with, and that what you return should be parameter_that_changes. Writing it like a function looks something like the following 12def fn(x, elem): return new_x where new_x will be x the next time fn is called. That took me some time to figure out. 123456789101112131415import tensorflow as tfimport numpy as np# Super Simple scan example as per: https://stackoverflow.com/questions/43841782/scan-function-in-theano-and-tensorflowdef f(x, ys): (y1, y2) = ys return x + y1 * y2a = tf.constant([1, 2, 3, 4, 5])b = tf.constant([2, 3, 2, 2, 1])c = tf.scan(f, (a, b), initializer=0)with tf.Session() as sess: print(sess.run(c)) output: 1[ 2 8 14 22 27] Another example: 1234567891011121314151617181920212223242526# updating 3 tensors with a single sequencea1 = tf.Variable([0,0])a2 = tf.Variable([1,1])a3 = tf.Variable([2,2])sequence = tf.Variable([1,2,3])# using tf.multiply istead of '*', e.g. tf.multiply(x,2) instead of 2*x was key to this compiling...def replace_one(old, x): a1, a2, a3 = old a1 = tf.add(a1,tf.multiply(x,1)) a2 = tf.add(a2,tf.multiply(x,2)) a3 = tf.add(a3,tf.multiply(x,3)) return [a1,a2,a3]# key things that worked: initializer needed to match output. # dumb mistake I can see tripping up many peopleupdate = tf.scan(replace_one, sequence, initializer=[a1, a2, a3])a1 = a1.assign(a2)with tf.Session() as sess: sess.run(tf.global_variables_initializer()) print(sess.run(update)) outputs: 1234567[array([[1, 1], [3, 3], [6, 6]], dtype=int32), array([[ 3, 3], [ 7, 7], [13, 13]], dtype=int32), array([[ 5, 5], [11, 11], [20, 20]], dtype=int32)] A few notes So this ws more difficult to implement than I expected. I had to get all the ingredients perfectly right. While I can assign outside of scan, for some reason the tensors a1, a2, a3 couldn’t be assigned, i.e. a1.assign(tf.add(a1,tf.multiply(x,1))), inside of scan You can have all your values inside a single tensor for the initializer and update them via indexing. This also doesn’t work. i.e. with T=tf.concat([a1,a2,a3]), you can’t do T[0]=x I spent a long time trying to manually concatonate the values so that I could track them in the future only to learn that scan does this by default!! E.g., for a1, the corresponding output vector is [a1+1, a1+1+2, a1+1+2+3] since the elements were [1,2,3]. Hope you found this useful !!]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>tensorflow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[python魔术方法 - 让自定义类更像内置类型 [转载]]]></title>
     <url>%2F2018%2F02%2F19%2Fpython%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95-%E8%AE%A9%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E6%9B%B4%E5%83%8F%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B%2F</url>
     <content type="text"><![CDATA[本文转载自程序员大咖·python 魔术方法: 让自定义类更像内置类型。 Python的魔术方法是Python中那些预定义的像__XXX__类型的函数。使用Python的魔术方法的最大优势在于python提供了简单的方法让对象可以表现得像内置类型一样。 __str__函数 __str__函数用于处理打印实例本身的时候的输出内容。如果没有覆写该函数，则默认输出一个对象名称和内存地址。例如： 12345&gt;&gt;&gt; class Student(object):... def __init__(self,name):... self._name = name...&gt;&gt;&gt; print Student() 输出： 1&lt;__main__.Student object at 0x0000000002A929E8&gt;. 那么我们如何让输出的结果可读性更高一点呢？我们可以覆写__str__函数。例如 1234567&gt;&gt;&gt; class Student(object):... def __init__(self, name):... self._name = name... def __str__(self):... return "I'm a student, named %s" % self._name...&gt;&gt;&gt; print Student("Charlie") 输出结果就是：I’m a student, named Charlie. 我们将str()函数作用于该对象的时候，其实是调用了该对象的__str__函数。 __repr__函数 __repr__也是将对象序列化，但是__repr__更多的是给python编译器看的。__str__更多的是可读性(readable)。 我们将repr()函数作用于摸某一个对象的时候，调用的其实就是该函数的__repr__函数。与repr()成对的是eval()函数。eval()函数是将序列化后的对象重新转为对象。前提是该对象实现了__repr__函数。 &gt; 上面这一段话基于自己的理解，不知道对错。 123456&gt;&gt;&gt; item = [1,2,3]&gt;&gt;&gt; repr(item)'[1, 2, 3]'&gt;&gt;&gt; other_item = eval(repr(item))&gt;&gt;&gt; other_item[1]2 __iter__函数 我们经常对list或者tuple使用for…in…来迭代。那是list继承自Iterable。Iterable实现了__iter__函数。 要想将一个自定义的对象变成一个可迭代的对象，那么必须要实现两个方法：__iter__和next. __iter__函数返回一个对象。迭代的时候则会不断地调用next函数拿到下一个值，直到捕获到StopIteration停止。 &gt; 廖雪峰老师教程里写的是__next__方法，不知道为啥。 12345678910111213141516class Fib(object): def __init__(self): self.a, self.b = 0, 1 def __iter__(self): return self def next(self): self.a, self.b = self.b, self.a + self.b if self.a &gt; 10000: raise StopIteration return self.afor i in Fib(): print i __getitem__函数 上面通过实现__iter__函数实现对象的迭代。那么如何实现对象按下标取出元素呢。这是通过实现对象的__getitem__方法。 我们来举一个例子。我们新建了一个类MyList，我们要办它实现普通list的一些功能，比如 1. 根据下标获取值 2. 正数顺序单步长切片 3. 任意步长切片 12345678910class MyList(object): def __init__(self, *args): self.numbers = args def __getitem__(self, item): return self.numbers[item] my_list = MyList(1, 2, 3, 4, 6, 5, 3)print my_list[2] 当然，上面实现了根据下标获取值。但是这还不够。我们还需要实现切片功能。例如my_list[1:3]。我们对对象进行切片操作的时候，调用的气势也是__getitem__函数。此时，该函数获取到的并不是int对象，而是slice对象。例如下面的代码 123456789101112131415161718class MyList(object): def __init__(self, *args): self.numbers = args def __getitem__(self, item): if isinstance(item, int): return self.numbers[item] elif isinstance(item, slice): # 写习惯了其他语言，差点忘记了三元运算符的格式了，吼吼吼。 # 下面句三元运算符的意思是，若为空，则为切片从0开始。 start = item.start if item.start is not None else 0 # 下面句三元运算符的意思是，若为空，则为切片到最末端结束。 stop = item.stop if item.stop is not None else len(self.numbers) return self.numbers[start:stop] my_list = MyList(1, 2, 3, 4, 6, 5, 3)print my_list[2:5] 上面的代码终于实现了切片功能，但是还没考虑负数呢。那么我们加一把劲再来改一下。代码如下： 123456789101112131415161718class MyList(object): def __init__(self, *args): self.numbers = args def __getitem__(self, item): if isinstance(item, int): return self.numbers[item] elif isinstance(item, slice): start = item.start if item.start is not None else 0 stop = item.stop if item.stop is not None else len(self.numbers) length = len(self.numbers) start = length + start + 1 if start &lt; 0 else start stop = length + stop + 1 if stop &lt; 0 else stop return self.numbers[start:stop] my_list = MyList(1, 2, 3, 4, 6, 5, 3)print my_list[1:-1] __getattar__ 在调用某一个对象不存在的属性或者方法的时候，会抛出一个一个AttributeError错误。但是如果我们实现了类中的魔术方法__getattar__，那么在调用不存在的属性或者方法的时候，就会调用该魔术方法。 1234567891011class Apple(object): def __getattr__(self, item): if item == "attar1": return "print" if item == "method1": return lambda x: "hello %s" % x apple = Apple()print apple.attar1print apple.method1 __getattar__函数一个重要的适用场景就是实现链式调用。例如我们在调用某一个api的时候： &gt; GET users/articles/index 那么我们就希望我们的代码可以实现Api.users.articles.index这么调用。思考一下，要实现链式调用，最重要的就是每一个调用都是返回一个实例～～。 123456789101112131415# coding=utf-8class Api(object): def __init__(self, path=''): self._path = path def __getattr__(self, name): return Api("%s/%s" % (self._path, name)) # 定义一个Post方法来发送请求 def post(self): print self._path api = Api()api.user.articles.index.post() 廖雪峰在他的教程中给我们出了一个题目： 例如调用github的api：users/:user/repos一样，中间的user名需要动态替换。 我们希望能api.users(&quot;charlie&quot;).repos这么调用。那么代码该如何实现呢？这可能需要用到另一个方法__call__ __call__函数 一个对象既有属性，又有方法。我们在调用一个实例的方法的时候，我们可以使用instance.method()的形式调用。其实也可以将实例本身看成一个函数用来调用，我们需要做的就是实现__call__函数本身。 1234567class Apple(object): def __call__(self, *args, **kwargs): return args apple = Apple()print apple("yes", "no") 此时我们再来看一下上面提到的实现api.users(&quot;charlie&quot;).repos链式调用的方法。 12345678910111213141516171819# coding=utf-8class Api(object): def __init__(self, path=''): self._path = path def __getattr__(self, name): return Api("%s/%s" % (self._path, name)) def __call__(self, args): self._path = "%s/%s" % (self._path, args) return Api(self._path) # 定义一个Post方法来发送请求 def post(self): print self._path api = Api()api.users("Charlie").index.post()]]></content>
@@ -153,8 +165,8 @@
         <category>Machine Learning</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>machine learning</tag>
+        <tag>java</tag>
         <tag>spark</tag>
         <tag>scala</tag>
         <tag>support vector machine</tag>
@@ -169,8 +181,8 @@
         <category>Natural Language Processing</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>deep learning</tag>
+        <tag>java</tag>
         <tag>lstm</tag>
         <tag>gru</tag>
         <tag>deeplearning4j</tag>
@@ -186,9 +198,9 @@
         <category>Machine Learning</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>deep learning</tag>
         <tag>machine learning</tag>
+        <tag>java</tag>
         <tag>lstm</tag>
         <tag>deeplearning4j</tag>
         <tag>spark</tag>
@@ -382,8 +394,8 @@
         <category>Natural Language Processing</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>deep learning</tag>
+        <tag>java</tag>
         <tag>natural language processing</tag>
         <tag>word embeddings</tag>
         <tag>skip-gram</tag>
@@ -397,8 +409,8 @@
         <category>Natural Language Processing</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>deep learning</tag>
+        <tag>java</tag>
         <tag>deeplearning4j</tag>
         <tag>natural language processing</tag>
         <tag>word embeddings</tag>
@@ -415,8 +427,8 @@
         <category>Machine Learning</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>machine learning</tag>
+        <tag>java</tag>
         <tag>deeplearning4j</tag>
         <tag>spark</tag>
         <tag>scala</tag>
