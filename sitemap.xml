@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://isaacchanghau.github.io/about/index.html</loc>
+    
+    <lastmod>2018-02-20T09:18:01.750Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://isaacchanghau.github.io/2017/09/19/PTransE/</loc>
+    
+    <lastmod>2018-02-20T09:14:00.202Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://isaacchanghau.github.io/2018/02/20/How-to-update-multiple-tensors-using-a-single-value-with-tf-scan/</loc>
     
     <lastmod>2018-02-20T09:03:29.182Z</lastmod>
@@ -100,13 +114,6 @@
   </url>
   
   <url>
-    <loc>https://isaacchanghau.github.io/2017/09/19/PTransE/</loc>
-    
-    <lastmod>2018-02-20T03:56:59.362Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://isaacchanghau.github.io/2017/05/29/parameter-update-methods/</loc>
     
     <lastmod>2018-02-20T03:56:07.042Z</lastmod>
@@ -180,13 +187,6 @@
     <loc>https://isaacchanghau.github.io/2017/08/17/Backpropagation-Algorithm/</loc>
     
     <lastmod>2018-02-20T03:43:22.634Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://isaacchanghau.github.io/about/index.html</loc>
-    
-    <lastmod>2018-02-19T15:37:03.423Z</lastmod>
     
   </url>
   
