@@ -107,7 +107,7 @@
 <meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/beam-search/2.jpg">
 <meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/beam-search/3.jpg">
 <meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/beam-search/4.jpg">
-<meta property="og:updated_time" content="2017-09-07T15:54:16.000Z">
+<meta property="og:updated_time" content="2018-02-20T03:59:07.679Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Seq2Seq中的Beam Search算法过程 [转载]">
 <meta name="twitter:description" content="本文转载自知乎专栏·机器学习算法与自然语言处理的seq2seq中的beam search算法过程。">
@@ -357,8 +357,8 @@
             
               <span class="post-updated">
                 &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
-                <time itemprop="dateUpdated" datetime="2017-09-07T23:54:16+08:00" content="2017-09-07">
-                  2017-09-07
+                <time itemprop="dateUpdated" datetime="2018-02-20T11:59:07+08:00" content="2018-02-20">
+                  2018-02-20
                 </time>
               </span>
             
@@ -427,16 +427,17 @@
 
       
         <p>本文转载自知乎专栏·<a href="https://zhuanlan.zhihu.com/qinlibo-ml" target="_blank" rel="noopener">机器学习算法与自然语言处理</a>的<a href="https://zhuanlan.zhihu.com/p/28048246" target="_blank" rel="noopener">seq2seq中的beam search算法过程</a>。<a id="more"></a></p>
-<p>在 Sequence2Sequence 模型中，beam search 的方法只用在测试的情况，因为在训练过程中，每一个 decoder 的输出是有正确答案的，也就不需要 beam search 去加大输出的准确率。假设现在我们用机器翻译作为例子来说明，我们需要翻译：</p>
-<blockquote>
-<p>“我是中国人” —&gt; “I am Chinese”</p>
-</blockquote>
+<p>在 Sequence2Sequence 模型中，beam search 的方法只用在测试的情况，因为在训练过程中，每一个 decoder 的输出是有正确答案的，也就不需要 beam search 去加大输出的准确率。假设现在我们用机器翻译作为例子来说明，我们需要翻译： &gt; “我是中国人” —&gt; “I am Chinese”</p>
 <p>假设我们的词表大小只有三个单词就是 I am Chinese。那么如果我们的 beam size 为 2 的话，我们现在来解释。</p>
-<p>如下图所示，我们在 decoder 的过程中，有了beam search 方法后，在第一次的输出，我们选取概率最大的 “I” 和 “am” 两个单词，而不是只挑选一个概率最大的单词。<br><img src="/images/deeplearning/beam-search/1.jpg" alt="1.jpg"><br>然后接下来我们要做的就是，把 “I” 单词作为下一个 decoder 的输入算一遍得到 $y_{2}$ 的输出概率分布，把 “am” 单词作为下一个 decoder 的输入算一遍也得到 $y_{2}$ 的输出概率分布。</p>
-<p>比如将 “I” 单词作为下一个 decoder 的输入算一遍得到 $y_{2}$ 的输出概率分布如下：<br><img src="/images/deeplearning/beam-search/2.jpg" alt="2.jpg"><br>比如将 “am” 单词作为下一个 decoder 的输入算一遍得到 $y_{2}$ 的输出概率分布如下：<br><img src="/images/deeplearning/beam-search/3.jpg" alt="3.jpg"><br>那么此时我们由于我们的 beam size 为 2，也就是我们只能保留概率最大的两个序列，此时我们可以计算所有的序列概率：$$\begin{aligned}<br>&amp; “I\quad I”=0.4\times 0.3=0.12,\qquad &amp; “I\quad am”=0.4\times 0.6=0.24,\\<br>&amp; “I\quad Chinese”=0.4\times 0.1=0.04,\qquad &amp; “am\quad I”=0.5\times 0.3=0.15,\\<br>&amp; “am\quad am”=0.5\times 0.3=0.15,\qquad &amp; “am\quad Chinese”=0.5\times 0.4=0.20<br>\end{aligned}$$我们很容易得出俩个最大概率的序列为 “I am” 和 “am Chinese”，然后后面会不断重复这个过程，直到遇到结束符为止。</p>
-<p>最终输出 2 个得分最高的序列。这就是seq2seq中的 beam search 算法过程，但是可能有些同学有一个疑问，就是但 $i-1$ 时刻选择的单词不同的时候，下一时刻的输出概率分布为什么会改变？</p>
-<p>这是由于解码的过程中，第i时刻的模型的输入，包括了第 $i-1$ 时刻模型的输出，那么很自然在第 $i-1$ 时刻模型的输出不同的时候，就会导致下一时刻模型的输出概率分布会不同，因为第 $i-1$ 时刻的输出作为参数影响了后一时刻模型的学习。</p>
-<p>如下图用了一个 slides 的法语翻译为英文的例子，可以更容易理解上面的解释。<br><img src="/images/deeplearning/beam-search/4.jpg" alt="4.jpg"><br>参考：<a href="https://www.zhihu.com/question/54356960" target="_blank" rel="noopener">谁能解释下seq2seq中的beam search算法过程?</a></p>
+<p>如下图所示，我们在 decoder 的过程中，有了beam search 方法后，在第一次的输出，我们选取概率最大的 “I” 和 “am” 两个单词，而不是只挑选一个概率最大的单词。 <img src="/images/deeplearning/beam-search/1.jpg" alt="1.jpg"> 然后接下来我们要做的就是，把 “I” 单词作为下一个 decoder 的输入算一遍得到 <span class="math inline">\(y_{2}\)</span> 的输出概率分布，把 “am” 单词作为下一个 decoder 的输入算一遍也得到 <span class="math inline">\(y_{2}\)</span> 的输出概率分布。</p>
+<p>比如将 “I” 单词作为下一个 decoder 的输入算一遍得到 <span class="math inline">\(y_{2}\)</span> 的输出概率分布如下： <img src="/images/deeplearning/beam-search/2.jpg" alt="2.jpg"> 比如将 “am” 单词作为下一个 decoder 的输入算一遍得到 <span class="math inline">\(y_{2}\)</span> 的输出概率分布如下： <img src="/images/deeplearning/beam-search/3.jpg" alt="3.jpg"> 那么此时我们由于我们的 beam size 为 2，也就是我们只能保留概率最大的两个序列，此时我们可以计算所有的序列概率：<span class="math display">\[\begin{aligned}
+&amp; &quot;I\quad I&quot;=0.4\times 0.3=0.12,\qquad &amp; &quot;I\quad am&quot;=0.4\times 0.6=0.24,\\
+&amp; &quot;I\quad Chinese&quot;=0.4\times 0.1=0.04,\qquad &amp; &quot;am\quad I&quot;=0.5\times 0.3=0.15,\\
+&amp; &quot;am\quad am&quot;=0.5\times 0.3=0.15,\qquad &amp; &quot;am\quad Chinese&quot;=0.5\times 0.4=0.20
+\end{aligned}\]</span>我们很容易得出俩个最大概率的序列为 “I am” 和 “am Chinese”，然后后面会不断重复这个过程，直到遇到结束符为止。</p>
+<p>最终输出 2 个得分最高的序列。这就是seq2seq中的 beam search 算法过程，但是可能有些同学有一个疑问，就是但 <span class="math inline">\(i-1\)</span> 时刻选择的单词不同的时候，下一时刻的输出概率分布为什么会改变？</p>
+<p>这是由于解码的过程中，第i时刻的模型的输入，包括了第 <span class="math inline">\(i-1\)</span> 时刻模型的输出，那么很自然在第 <span class="math inline">\(i-1\)</span> 时刻模型的输出不同的时候，就会导致下一时刻模型的输出概率分布会不同，因为第 <span class="math inline">\(i-1\)</span> 时刻的输出作为参数影响了后一时刻模型的学习。</p>
+<p>如下图用了一个 slides 的法语翻译为英文的例子，可以更容易理解上面的解释。 <img src="/images/deeplearning/beam-search/4.jpg" alt="4.jpg"> 参考：<a href="https://www.zhihu.com/question/54356960" target="_blank" rel="noopener">谁能解释下seq2seq中的beam search算法过程?</a></p>
 
       
     </div>
@@ -1137,7 +1138,7 @@
     });
   </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+  MathJax.Hub.Config("");
 </script>
 
 <script type="text/x-mathjax-config">
@@ -1149,7 +1150,7 @@
   });
 </script>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->

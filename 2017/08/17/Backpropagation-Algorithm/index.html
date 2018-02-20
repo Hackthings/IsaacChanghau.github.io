@@ -105,7 +105,7 @@
 <meta property="og:locale" content="en">
 <meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/backprop/1.png">
 <meta property="og:image" content="https://isaacchanghau.github.io/images/deeplearning/backprop/2.png">
-<meta property="og:updated_time" content="2018-01-30T08:31:36.000Z">
+<meta property="og:updated_time" content="2018-02-20T03:43:22.634Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Backpropagation Algorithm">
 <meta name="twitter:description" content="The article is excerpted from Andrew Ng’s CS294A Lecture notes: Sparse Autoencoder, then I add some personal understanding.">
@@ -355,8 +355,8 @@
             
               <span class="post-updated">
                 &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
-                <time itemprop="dateUpdated" datetime="2018-01-30T16:31:36+08:00" content="2018-01-30">
-                  2018-01-30
+                <time itemprop="dateUpdated" datetime="2018-02-20T11:43:22+08:00" content="2018-02-20">
+                  2018-02-20
                 </time>
               </span>
             
@@ -370,7 +370,7 @@
             <span class="post-letters-count">
               &nbsp; | &nbsp;
               <i class="fa fa-file-word-o"></i>
-            <span>Count 2,734 words</span>
+            <span>Count 2,731 words</span>
               <!--&nbsp; | &nbsp;
               <i class="fa fa-clock-o"></i>
             <span>Reading 17 min</span>-->
@@ -425,50 +425,115 @@
 
       
         <p>The article is excerpted from Andrew Ng’s <a href="https://web.stanford.edu/class/cs294a/" target="_blank" rel="noopener">CS294A Lecture notes</a>: <a href="https://web.stanford.edu/class/cs294a/sparseAutoencoder_2011new.pdf" target="_blank" rel="noopener">Sparse Autoencoder</a>, then I add some personal understanding.<a id="more"></a></p>
-<p>In this article, we will let $n_{l}$ denote the number of layers in our network, label $l$ as $L_{l}$, so layer $L_{1}$ is the input layer, and layer $L_{n_{l}}$ the output layer. Neural network has parameters $(W,b)=(W^{(1)},b^{(1)},\dots,W^{(n_{l}-1)},b^{(n_{l}-1)})$, where we write $W_{ij}^{(l)}$ to denote the parameter (or weight) associated with the connection between unit $j$ in layer $l$ and unit $i$ in layer $l+1$. (Note the order of the indices). Also, $b_{i}^{(l)}$ is the bais associated with unit $i$ in layer $l+1$. We also let $s_{l}$ denote the number of nodes in layer $l$ (not counting the bias unit). Plus, we will write $a_{i}^{(l)}$ to denote the activation (meaning output value) of unit $i$ in layer $l$.<br><img src="/images/deeplearning/backprop/1.png" alt="1.png"><br>Suppose we have a fixed training set $\{(x^{(1)},y^{(1)}),\dots,(x^{(m)},y^{(m)})\}$ of $m$ training examples. We can train our neural network using batch gradient descent. In detail, for a single training example $(x,y)$, we define the cost function with respect to that single example to be$$<br>J(W,b;x,y)=\frac{1}{2}\Vert h_{W,b}(x)-y\Vert^{2}\tag{1}<br>$$This is a (one-half) <strong>squared-error cost function</strong>. Given a training set of $m$ examples, we then define the <strong>overall cost function</strong> to be$$\begin{aligned}<br>J(W,b) &amp; =\bigg[\frac{1}{m}\sum_{i=1}^{m}J(W,b;x^{(i)},y^{(i)})\bigg]+\frac{\lambda}{2}\sum_{l=1}^{n_{l}-1}\sum_{i=1}^{s_{l}}\sum_{j=1}^{s_{l}+1}\big(W_{ji}^{(l)}\big)^{2}\\<br>&amp; =\bigg[\frac{1}{m}\sum_{i=1}^{m}\big(\frac{1}{2}\Vert h_{W,b}(x^{(i)})-y^{(i)}\Vert^{2}\big)\bigg]+\frac{\lambda}{2}\sum_{l=1}^{n_{l}-1}\sum_{i=1}^{s_{l}}\sum_{j=1}^{s_{l}+1}\big(W_{ji}^{(l)}\big)^{2}<br>\end{aligned}\tag{2}$$The first term is an <strong>average sum-of-squares error term</strong>. The second term is a <strong>regularization term</strong> (also called a <strong>weight decay term</strong>) that tends to decrease the magnitude of the weights, and helps <strong>prevent overfitting</strong>.</p>
+<p>In this article, we will let <span class="math inline">\(n_{l}\)</span> denote the number of layers in our network, label <span class="math inline">\(l\)</span> as <span class="math inline">\(L_{l}\)</span>, so layer <span class="math inline">\(L_{1}\)</span> is the input layer, and layer <span class="math inline">\(L_{n_{l}}\)</span> the output layer. Neural network has parameters <span class="math inline">\((W,b)=(W^{(1)},b^{(1)},\dots,W^{(n_{l}-1)},b^{(n_{l}-1)})\)</span>, where we write <span class="math inline">\(W_{ij}^{(l)}\)</span> to denote the parameter (or weight) associated with the connection between unit <span class="math inline">\(j\)</span> in layer <span class="math inline">\(l\)</span> and unit <span class="math inline">\(i\)</span> in layer <span class="math inline">\(l+1\)</span>. (Note the order of the indices). Also, <span class="math inline">\(b_{i}^{(l)}\)</span> is the bais associated with unit <span class="math inline">\(i\)</span> in layer <span class="math inline">\(l+1\)</span>. We also let <span class="math inline">\(s_{l}\)</span> denote the number of nodes in layer <span class="math inline">\(l\)</span> (not counting the bias unit). Plus, we will write <span class="math inline">\(a_{i}^{(l)}\)</span> to denote the activation (meaning output value) of unit <span class="math inline">\(i\)</span> in layer <span class="math inline">\(l\)</span>. <img src="/images/deeplearning/backprop/1.png" alt="1.png"> Suppose we have a fixed training set <span class="math inline">\(\{(x^{(1)},y^{(1)}),\dots,(x^{(m)},y^{(m)})\}\)</span> of <span class="math inline">\(m\)</span> training examples. We can train our neural network using batch gradient descent. In detail, for a single training example <span class="math inline">\((x,y)\)</span>, we define the cost function with respect to that single example to be<span class="math display">\[
+J(W,b;x,y)=\frac{1}{2}\Vert h_{W,b}(x)-y\Vert^{2}\tag{1}
+\]</span>This is a (one-half) <strong>squared-error cost function</strong>. Given a training set of <span class="math inline">\(m\)</span> examples, we then define the <strong>overall cost function</strong> to be<span class="math display">\[\begin{aligned}
+J(W,b) &amp; =\bigg[\frac{1}{m}\sum_{i=1}^{m}J(W,b;x^{(i)},y^{(i)})\bigg]+\frac{\lambda}{2}\sum_{l=1}^{n_{l}-1}\sum_{i=1}^{s_{l}}\sum_{j=1}^{s_{l}+1}\big(W_{ji}^{(l)}\big)^{2}\\
+&amp; =\bigg[\frac{1}{m}\sum_{i=1}^{m}\big(\frac{1}{2}\Vert h_{W,b}(x^{(i)})-y^{(i)}\Vert^{2}\big)\bigg]+\frac{\lambda}{2}\sum_{l=1}^{n_{l}-1}\sum_{i=1}^{s_{l}}\sum_{j=1}^{s_{l}+1}\big(W_{ji}^{(l)}\big)^{2}
+\end{aligned}\tag{2}\]</span>The first term is an <strong>average sum-of-squares error term</strong>. The second term is a <strong>regularization term</strong> (also called a <strong>weight decay term</strong>) that tends to decrease the magnitude of the weights, and helps <strong>prevent overfitting</strong>.</p>
 <blockquote>
-<p>Usually weight decay is not applied to the bias terms $b_{i}^{(l)}$, as reflected in the difinition of $J(W,b)$. Applying weight decay to the bias units usually makes only a small different to the final network, however. If you took <a href="http://cs229.stanford.edu" target="_blank" rel="noopener">CS229</a>, you may also recognize weight decay this as essentially a variant of the Bayesian regularization method you saw there, where we placed a Gaussian prior on the parameters and did MAP (instead of maximum likelihood) estimation.</p>
+<p>Usually weight decay is not applied to the bias terms <span class="math inline">\(b_{i}^{(l)}\)</span>, as reflected in the difinition of <span class="math inline">\(J(W,b)\)</span>. Applying weight decay to the bias units usually makes only a small different to the final network, however. If you took <a href="http://cs229.stanford.edu" target="_blank" rel="noopener">CS229</a>, you may also recognize weight decay this as essentially a variant of the Bayesian regularization method you saw there, where we placed a Gaussian prior on the parameters and did MAP (instead of maximum likelihood) estimation.</p>
 </blockquote>
-<p>The <strong>weight decay parameter</strong> $\lambda$ controls the relative importance of the two terms. Note also the slightly overloaded notation: $J(W,b;x,y)$ is the squared error cost with respect to a single example; $J(W,b)$ is the overall cost function, which includes the weight decay term.</p>
-<p>This cost function above is often used both for <strong>classification</strong> and for <strong>regression</strong> problems. For classification, we let $y=0$ or $1$ represent the two class labels (recall that the sigmoid activation function outputs values in $[0,1]$; if we were using a tanh activation function, we would instead use $-1$ and $+1$ to denote the labels). For regression problems, we first scale our outputs to ensure that they lie in the $[0,1]$ range (or if we were using a <code>tanh</code> activation function, then the $[−1,1]$ range).</p>
-<p>Our goal is to minimize $J(W,b)$ as a function of $W$ and $b$. To train our neural network, we will initialize each parameter $W_{ij}^{(l)}$ and each $b_{i}^{(l)}$ to a small random value near zero (say according to a $\mathfrak{N}(0,\epsilon^{2})$ distribution for some small $\epsilon$, say $0.01$), and then apply an optimization algorithm such as batch gradient descent. Since $J(W,b)$ is a <strong>non-convex function</strong>, gradient descent is susceptible to <strong>local optima</strong>; however, in practice gradient descent usually works fairly well.</p>
-<p>Finally, note that it is important to initialize the parameters randomly, rather than to all 0’s. If all the parameters start off at identical values, then all the hidden layer units will end up learning the same function of the input (more formally, $W_{ij}^{(1)}$ will be the same for all values of $i$, so that $a_{1}^{(2)}=a_{2}^{(2)}=a_{3}^{(2)}=\dots$ for any input $x$). The random initialization serves the purpose of <strong>symmetry breaking</strong>.</p>
-<p>One iteration of gradient descent updates the parameters $W$, $b$ as follows:$$<br>W_{ij}^{(l)}:=W_{ij}^{(l)}-\alpha\frac{\partial J(W,b)}{\partial W_{ij}^{(l)}}\tag{3}<br>$$$$<br>b_{i}^{(l)}:=b_{i}^{(l)}-\alpha\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}\tag{4}<br>$$where $\alpha$ is the <strong>learning rate</strong>. The key step is computing the partial derivatives above. We will now describe the <strong>backpropagation</strong> algorithm, which gives an efficient way to compute these partial derivatives.</p>
-<p>We will first describe how backpropagation can be used to compute $\frac{\partial}{\partial W_{ij}^{(l)}}J(W,b;x,y)$ and $\frac{\partial}{\partial b_{i}^{(l)}}J(W,b;x,y)$, the partial derivatives of the cost function $J(W,b;x,y)$ defined with respect to a single example $(x,y)$. Once we can compute these, then by referring to Equation (2), we see that the derivative of the overall cost function $J(W,b)$ can be computed as$$<br>\frac{\partial J(W,b)}{\partial W_{ij}^{(l)}}=\bigg[\frac{1}{m}\sum_{i=1}^{m}\frac{\partial}{\partial W_{ij}^{(l)}}J(W,b;x^{(i)},y^{(i)})\bigg]+\lambda W_{ij}^{(l)}\tag{5}<br>$$$$<br>\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}=\frac{1}{m}\sum_{i=1}^{m}\frac{\partial}{\partial b_{i}^{(l)}}J(W,b;x^{(i)},y^{(i)})\tag{6}<br>$$The two lines above differ slightly <em>because weight decay is applied to $W$ but not $b$</em>.</p>
-<p>The intuition behind the backpropagation algorithm is as follows. Given a training example $(x,y)$, we will first run a “forward pass” to compute all the activations throughout the network, including the output value of the hypothesis $h_{W,b}(x)$. Then, for each node i in layer l, we would like to compute an “<strong>error term</strong>” $\delta_{i}^{(l)}$ that measures how much that node was “responsible” for any errors in our output. For an output node, we can directly measure the difference between the network’s activation and the true target value, and use that to define $\delta_{i}^{(n_{l})}$ (where layer $n_{l}$ is the output layer). How about hidden units? For those, we will compute $\delta_{i}^{(l)}$ based on a weighted average of the error terms of the nodes that uses $a_{i}^{(l)}$ (the $i$-th activation value of $l$ layer) as an input.</p>
+<p>The <strong>weight decay parameter</strong> <span class="math inline">\(\lambda\)</span> controls the relative importance of the two terms. Note also the slightly overloaded notation: <span class="math inline">\(J(W,b;x,y)\)</span> is the squared error cost with respect to a single example; <span class="math inline">\(J(W,b)\)</span> is the overall cost function, which includes the weight decay term.</p>
+<p>This cost function above is often used both for <strong>classification</strong> and for <strong>regression</strong> problems. For classification, we let <span class="math inline">\(y=0\)</span> or <span class="math inline">\(1\)</span> represent the two class labels (recall that the sigmoid activation function outputs values in <span class="math inline">\([0,1]\)</span>; if we were using a tanh activation function, we would instead use <span class="math inline">\(-1\)</span> and <span class="math inline">\(+1\)</span> to denote the labels). For regression problems, we first scale our outputs to ensure that they lie in the <span class="math inline">\([0,1]\)</span> range (or if we were using a <code>tanh</code> activation function, then the <span class="math inline">\([−1,1]\)</span> range).</p>
+<p>Our goal is to minimize <span class="math inline">\(J(W,b)\)</span> as a function of <span class="math inline">\(W\)</span> and <span class="math inline">\(b\)</span>. To train our neural network, we will initialize each parameter <span class="math inline">\(W_{ij}^{(l)}\)</span> and each <span class="math inline">\(b_{i}^{(l)}\)</span> to a small random value near zero (say according to a <span class="math inline">\(\mathfrak{N}(0,\epsilon^{2})\)</span> distribution for some small <span class="math inline">\(\epsilon\)</span>, say <span class="math inline">\(0.01\)</span>), and then apply an optimization algorithm such as batch gradient descent. Since <span class="math inline">\(J(W,b)\)</span> is a <strong>non-convex function</strong>, gradient descent is susceptible to <strong>local optima</strong>; however, in practice gradient descent usually works fairly well.</p>
+<p>Finally, note that it is important to initialize the parameters randomly, rather than to all 0’s. If all the parameters start off at identical values, then all the hidden layer units will end up learning the same function of the input (more formally, <span class="math inline">\(W_{ij}^{(1)}\)</span> will be the same for all values of <span class="math inline">\(i\)</span>, so that <span class="math inline">\(a_{1}^{(2)}=a_{2}^{(2)}=a_{3}^{(2)}=\dots\)</span> for any input <span class="math inline">\(x\)</span>). The random initialization serves the purpose of <strong>symmetry breaking</strong>.</p>
+<p>One iteration of gradient descent updates the parameters <span class="math inline">\(W\)</span>, <span class="math inline">\(b\)</span> as follows:<span class="math display">\[
+W_{ij}^{(l)}:=W_{ij}^{(l)}-\alpha\frac{\partial J(W,b)}{\partial W_{ij}^{(l)}}\tag{3}
+\]</span><span class="math display">\[
+b_{i}^{(l)}:=b_{i}^{(l)}-\alpha\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}\tag{4}
+\]</span>where <span class="math inline">\(\alpha\)</span> is the <strong>learning rate</strong>. The key step is computing the partial derivatives above. We will now describe the <strong>backpropagation</strong> algorithm, which gives an efficient way to compute these partial derivatives.</p>
+<p>We will first describe how backpropagation can be used to compute <span class="math inline">\(\frac{\partial}{\partial W_{ij}^{(l)}}J(W,b;x,y)\)</span> and <span class="math inline">\(\frac{\partial}{\partial b_{i}^{(l)}}J(W,b;x,y)\)</span>, the partial derivatives of the cost function <span class="math inline">\(J(W,b;x,y)\)</span> defined with respect to a single example <span class="math inline">\((x,y)\)</span>. Once we can compute these, then by referring to Equation (2), we see that the derivative of the overall cost function <span class="math inline">\(J(W,b)\)</span> can be computed as<span class="math display">\[
+\frac{\partial J(W,b)}{\partial W_{ij}^{(l)}}=\bigg[\frac{1}{m}\sum_{i=1}^{m}\frac{\partial}{\partial W_{ij}^{(l)}}J(W,b;x^{(i)},y^{(i)})\bigg]+\lambda W_{ij}^{(l)}\tag{5}
+\]</span><span class="math display">\[
+\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}=\frac{1}{m}\sum_{i=1}^{m}\frac{\partial}{\partial b_{i}^{(l)}}J(W,b;x^{(i)},y^{(i)})\tag{6}
+\]</span>The two lines above differ slightly <em>because weight decay is applied to <span class="math inline">\(W\)</span> but not <span class="math inline">\(b\)</span></em>.</p>
+<p>The intuition behind the backpropagation algorithm is as follows. Given a training example <span class="math inline">\((x,y)\)</span>, we will first run a “forward pass” to compute all the activations throughout the network, including the output value of the hypothesis <span class="math inline">\(h_{W,b}(x)\)</span>. Then, for each node i in layer l, we would like to compute an “<strong>error term</strong>” <span class="math inline">\(\delta_{i}^{(l)}\)</span> that measures how much that node was “responsible” for any errors in our output. For an output node, we can directly measure the difference between the network’s activation and the true target value, and use that to define <span class="math inline">\(\delta_{i}^{(n_{l})}\)</span> (where layer <span class="math inline">\(n_{l}\)</span> is the output layer). How about hidden units? For those, we will compute <span class="math inline">\(\delta_{i}^{(l)}\)</span> based on a weighted average of the error terms of the nodes that uses <span class="math inline">\(a_{i}^{(l)}\)</span> (the <span class="math inline">\(i\)</span>-th activation value of <span class="math inline">\(l\)</span> layer) as an input.</p>
 <blockquote>
-<p>The reason why we need to introduce error term $\delta_{i}^{(l)}$:<br>Using the <strong>chain rule of derivation</strong>, we have$$<br>\frac{\partial J(w,b;x,y)}{\partial W_{ij}^{(l)}}=\frac{\partial J(w,b;x,y)}{\partial z_{i}^{(l+1)}}\frac{\partial z_{i}^{(l+1)}}{\partial W_{ij}^{(l)}}<br>$$$$<br>\frac{\partial J(w,b;x,y)}{\partial b_{i}^{(l)}}=\frac{\partial J(w,b;x,y)}{\partial z_{i}^{(l+1)}}\frac{\partial z_{i}^{(l+1)}}{\partial b_{i}^{(l)}}<br>$$Since $z^{(l+1)}=W^{(l)}a^{(l)}+b^{(l)}$, then$$<br>z_{i}^{(l+1)}=\sum_{k=1}^{s_{l}}W_{ik}^{(l)}a_{k}^{(l)}+b_{i}^{(l)}$$Thus we have$$\frac{\partial z_{i}^{(l+1)}}{\partial W_{ij}^{(l)}}=a_{j}^{(l)},\quad\frac{\partial z_{i}^{(l+1)}}{b_{i}^{(l)}}=1<br>$$If we let $\delta_{i}^{(l)}=\frac{\partial J(w,b;x,y)}{\partial z_{i}^{(l)}}$, then we have$$\frac{\partial J(w,b;x,y)}{\partial W_{ij}^{(l)}}=a_{i}^{(l)}\delta_{i}^{(l+1)}$$$$\frac{\partial J(w,b;x,y)}{\partial b_{i}^{(l)}}=\delta_{i}^{(l+1)}<br>$$Thus, in order to compute $\frac{\partial J(W,b)}{\partial W_{ij}^{(l)}}$ and $\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}$, the key is to compute $\delta_{i}^{(l+1)}$</p>
+<p>The reason why we need to introduce error term <span class="math inline">\(\delta_{i}^{(l)}\)</span>: Using the <strong>chain rule of derivation</strong>, we have<span class="math display">\[
+\frac{\partial J(w,b;x,y)}{\partial W_{ij}^{(l)}}=\frac{\partial J(w,b;x,y)}{\partial z_{i}^{(l+1)}}\frac{\partial z_{i}^{(l+1)}}{\partial W_{ij}^{(l)}}
+\]</span><span class="math display">\[
+\frac{\partial J(w,b;x,y)}{\partial b_{i}^{(l)}}=\frac{\partial J(w,b;x,y)}{\partial z_{i}^{(l+1)}}\frac{\partial z_{i}^{(l+1)}}{\partial b_{i}^{(l)}}
+\]</span>Since <span class="math inline">\(z^{(l+1)}=W^{(l)}a^{(l)}+b^{(l)}\)</span>, then<span class="math display">\[
+z_{i}^{(l+1)}=\sum_{k=1}^{s_{l}}W_{ik}^{(l)}a_{k}^{(l)}+b_{i}^{(l)}\]</span>Thus we have<span class="math display">\[\frac{\partial z_{i}^{(l+1)}}{\partial W_{ij}^{(l)}}=a_{j}^{(l)},\quad\frac{\partial z_{i}^{(l+1)}}{b_{i}^{(l)}}=1
+\]</span>If we let <span class="math inline">\(\delta_{i}^{(l)}=\frac{\partial J(w,b;x,y)}{\partial z_{i}^{(l)}}\)</span>, then we have<span class="math display">\[\frac{\partial J(w,b;x,y)}{\partial W_{ij}^{(l)}}=a_{i}^{(l)}\delta_{i}^{(l+1)}\]</span><span class="math display">\[\frac{\partial J(w,b;x,y)}{\partial b_{i}^{(l)}}=\delta_{i}^{(l+1)}
+\]</span>Thus, in order to compute <span class="math inline">\(\frac{\partial J(W,b)}{\partial W_{ij}^{(l)}}\)</span> and <span class="math inline">\(\frac{\partial J(W,b)}{\partial b_{i}^{(l)}}\)</span>, the key is to compute <span class="math inline">\(\delta_{i}^{(l+1)}\)</span></p>
 </blockquote>
 <p>In detail, here is the backpropagation algorithm:</p>
-<ol>
-<li>Perform a feedforward pass, computing the activations $a_{i}^{(l)}$ for layers $L_{2}$, $L_{3}$, and so on up to the output layer $L_{n_{l}}$.</li>
-<li><p>For each output unit $i$ in layer $n_{l}$ (the output layer), set$$<br>\delta_{i}^{(n_{l})}=\frac{\partial}{\partial z_{i}^{(n_{l})}}\frac{1}{2}\Vert y-h_{W,b}(x)\Vert^{2}=-(y_{i}-a_{i}^{(n_{l})})\centerdot f’(z_{i}^{(n_{l})})\tag{7}$$</p>
+<ol type="1">
+<li><p>Perform a feedforward pass, computing the activations <span class="math inline">\(a_{i}^{(l)}\)</span> for layers <span class="math inline">\(L_{2}\)</span>, <span class="math inline">\(L_{3}\)</span>, and so on up to the output layer <span class="math inline">\(L_{n_{l}}\)</span>.</p></li>
+<li><p>For each output unit <span class="math inline">\(i\)</span> in layer <span class="math inline">\(n_{l}\)</span> (the output layer), set<span class="math display">\[
+\delta_{i}^{(n_{l})}=\frac{\partial}{\partial z_{i}^{(n_{l})}}\frac{1}{2}\Vert y-h_{W,b}(x)\Vert^{2}=-(y_{i}-a_{i}^{(n_{l})})\centerdot f&#39;(z_{i}^{(n_{l})})\tag{7}\]</span></p></li>
+</ol>
 <blockquote>
-<p>Its computation process as follow:$$\begin{aligned}<br>\delta_{i}^{(n_{l})} &amp;=\frac{\partial J(W,b;x,y)}{\partial z_{i}^{(n_{l})}}=\frac{\partial}{\partial z_{i}^{(n_{l})}}\bigg(\frac{1}{2}\Vert y-h_{W,b}(x)\Vert^{2}\bigg)\quad (\textrm{The definition of }J(W,b;x,y))\\<br>&amp;=\frac{1}{2}\frac{\partial}{\partial z_{i}^{(n_{l})}}\bigg(\sum_{j=1}^{s_{n_{l}}}\big(y_{j}-a_{j}^{(n_{l})}\big)^{2}\bigg)\quad (\textrm{The definition of vector norm }\Vert\centerdot\Vert)\\<br>&amp;=\frac{1}{2}\frac{\partial}{\partial z_{i}^{(n_{l})}}\bigg(\sum_{j=1}^{s_{n_{l}}}\big(y_{j}-f(z_{j}^{(n_{l})})\big)^{2}\bigg)\quad (\textrm{Using }a_{j}^{(n_{l})}=f(z_{j}^{(n_{l})}))\\<br>&amp;=-(y_{i}-f(z_{i}^{(n_{l})}))\centerdot f’(z_{i}^{(n_{l})})\quad (\textrm{compute partial derivative of sum term wrt. }z_{i}^{(n_{l})})\\<br>&amp;=-(y_{i}-a_{i}^{(n_{l})})\centerdot f’(z_{i}^{(n_{l})})\quad (\textrm{Using }a_{j}^{(n_{l})}=f(z_{j}^{(n_{l})}))<br>\end{aligned}$$</p>
+<p>Its computation process as follow:<span class="math display">\[\begin{aligned}
+\delta_{i}^{(n_{l})} &amp;=\frac{\partial J(W,b;x,y)}{\partial z_{i}^{(n_{l})}}=\frac{\partial}{\partial z_{i}^{(n_{l})}}\bigg(\frac{1}{2}\Vert y-h_{W,b}(x)\Vert^{2}\bigg)\quad (\textrm{The definition of }J(W,b;x,y))\\
+&amp;=\frac{1}{2}\frac{\partial}{\partial z_{i}^{(n_{l})}}\bigg(\sum_{j=1}^{s_{n_{l}}}\big(y_{j}-a_{j}^{(n_{l})}\big)^{2}\bigg)\quad (\textrm{The definition of vector norm }\Vert\centerdot\Vert)\\
+&amp;=\frac{1}{2}\frac{\partial}{\partial z_{i}^{(n_{l})}}\bigg(\sum_{j=1}^{s_{n_{l}}}\big(y_{j}-f(z_{j}^{(n_{l})})\big)^{2}\bigg)\quad (\textrm{Using }a_{j}^{(n_{l})}=f(z_{j}^{(n_{l})}))\\
+&amp;=-(y_{i}-f(z_{i}^{(n_{l})}))\centerdot f&#39;(z_{i}^{(n_{l})})\quad (\textrm{compute partial derivative of sum term wrt. }z_{i}^{(n_{l})})\\
+&amp;=-(y_{i}-a_{i}^{(n_{l})})\centerdot f&#39;(z_{i}^{(n_{l})})\quad (\textrm{Using }a_{j}^{(n_{l})}=f(z_{j}^{(n_{l})}))
+\end{aligned}\]</span></p>
 </blockquote>
-</li>
-<li><p>For $l=n_{l}-1, n_{l}-2,\dots,2$, each node $i$ in layer $l$, set$$<br>\delta_{i}^{(l)}=\bigg(\sum_{j=1}^{s_{l}+1}W_{ji}^{(l)}\delta_{j}^{(l+1)}\bigg)f’(z_{i}^{(l)})\tag{8}$$</p>
+<ol start="3" type="1">
+<li>For <span class="math inline">\(l=n_{l}-1, n_{l}-2,\dots,2\)</span>, each node <span class="math inline">\(i\)</span> in layer <span class="math inline">\(l\)</span>, set<span class="math display">\[
+\delta_{i}^{(l)}=\bigg(\sum_{j=1}^{s_{l}+1}W_{ji}^{(l)}\delta_{j}^{(l+1)}\bigg)f&#39;(z_{i}^{(l)})\tag{8}\]</span></li>
+</ol>
 <blockquote>
-<p>Its computation process as follow:$$\begin{aligned}<br>\delta_{i}^{(n_{l}-1)} &amp;=\frac{\partial J(W,b;x,y)}{\partial z_{i}^{(n_{l}-1)}}=\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\bigg(\frac{1}{2}\Vert y-h_{W,b}(x)\Vert^{2}\bigg)\quad (\textrm{The definition of }J(W,b;x,y))\\<br>&amp;=\frac{1}{2}\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\bigg(\sum_{j=1}^{s_{n_{l}}}\big(y_{j}-a_{j}^{(n_{l})}\big)^{2}\bigg)\quad (\textrm{The definition of vector norm }\Vert\centerdot\Vert)\\<br>&amp;=\frac{1}{2}\sum_{j=1}^{s_{n_{l}}}\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\big(y_{j}-a_{j}^{(n_{l})}\big)^{2}\\<br>&amp;=\frac{1}{2}\sum_{j=1}^{s_{n_{l}}}\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\big(y_{j}-f(z_{j}^{(n_{l})})\big)^{2}\quad (\textrm{Using }a_{j}^{(n_{l})}=f(z_{j}^{(n_{l})}))\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}-\big(y_{j}-f(z_{j}^{(n_{l})})\big)\frac{\partial f(z_{j}^{(n_{l})})}{\partial z_{i}^{(n_{l}-1)}}\quad (\textrm{Compute partial derivative})\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}-\big(y_{j}-f(z_{j}^{(n_{l})})\big)\centerdot f’(z_{j}^{(n_{l})})\centerdot\frac{\partial z_{i}^{(n_{l})}}{\partial z_{i}^{(n_{l}-1)}}\quad (\textrm{Using Chain rule to compute }\frac{\partial f(z_{j}^{(n_{l})})}{\partial z_{i}^{(n_{l}-1)}})\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}\delta_{j}^{(n_{l})}\centerdot\frac{\partial z_{i}^{(n_{l})}}{\partial z_{i}^{(n_{l}-1)}}\quad (\textrm{Using Equation (7)})\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}\delta_{j}^{(n_{l})}\centerdot\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\bigg(\sum_{k=1}^{s_{n_{l}-1}}f(z_{k}^{(n_{l}-1)})\centerdot W_{jk}^{(n_{l}-1)}+b_{j}^{(n_{l}-1)}\bigg)\quad (\textrm{According to the definition of }z_{j}^{(n_{l})})\\<br>&amp;=\sum_{j=1}^{s_{n_{l}}}\delta_{j}^{(n_{l})}\centerdot W_{ji}^{(n_{l}-1)}\centerdot f’(z_{i}^{(n_{l}-1)})\quad (\textrm{Compute partial derivative of }z_{i}^{(n_{l}-1)})\\<br>&amp;=\bigg(\sum_{j=1}^{s_{n_{l}}}W_{ji}^{(n_{l}-1)}\centerdot\delta_{j}^{(n_{l})}\bigg)\centerdot f’(z_{i}^{(n_{l}-1)})<br>\end{aligned}$$By replacing the relationship between $n_{l}-1$ and $n_{l}$ to the relationship between $l$ and $l+1$, we can derive the Equation (8). And the above derivation process from backward to forward is the essence of “Backpropagation”.</p>
+<p>Its computation process as follow:<span class="math display">\[\begin{aligned}
+\delta_{i}^{(n_{l}-1)} &amp;=\frac{\partial J(W,b;x,y)}{\partial z_{i}^{(n_{l}-1)}}=\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\bigg(\frac{1}{2}\Vert y-h_{W,b}(x)\Vert^{2}\bigg)\quad (\textrm{The definition of }J(W,b;x,y))\\
+&amp;=\frac{1}{2}\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\bigg(\sum_{j=1}^{s_{n_{l}}}\big(y_{j}-a_{j}^{(n_{l})}\big)^{2}\bigg)\quad (\textrm{The definition of vector norm }\Vert\centerdot\Vert)\\
+&amp;=\frac{1}{2}\sum_{j=1}^{s_{n_{l}}}\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\big(y_{j}-a_{j}^{(n_{l})}\big)^{2}\\
+&amp;=\frac{1}{2}\sum_{j=1}^{s_{n_{l}}}\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\big(y_{j}-f(z_{j}^{(n_{l})})\big)^{2}\quad (\textrm{Using }a_{j}^{(n_{l})}=f(z_{j}^{(n_{l})}))\\
+&amp;=\sum_{j=1}^{s_{n_{l}}}-\big(y_{j}-f(z_{j}^{(n_{l})})\big)\frac{\partial f(z_{j}^{(n_{l})})}{\partial z_{i}^{(n_{l}-1)}}\quad (\textrm{Compute partial derivative})\\
+&amp;=\sum_{j=1}^{s_{n_{l}}}-\big(y_{j}-f(z_{j}^{(n_{l})})\big)\centerdot f&#39;(z_{j}^{(n_{l})})\centerdot\frac{\partial z_{i}^{(n_{l})}}{\partial z_{i}^{(n_{l}-1)}}\quad (\textrm{Using Chain rule to compute }\frac{\partial f(z_{j}^{(n_{l})})}{\partial z_{i}^{(n_{l}-1)}})\\
+&amp;=\sum_{j=1}^{s_{n_{l}}}\delta_{j}^{(n_{l})}\centerdot\frac{\partial z_{i}^{(n_{l})}}{\partial z_{i}^{(n_{l}-1)}}\quad (\textrm{Using Equation (7)})\\
+&amp;=\sum_{j=1}^{s_{n_{l}}}\delta_{j}^{(n_{l})}\centerdot\frac{\partial}{\partial z_{i}^{(n_{l}-1)}}\bigg(\sum_{k=1}^{s_{n_{l}-1}}f(z_{k}^{(n_{l}-1)})\centerdot W_{jk}^{(n_{l}-1)}+b_{j}^{(n_{l}-1)}\bigg)\quad (\textrm{According to the definition of }z_{j}^{(n_{l})})\\
+&amp;=\sum_{j=1}^{s_{n_{l}}}\delta_{j}^{(n_{l})}\centerdot W_{ji}^{(n_{l}-1)}\centerdot f&#39;(z_{i}^{(n_{l}-1)})\quad (\textrm{Compute partial derivative of }z_{i}^{(n_{l}-1)})\\
+&amp;=\bigg(\sum_{j=1}^{s_{n_{l}}}W_{ji}^{(n_{l}-1)}\centerdot\delta_{j}^{(n_{l})}\bigg)\centerdot f&#39;(z_{i}^{(n_{l}-1)})
+\end{aligned}\]</span>By replacing the relationship between <span class="math inline">\(n_{l}-1\)</span> and <span class="math inline">\(n_{l}\)</span> to the relationship between <span class="math inline">\(l\)</span> and <span class="math inline">\(l+1\)</span>, we can derive the Equation (8). And the above derivation process from backward to forward is the essence of “Backpropagation”.</p>
 </blockquote>
-</li>
-<li><p>Compute the desired partial derivatives, which are given as:$$\begin{aligned}<br>\frac{\partial}{\partial W_{ij}^{(l)}}J(W,b;x,y) &amp;=a_{j}^{(l)}\delta_{i}^{(l+1)}\\<br>\frac{\partial}{\partial b_{i}^{(l)}}J(W,b;x,y) &amp;=\delta_{i}^{(l+1)}<br>\end{aligned}$$</p>
-</li>
+<ol start="4" type="1">
+<li>Compute the desired partial derivatives, which are given as:<span class="math display">\[\begin{aligned}
+\frac{\partial}{\partial W_{ij}^{(l)}}J(W,b;x,y) &amp;=a_{j}^{(l)}\delta_{i}^{(l+1)}\\
+\frac{\partial}{\partial b_{i}^{(l)}}J(W,b;x,y) &amp;=\delta_{i}^{(l+1)}
+\end{aligned}\]</span></li>
 </ol>
-<p>Below gives a graph to illustrate the above steps, we use a sample $(x,y)$ as an example.<br><img src="/images/deeplearning/backprop/2.png" alt="2.png"><br>Finally, we can also rewrite the algorithm using matrix-vectorial notation. We will use “$\bullet$” to denote the element-wise product operator (also called the Hadamard product), so that if $a=b\bullet c$, then $a_{i}=b_{i}c_{i}$. Similar to how we extended the definition of $f(\centerdot)$ to apply element-wise to vectors, we also do the same for $f’(\centerdot)$ (so that $f’([z_{1},z_{2},z_{3}])=\big[\frac{\partial f(z_{1})}{\partial z_{1}},\frac{\partial f(z_{2})}{\partial z_{2}},\frac{\partial f(z_{3})}{\partial z_{3}}\big]$). The algorithm can then be written:</p>
-<ol>
-<li>Perform a feedforward pass, computing the activations for layers $L_{2}$, $L_{3}$, up to the output layer $L_{n_{l}}$, using Equations$$\begin{aligned}<br>z^{(l+1)} &amp;=W^{(l)}a^{(l)}+b^{(l)}\\<br>a^{(l+1)} &amp;=f(z^{(l+1)})<br>\end{aligned}$$</li>
-<li>For the output layer (layer $n_{l}$), set$$<br>\delta^{(n_{l})}=-(y-a^{(n_{l})})\bullet f’(z^{(n)})<br>$$</li>
-<li>For $l=n_{l}-1, n_{l}-2,\dots,2$, set$$<br>\delta^{(l)}=\big((W^{(l)})^{T}\delta^{(l+1)}\big)\bullet f’(z^{(l)})<br>$$</li>
-<li>Compute the desired partial derivatives:$$\begin{aligned}<br>\nabla_{W^{(l)}}J(W,b;x,y) &amp;=\delta^{(l+1)}\big(a^{(l)}\big)^{T}\\<br>\nabla_{b^{(l)}}J(W,b;x,y) &amp;=\delta^{(l+1)}<br>\end{aligned}$$</li>
+<p>Below gives a graph to illustrate the above steps, we use a sample <span class="math inline">\((x,y)\)</span> as an example. <img src="/images/deeplearning/backprop/2.png" alt="2.png"> Finally, we can also rewrite the algorithm using matrix-vectorial notation. We will use “<span class="math inline">\(\bullet\)</span>” to denote the element-wise product operator (also called the Hadamard product), so that if <span class="math inline">\(a=b\bullet c\)</span>, then <span class="math inline">\(a_{i}=b_{i}c_{i}\)</span>. Similar to how we extended the definition of <span class="math inline">\(f(\centerdot)\)</span> to apply element-wise to vectors, we also do the same for <span class="math inline">\(f&#39;(\centerdot)\)</span> (so that <span class="math inline">\(f&#39;([z_{1},z_{2},z_{3}])=\big[\frac{\partial f(z_{1})}{\partial z_{1}},\frac{\partial f(z_{2})}{\partial z_{2}},\frac{\partial f(z_{3})}{\partial z_{3}}\big]\)</span>). The algorithm can then be written:</p>
+<ol type="1">
+<li><p>Perform a feedforward pass, computing the activations for layers <span class="math inline">\(L_{2}\)</span>, <span class="math inline">\(L_{3}\)</span>, up to the output layer <span class="math inline">\(L_{n_{l}}\)</span>, using Equations<span class="math display">\[\begin{aligned}
+z^{(l+1)} &amp;=W^{(l)}a^{(l)}+b^{(l)}\\
+a^{(l+1)} &amp;=f(z^{(l+1)})
+\end{aligned}\]</span></p></li>
+<li><p>For the output layer (layer <span class="math inline">\(n_{l}\)</span>), set<span class="math display">\[
+\delta^{(n_{l})}=-(y-a^{(n_{l})})\bullet f&#39;(z^{(n)})
+\]</span></p></li>
+<li><p>For <span class="math inline">\(l=n_{l}-1, n_{l}-2,\dots,2\)</span>, set<span class="math display">\[
+\delta^{(l)}=\big((W^{(l)})^{T}\delta^{(l+1)}\big)\bullet f&#39;(z^{(l)})
+\]</span></p></li>
+<li><p>Compute the desired partial derivatives:<span class="math display">\[\begin{aligned}
+\nabla_{W^{(l)}}J(W,b;x,y) &amp;=\delta^{(l+1)}\big(a^{(l)}\big)^{T}\\
+\nabla_{b^{(l)}}J(W,b;x,y) &amp;=\delta^{(l+1)}
+\end{aligned}\]</span></p></li>
 </ol>
-<p><strong>Implementation note</strong>: In steps 2 and 3 above, we need to compute $f’(z^{(l)})$ for each value of $i$. Assuming $f(z)$ is the <code>sigmoid</code> activation function, we would already have $a_{i}^{(l)}$ stored away from the forward pass through the network. Thus, using the expression that we worked out earlier for $f’(z)$, we can compute this as$$<br>f’(z^{(l)})=a_{i}^{(l)}(1-a_{i}^{(l)})<br>$$Finally, we are ready to describe the full <strong>gradient descent algorithm</strong>. In the pseudo-code below, $\Delta W^{(l)}$ is a matrix (of the same dimension as $W^{(l)}$), and $\Delta b^{(l)}$ is a vector (of the same dimension as $b^{(l)}$). Note that in this notation, “$\Delta W^{(l)}$” is a matrix, and in particular it isn’t “$\Delta$ times $W^{(l)}$”. We implement one iteration of batch gradient descent as follows:</p>
-<ol>
-<li>Set $\Delta W^{(l)}:=0$, $\Delta b^{(l)}:=0$ (matrix/vector of zeros) for all $l$.</li>
-<li>For $i=1$ to $m$:<br>2a. Use backpropagation to compute $\nabla_{W^{(l)}}J(W,b;x,y)$ and $\nabla_{b^{(l)}}J(W,b;x,y)$.<br>2b. Set $\Delta W^{(l)}:=\Delta W^{(l)}+\nabla_{W^{(l)}}J(W,b;x,y)$<br>2c. Set $\Delta b^{(l)}:=\Delta b^{(l)}+\nabla_{b^{(l)}}J(W,b;x,y)$</li>
-<li>Update the parameters$$\begin{aligned}<br>W^{(l)} &amp;:= W^{(l)}-\alpha\bigg[\big(\frac{1}{m}\Delta W^{(l)}\big)+\lambda W^{(l)}\bigg]\\<br>b^{(l)} &amp;:= b^{(l)}-\alpha\bigg[\frac{1}{m}\Delta b^{(l)}\bigg]<br>\end{aligned}$$</li>
+<p><strong>Implementation note</strong>: In steps 2 and 3 above, we need to compute <span class="math inline">\(f&#39;(z^{(l)})\)</span> for each value of <span class="math inline">\(i\)</span>. Assuming <span class="math inline">\(f(z)\)</span> is the <code>sigmoid</code> activation function, we would already have <span class="math inline">\(a_{i}^{(l)}\)</span> stored away from the forward pass through the network. Thus, using the expression that we worked out earlier for <span class="math inline">\(f&#39;(z)\)</span>, we can compute this as<span class="math display">\[
+f&#39;(z^{(l)})=a_{i}^{(l)}(1-a_{i}^{(l)})
+\]</span>Finally, we are ready to describe the full <strong>gradient descent algorithm</strong>. In the pseudo-code below, <span class="math inline">\(\Delta W^{(l)}\)</span> is a matrix (of the same dimension as <span class="math inline">\(W^{(l)}\)</span>), and <span class="math inline">\(\Delta b^{(l)}\)</span> is a vector (of the same dimension as <span class="math inline">\(b^{(l)}\)</span>). Note that in this notation, “<span class="math inline">\(\Delta W^{(l)}\)</span>” is a matrix, and in particular it isn’t “<span class="math inline">\(\Delta\)</span> times <span class="math inline">\(W^{(l)}\)</span>”. We implement one iteration of batch gradient descent as follows:</p>
+<ol type="1">
+<li><p>Set <span class="math inline">\(\Delta W^{(l)}:=0\)</span>, <span class="math inline">\(\Delta b^{(l)}:=0\)</span> (matrix/vector of zeros) for all <span class="math inline">\(l\)</span>.</p></li>
+<li><p>For <span class="math inline">\(i=1\)</span> to <span class="math inline">\(m\)</span>:</p></li>
 </ol>
-<p>To train our neural network, we can now repeatedly take steps of gradient descent to reduce our cost function $J(W,b)$.</p>
+<ul>
+<li><p>Use backpropagation to compute <span class="math inline">\(\nabla_{W^{(l)}}J(W,b;x,y)\)</span> and <span class="math inline">\(\nabla_{b^{(l)}}J(W,b;x,y)\)</span>.</p></li>
+<li><p>Set <span class="math inline">\(\Delta W^{(l)}:=\Delta W^{(l)}+\nabla_{W^{(l)}}J(W,b;x,y)\)</span></p></li>
+<li><p>Set <span class="math inline">\(\Delta b^{(l)}:=\Delta b^{(l)}+\nabla_{b^{(l)}}J(W,b;x,y)\)</span></p></li>
+</ul>
+<ol start="3" type="1">
+<li>Update the parameters<span class="math display">\[\begin{aligned}
+W^{(l)} &amp;:= W^{(l)}-\alpha\bigg[\big(\frac{1}{m}\Delta W^{(l)}\big)+\lambda W^{(l)}\bigg]\\
+b^{(l)} &amp;:= b^{(l)}-\alpha\bigg[\frac{1}{m}\Delta b^{(l)}\bigg]
+\end{aligned}\]</span></li>
+</ol>
+<p>To train our neural network, we can now repeatedly take steps of gradient descent to reduce our cost function <span class="math inline">\(J(W,b)\)</span>.</p>
 
       
     </div>
@@ -1169,7 +1234,7 @@
     });
   </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+  MathJax.Hub.Config("");
 </script>
 
 <script type="text/x-mathjax-config">
@@ -1181,7 +1246,7 @@
   });
 </script>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->

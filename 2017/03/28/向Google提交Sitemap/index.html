@@ -428,19 +428,24 @@
       
 
       
-        <p>Sitemap 可方便网站管理员通知搜索引擎他们网站上有哪些可供抓取的网页。最简单的 Sitemap<a id="more"></a> 形式，就是XML文件，在其中列出网站中的网址以及关于每个网址的其他元数据(上次更新的时间、更改的频率以及相对于网站上其他网址的重要程度为何等)，以便搜索引擎可以更加智能地抓取网站。<br>提交自己的Hexo博客的sitemap到Google，有助于让别人更好地通过Google搜索到自己的博客。</p>
-<h2 id="生成sitemap-xml文件"><a href="#生成sitemap-xml文件" class="headerlink" title="生成sitemap.xml文件"></a>生成sitemap.xml文件</h2><p>安装hexo-generator-sitemap请参考: <a href="https://isaacchanghau.github.io/2017/05/03/Hexo%E6%B7%BB%E5%8A%A0tags-categories-css-sitemap-search/">[Hexo添加tags-categories-css-sitemap-search]</a>，然后执行下面命令将会在public文件夹生成sitemap.xml文件。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo g</span><br></pre></td></tr></table></figure></p>
-<p>将代码部署到GitHub服务器上，在browser中输入你的域名/sitemap.xml就能看见生成的sitemap.xml文件。<br>例如我的博客: <a href="https://isaacchanghau.github.io/sitemap.xml">https://isaacchanghau.github.io/sitemap.xml</a></p>
-<h2 id="向Google提交网页"><a href="#向Google提交网页" class="headerlink" title="向Google提交网页"></a>向Google提交网页</h2><p>首先使用自己的Google账号登陆Google Webmaster Central: <a href="https://www.google.com/webmasters/verification/home?hl=en" target="_blank" rel="noopener">[link]</a>。<br>进入后如下图:<br><img src="/images/settings/googlesitemap/addproperty.png" alt="webmaster central"></p>
-<p>点击ADD A PROPERTY，输入你的网址URL(e.g.: 我的网址是<a href="https://isaacchanghau.github.io/">https://isaacchanghau.github.io/</a>)，然后点击Continue。</p>
-<h2 id="Google验证网页所有权"><a href="#Google验证网页所有权" class="headerlink" title="Google验证网页所有权"></a>Google验证网页所有权</h2><p>上一步点击Continue后将进入验证所有权页面。Google提供几种不同的验证方式:<br>Recommended method: (图中的这个网址我随便输的，用来举个例子)<br><img src="/images/settings/googlesitemap/verify1.png" alt="recommended method"></p>
-<p>Alternate methods:<br><img src="/images/settings/googlesitemap/verify2.png" alt="alternate methods"></p>
-<p>这里我使用的是第一种方式，直接下载页面给的HTML verification file，然后将该文件上传到我的网页来进行验证。<br>对于Alternate methods中的方法:<br>HTML tag – 参考Fiona’s Blog: <a href="http://fionat.github.io/blog/2013/10/23/sitemap/" target="_blank" rel="noopener">[link]</a><br>其余三种方式(Domain name provider，Google Analytics，Google Tag Manager)请自行Google相关资料。</p>
-<h2 id="Google网站站长上传sitemap"><a href="#Google网站站长上传sitemap" class="headerlink" title="Google网站站长上传sitemap"></a>Google网站站长上传sitemap</h2><p>进入Google Search Console: <a href="https://www.google.com/webmasters/tools/" target="_blank" rel="noopener">[link]</a>。<br>因为之前已经向Google提交并验证了你的网页，所以进入后能看见自己的网页缩略图:<br><img src="/images/settings/googlesitemap/details.png" alt="search console home"></p>
-<p>这里点击View details，进入下一个页面:<br><img src="/images/settings/googlesitemap/addsitemap.png" alt="add sitemap"></p>
-<p>点击第五栏Submit a Sitemap:<br><img src="/images/settings/googlesitemap/submit.png" alt="sitemap"></p>
-<p>之后点击ADD/TEST SITEMAP，输入你的sitemap.xml的链接(e.g.: 我的sitemap是<a href="https://isaacchanghau.github.io/sitemap.xml">https://isaacchanghau.github.io/sitemap.xml</a>)，然后提交即可。<br>至此，所有步骤完成。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>Fiona’s Blog: <a href="http://fionat.github.io/blog/2013/10/23/sitemap/" target="_blank" rel="noopener">[link]</a>。<br>百度百科: <a href="http://baike.baidu.com/item/sitemap" target="_blank" rel="noopener">[link]</a>。</p>
+        <p>Sitemap 可方便网站管理员通知搜索引擎他们网站上有哪些可供抓取的网页。最简单的 Sitemap<a id="more"></a> 形式，就是XML文件，在其中列出网站中的网址以及关于每个网址的其他元数据(上次更新的时间、更改的频率以及相对于网站上其他网址的重要程度为何等)，以便搜索引擎可以更加智能地抓取网站。 提交自己的Hexo博客的sitemap到Google，有助于让别人更好地通过Google搜索到自己的博客。</p>
+<h2 id="生成sitemap.xml文件">生成sitemap.xml文件</h2>
+<p>安装hexo-generator-sitemap请参考: <a href="https://isaacchanghau.github.io/2017/05/03/Hexo%E6%B7%BB%E5%8A%A0tags-categories-css-sitemap-search/">[Hexo添加tags-categories-css-sitemap-search]</a>，然后执行下面命令将会在public文件夹生成sitemap.xml文件。 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo g</span><br></pre></td></tr></table></figure></p>
+<p>将代码部署到GitHub服务器上，在browser中输入你的域名/sitemap.xml就能看见生成的sitemap.xml文件。 例如我的博客: <a href="https://isaacchanghau.github.io/sitemap.xml" class="uri">https://isaacchanghau.github.io/sitemap.xml</a></p>
+<h2 id="向google提交网页">向Google提交网页</h2>
+<p>首先使用自己的Google账号登陆Google Webmaster Central: <a href="https://www.google.com/webmasters/verification/home?hl=en" target="_blank" rel="noopener">[link]</a>。 进入后如下图: <img src="/images/settings/googlesitemap/addproperty.png" alt="webmaster central"></p>
+<p>点击ADD A PROPERTY，输入你的网址URL(e.g.: 我的网址是<a href="https://isaacchanghau.github.io/" class="uri">https://isaacchanghau.github.io/</a>)，然后点击Continue。</p>
+<h2 id="google验证网页所有权">Google验证网页所有权</h2>
+<p>上一步点击Continue后将进入验证所有权页面。Google提供几种不同的验证方式: Recommended method: (图中的这个网址我随便输的，用来举个例子) <img src="/images/settings/googlesitemap/verify1.png" alt="recommended method"></p>
+<p>Alternate methods: <img src="/images/settings/googlesitemap/verify2.png" alt="alternate methods"></p>
+<p>这里我使用的是第一种方式，直接下载页面给的HTML verification file，然后将该文件上传到我的网页来进行验证。 对于Alternate methods中的方法: HTML tag – 参考Fiona’s Blog: <a href="http://fionat.github.io/blog/2013/10/23/sitemap/" target="_blank" rel="noopener">[link]</a> 其余三种方式(Domain name provider，Google Analytics，Google Tag Manager)请自行Google相关资料。</p>
+<h2 id="google网站站长上传sitemap">Google网站站长上传sitemap</h2>
+<p>进入Google Search Console: <a href="https://www.google.com/webmasters/tools/" target="_blank" rel="noopener">[link]</a>。 因为之前已经向Google提交并验证了你的网页，所以进入后能看见自己的网页缩略图: <img src="/images/settings/googlesitemap/details.png" alt="search console home"></p>
+<p>这里点击View details，进入下一个页面: <img src="/images/settings/googlesitemap/addsitemap.png" alt="add sitemap"></p>
+<p>点击第五栏Submit a Sitemap: <img src="/images/settings/googlesitemap/submit.png" alt="sitemap"></p>
+<p>之后点击ADD/TEST SITEMAP，输入你的sitemap.xml的链接(e.g.: 我的sitemap是<a href="https://isaacchanghau.github.io/sitemap.xml" class="uri">https://isaacchanghau.github.io/sitemap.xml</a>)，然后提交即可。 至此，所有步骤完成。</p>
+<h2 id="参考链接">参考链接</h2>
+<p>Fiona’s Blog: <a href="http://fionat.github.io/blog/2013/10/23/sitemap/" target="_blank" rel="noopener">[link]</a>。 百度百科: <a href="http://baike.baidu.com/item/sitemap" target="_blank" rel="noopener">[link]</a>。</p>
 
       
     </div>
@@ -675,7 +680,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#生成sitemap-xml文件"><span class="nav-number">1.</span> <span class="nav-text">生成sitemap.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#向Google提交网页"><span class="nav-number">2.</span> <span class="nav-text">向Google提交网页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Google验证网页所有权"><span class="nav-number">3.</span> <span class="nav-text">Google验证网页所有权</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Google网站站长上传sitemap"><span class="nav-number">4.</span> <span class="nav-text">Google网站站长上传sitemap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#生成sitemap.xml文件"><span class="nav-number">1.</span> <span class="nav-text">生成sitemap.xml文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#向google提交网页"><span class="nav-number">2.</span> <span class="nav-text">向Google提交网页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#google验证网页所有权"><span class="nav-number">3.</span> <span class="nav-text">Google验证网页所有权</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#google网站站长上传sitemap"><span class="nav-number">4.</span> <span class="nav-text">Google网站站长上传sitemap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考链接"><span class="nav-number">5.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
             
 
           </div>
@@ -1160,7 +1165,7 @@
     });
   </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
 <script type="text/x-mathjax-config">
-  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+  MathJax.Hub.Config("");
 </script>
 
 <script type="text/x-mathjax-config">
@@ -1172,7 +1177,7 @@
   });
 </script>
 
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+<script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 <!-- End: Injected MathJax -->
 <!-- hexo-inject:end -->
