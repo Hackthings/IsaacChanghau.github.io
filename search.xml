@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[使用TensorFlow中的Dataset API [转载]]]></title>
+    <url>%2F2018%2F02%2F21%2F%E4%BD%BF%E7%94%A8TensorFlow%E4%B8%AD%E7%9A%84Dataset-API%2F</url>
+    <content type="text"><![CDATA[本文转载自AI科技大本营·如何使用TensorFlow中的Dataset API（使用内置输入管道，告别“feed-dict”）. 本文基于TensorFlow 1.5版本 我们知道，在TensorFlow中可以使用feed-dict的方式输入数据信息，但是这种方法的速度是最慢的，在实际应用中应该尽量避免这种方法。而使用输入管道就可以保证GPU在工作时无需等待新的数据输入，这才是正确的方法。 幸运的是，TensorFlow提供了一种内置的API——Dataset，使得我们可以很容易地就利用输入管道的方式输入数据。在这篇教程中，我们将介绍如何创建和使用输入管道以及如何高效地向模型输入数据。 这篇文章将解释DatasetAPI的基本工作机制，并给出了几种最常用的例子。你可以通过下面的网站地址下载文章中的代码：[link]。 概述 使用Dataset的三个步骤： 载入数据：为数据创建一个Dataset实例 创建一个迭代器：使用创建的数据集来构造一个Iterator实例以遍历数据集 使用数据：使用创建的迭代器，我们可以从数据集中获取数据元素，从而输入到模型中去。 载入数据 首先，我们需要将一些数据放到数据集中。 从numpy载入：这是最常见的情况，假设我们有一个numpy数组，我们想将它传递给TensorFlow 1234# create a random vector of shape (100,2)x = np.random.sample((100,2))# make a dataset from a numpy arraydataset = tf.data.Dataset.from_tensor_slices(x) 我们也可以传递多个numpy数组，最典型的例子是当数据被划分为特征和标签的时候： 12features, labels = (np.random.sample((100,2)), np.random.sample((100,1)))dataset = tf.data.Dataset.from_tensor_slices((features,labels)) 从tensors中载入：我们当然也可以用一些张量初始化数据集 12# using a tensordataset = tf.data.Dataset.from_tensor_slices(tf.random_uniform([100, 2])) 从placeholder中载入：如果我们想动态地改变Dataset中的数据，使用这种方式是很有用的。 12x = tf.placeholder(tf.float32, shape=[None,2])dataset = tf.data.Dataset.from_tensor_slices(x) 从generator载入：我们也可以从generator中初始化一个Dataset。当一个数组中元素长度不相同时，使用这种方式处理是很有效的。（例如一个序列） 12345678910sequence = np.array([[1],[2,3],[3,4]])def generator(): for el in sequence: yield eldataset = tf.data.Dataset().from_generator(generator,output_types=tf.float32, output_shapes=[tf.float32]) 在这种情况下，你还需要指定数据的类型和大小以创建正确的tensor。 创建一个迭代器 我们已经知道了如何创建数据集，但是如何从中获取数据呢？我们需要使用一个Iterator遍历数据集并重新得到数据真实值。有四种形式的迭代器。 One shot Iterator: 这是最简单的迭代器，下面给出第一个例子 12345x = np.random.sample((100,2))# make a dataset from a numpy arraydataset = tf.data.Dataset.from_tensor_slices(x)# create the iteratoriter = dataset.make_one_shot_iterator() 接着你需要调用get_next()来获得包含数据的张量 1234...# create the iteratoriter = dataset.make_one_shot_iterator()el = iter.get_next() 我们可以运行el来查看它们的值。 12with tf.Session() as sess: print(sess.run(el)) # output: [ 0.42116176 0.40666069] 可初始化的迭代器：如果我们想建立一个可以在运行时改变数据源的动态数据集，我们可以用placeholder创建一个数据集。接着用常见的feed-dict机制初始化这个placeholder。这些工作可以通过使用一个可初始化的迭代器完成。使用上一节的第三个例子 12345678910# using a placeholderx = tf.placeholder(tf.float32, shape=[None,2])dataset = tf.data.Dataset.from_tensor_slices(x)data = np.random.sample((100,2))iter = dataset.make_initializable_iterator() # create the iteratorel = iter.get_next()with tf.Session() as sess: # feed the placeholder with data sess.run(iter.initializer, feed_dict=&#123; x: data &#125;) print(sess.run(el)) # output [ 0.52374458 0.71968478] 这次，我们调用make_initializable_iterator。接着我们在sess中运行initializer操作，以传递数据，这种情况下数据是随机的numpy数组。 假设我们有了训练集和测试集，如下代码所示 12train_data = (np.random.sample((100,2)), np.random.sample((100,1)))test_data = (np.array([[1,2]]), np.array([[0]])) 接着，我们训练该模型，并在测试数据集上对其进行测试，这可以通过训练后对迭代器再次进行初始化来完成。 12345678910111213141516# initializable iterator to switch between datasetEPOCHS = 10x, y = tf.placeholder(tf.float32, shape=[None,2]), tf.placeholder(tf.float32, shape=[None,1])dataset = tf.data.Dataset.from_tensor_slices((x, y))train_data = (np.random.sample((100,2)), np.random.sample((100,1)))test_data = (np.array([[1,2]]), np.array([[0]]))iter = dataset.make_initializable_iterator()features, labels = iter.get_next()with tf.Session() as sess: # initialise iterator with train data sess.run(iter.initializer, feed_dict=&#123; x: train_data[0], y: train_data[1]&#125;) for _ in range(EPOCHS): sess.run([features, labels]) # switch to test data sess.run(iter.initializer, feed_dict=&#123; x: test_data[0], y: test_data[1]&#125;) print(sess.run([features, labels])) 可重新初始化的迭代器：这个概念和之前的相似，我们想在数据间动态切换。但是我们是转换数据集而不是把新数据送到相同的数据集。和之前一样，我们需要一个训练集和一个测试集 123# making fake data using numpytrain_data = (np.random.sample((100,2)), np.random.sample((100,1)))test_data = (np.random.sample((10,2)), np.random.sample((10,1))) 接下来创建两个Dataset 123# create two datasets, one for training and one for testtrain_dataset = tf.data.Dataset.from_tensor_slices(train_data)test_dataset = tf.data.Dataset.from_tensor_slices(test_data) 现在我们要用到一个小技巧，即创建一个通用的Iterator 12# create a iterator of the correct shape and typeiter = tf.data.Iterator.from_structure(train_dataset.output_types, train_dataset.output_shapes) 接着创建两个初始化运算 123# create the initialisation operationstrain_init_op = iter.make_initializer(train_dataset)test_init_op = iter.make_initializer(test_dataset) 和之前一样，我们得到下一个元素 1features, labels = iter.get_next() 现在，我们可以直接使用session运行两个初始化运算。把上面这些综合起来我们可以得到： 1234567891011121314151617181920# Reinitializable iterator to switch between DatasetsEPOCHS = 10# making fake data using numpytrain_data = (np.random.sample((100,2)), np.random.sample((100,1)))test_data = (np.random.sample((10,2)), np.random.sample((10,1)))# create two datasets, one for training and one for testtrain_dataset = tf.data.Dataset.from_tensor_slices(train_data)test_dataset = tf.data.Dataset.from_tensor_slices(test_data)# create a iterator of the correct shape and typeiter = tf.data.Iterator.from_structure(train_dataset.output_types, train_dataset.output_shapes)features, labels = iter.get_next()# create the initialisation operationstrain_init_op = iter.make_initializer(train_dataset)test_init_op = iter.make_initializer(test_dataset)with tf.Session() as sess: sess.run(train_init_op) # switch to train dataset for _ in range(EPOCHS): sess.run([features, labels]) sess.run(test_init_op) # switch to val dataset print(sess.run([features, labels])) Feedable迭代器：老实说，我并不认为这种迭代器有用。这种方式是在迭代器之间转换而不是在数据集间转换，比如在来自make_one_shot_iterator()的一个迭代器和来自make_initializable_iterator()的一个迭代器之间进行转换。 使用数据 在之前的例子中，我们使用session来打印Dataset中next元素的值 1234...next_el = iter.get_next()...print(sess.run(next_el)) # will output the current element 现在为了向模型传递数据，我们只需要传递get_next()产生的张量。在下面的代码中，我们有一个包含两个numpy数组的Dataset，这里用到了和第一节一样的例子。注意到我们需要将.random.sample封装到另外一个numpy数组中，因此会增加一个维度以用于数据batch。 123# using two numpy arraysfeatures, labels = (np.array([np.random.sample((100,2))]), np.array([np.random.sample((100,1))]))dataset = tf.data.Dataset.from_tensor_slices((features,labels)).repeat().batch(BATCH_SIZE) 接下来和平时一样，我们创建一个迭代器 12iter = dataset.make_one_shot_iterator()x, y = iter.get_next() 建立一个简单的神经网络模型 123456# make a simple modelnet = tf.layers.dense(x, 8) # pass the first value from iter.get_next() as inputnet = tf.layers.dense(net, 8)prediction = tf.layers.dense(net, 1)loss = tf.losses.mean_squared_error(prediction, y) # pass the second value from iter.get_net() as labeltrain_op = tf.train.AdamOptimizer().minimize(loss) 我们直接使用来自iter.get_next()的张量作为神经网络第一层的输入和损失函数的标签。将上面的综合起来可以得到： 123456789101112131415161718EPOCHS = 10BATCH_SIZE = 16# using two numpy arraysfeatures, labels = (np.array([np.random.sample((100,2))]), np.array([np.random.sample((100,1))]))dataset = tf.data.Dataset.from_tensor_slices((features,labels)).repeat().batch(BATCH_SIZE)iter = dataset.make_one_shot_iterator()x, y = iter.get_next()# make a simple modelnet = tf.layers.dense(x, 8, activation=tf.tanh) # pass the first value from iter.get_next() as inputnet = tf.layers.dense(net, 8, activation=tf.tanh)prediction = tf.layers.dense(net, 1, activation=tf.tanh)loss = tf.losses.mean_squared_error(prediction, y) # pass the second value from iter.get_net() as labeltrain_op = tf.train.AdamOptimizer().minimize(loss)with tf.Session() as sess: sess.run(tf.global_variables_initializer()) for i in range(EPOCHS): _, loss_value = sess.run([train_op, loss]) print("Iter: &#123;&#125;, Loss: &#123;:.4f&#125;".format(i, loss_value)) 输出： 12345678910Iter: 0, Loss: 0.1328 Iter: 1, Loss: 0.1312 Iter: 2, Loss: 0.1296 Iter: 3, Loss: 0.1281 Iter: 4, Loss: 0.1267 Iter: 5, Loss: 0.1254 Iter: 6, Loss: 0.1242 Iter: 7, Loss: 0.1231 Iter: 8, Loss: 0.1220 Iter: 9, Loss: 0.1210 有用的技巧 batch：通常情况下，batch是一件麻烦的事情，但是通过Dataset API我们可以使用batch(BATCH_SIZE)方法自动地将数据按照指定的大小batch，默认值是1。在接下来的例子中，我们使用的batch大小为4。 1234567891011# BATCHINGBATCH_SIZE = 4x = np.random.sample((100,2))# make a dataset from a numpy arraydataset = tf.data.Dataset.from_tensor_slices(x).batch(BATCH_SIZE)iter = dataset.make_one_shot_iterator()el = iter.get_next()with tf.Session() as sess: print(sess.run(el)) 输出： 1234[[ 0.65686128 0.99373963] [ 0.69690451 0.32446826] [ 0.57148422 0.68688242] [ 0.20335116 0.82473219]] Repeat：使用.repeat()我们可以指定数据集迭代的次数。如果没有设置参数，则迭代会一直循环。通常来说，一直循环并直接用标准循环控制epoch的次数能取得较好的效果。 Shuffle：我们可以使用shuffle()方法将Dataset随机洗牌，默认是在数据集中对每一个epoch洗牌，这种处理可以避免过拟合。 我们也可以设置buffer_size参数，下一个元素将从这个固定大小的缓存中按照均匀分布抽取。例子： 1234567891011# BATCHINGBATCH_SIZE = 4x = np.array([[1],[2],[3],[4]])# make a dataset from a numpy arraydataset = tf.data.Dataset.from_tensor_slices(x)dataset = dataset.shuffle(buffer_size=100)dataset = dataset.batch(BATCH_SIZE)iter = dataset.make_one_shot_iterator()el = iter.get_next()with tf.Session() as sess: print(sess.run(el)) 首次运行输出： 1234[[4] [2] [3] [1]] 第二次运行输出： 1234[[3] [1] [2] [4]] 这样数据就被洗牌了。你还可以设置seed参数。 Map 你可以使用map()方法对数据集的每个成员应用自定义的函数。在下面的例子中，我们将每个元素乘以2。 1234567891011# MAPx = np.array([[1],[2],[3],[4]])# make a dataset from a numpy arraydataset = tf.data.Dataset.from_tensor_slices(x)dataset = dataset.map(lambda x: x*2)iter = dataset.make_one_shot_iterator()el = iter.get_next()with tf.Session() as sess: # this will run forever for _ in range(len(x)): print(sess.run(el)) 输出： 1234[2][4][6][8] 其他资源: [TensorFlow dataset tutorial]，[Dataset docs]。 结论 Dataset API提供了一种快速而且鲁棒的方法来创建优化的输入管道来训练、评估和测试我们的模型。在这篇文章中，我们了解了很多常见的利用Dataset API的操作。 原文：[https://towardsdatascience.com/how-to-use-dataset-in-tensorflow-c758ef9e4428]]]></content>
+      <categories>
+        <category>Python</category>
+      </categories>
+      <tags>
+        <tag>python</tag>
+        <tag>tensorflow</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[How to update multiple tensors using a single value with tf.scan [Reprinted]]]></title>
     <url>%2F2018%2F02%2F20%2FHow-to-update-multiple-tensors-using-a-single-value-with-tf-scan%2F</url>
     <content type="text"><![CDATA[This post is reprinted from Wilka Carvalho · How to update multiple tensors using a single value with tf.scan. Corresponding Jupyter Notebook I assume that you have a set of Tensors that you want to update with a sequence iteratively. E.g. you have a neural network that you’d like to update with a point at time t in a sequence and values from the network at time t-1. If you want to see this in full-fledged use, look at my jupyter notebook where I recreate the Variational Recurrent Neural Network! This is the definition of scan: 12345678910tf.scan( fn, elems, initializer=None, parallel_iterations=10, back_prop=True, swap_memory=False, infer_shape=True, name=None) fn should follow the form fn(parameter_that_changes,parameter_you_change_with). This means that you can assume that your input from elem will always go to parameter_you_change_with, and that what you return should be parameter_that_changes. Writing it like a function looks something like the following 12def fn(x, elem): return new_x where new_x will be x the next time fn is called. That took me some time to figure out. 123456789101112131415import tensorflow as tfimport numpy as np# Super Simple scan example as per: https://stackoverflow.com/questions/43841782/scan-function-in-theano-and-tensorflowdef f(x, ys): (y1, y2) = ys return x + y1 * y2a = tf.constant([1, 2, 3, 4, 5])b = tf.constant([2, 3, 2, 2, 1])c = tf.scan(f, (a, b), initializer=0)with tf.Session() as sess: print(sess.run(c)) output: 1[ 2 8 14 22 27] Another example: 1234567891011121314151617181920212223242526# updating 3 tensors with a single sequencea1 = tf.Variable([0,0])a2 = tf.Variable([1,1])a3 = tf.Variable([2,2])sequence = tf.Variable([1,2,3])# using tf.multiply istead of '*', e.g. tf.multiply(x,2) instead of 2*x was key to this compiling...def replace_one(old, x): a1, a2, a3 = old a1 = tf.add(a1,tf.multiply(x,1)) a2 = tf.add(a2,tf.multiply(x,2)) a3 = tf.add(a3,tf.multiply(x,3)) return [a1,a2,a3]# key things that worked: initializer needed to match output. # dumb mistake I can see tripping up many peopleupdate = tf.scan(replace_one, sequence, initializer=[a1, a2, a3])a1 = a1.assign(a2)with tf.Session() as sess: sess.run(tf.global_variables_initializer()) print(sess.run(update)) outputs: 1234567[array([[1, 1], [3, 3], [6, 6]], dtype=int32), array([[ 3, 3], [ 7, 7], [13, 13]], dtype=int32), array([[ 5, 5], [11, 11], [20, 20]], dtype=int32)] A few notes So this ws more difficult to implement than I expected. I had to get all the ingredients perfectly right. While I can assign outside of scan, for some reason the tensors a1, a2, a3 couldn’t be assigned, i.e. a1.assign(tf.add(a1,tf.multiply(x,1))), inside of scan You can have all your values inside a single tensor for the initializer and update them via indexing. This also doesn’t work. i.e. with T=tf.concat([a1,a2,a3]), you can’t do T[0]=x I spent a long time trying to manually concatonate the values so that I could track them in the future only to learn that scan does this by default!! E.g., for a1, the corresponding output vector is [a1+1, a1+1+2, a1+1+2+3] since the elements were [1,2,3]. Hope you found this useful !!]]></content>
@@ -165,8 +177,8 @@
         <category>Machine Learning</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>machine learning</tag>
+        <tag>java</tag>
         <tag>spark</tag>
         <tag>scala</tag>
         <tag>support vector machine</tag>
@@ -181,13 +193,13 @@
         <category>Natural Language Processing</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>deep learning</tag>
+        <tag>java</tag>
         <tag>lstm</tag>
         <tag>gru</tag>
-        <tag>deeplearning4j</tag>
         <tag>natural language processing</tag>
         <tag>seq2seq</tag>
+        <tag>deeplearning4j</tag>
       </tags>
   </entry>
   <entry>
@@ -198,9 +210,9 @@
         <category>Machine Learning</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>deep learning</tag>
         <tag>machine learning</tag>
+        <tag>java</tag>
         <tag>lstm</tag>
         <tag>deeplearning4j</tag>
         <tag>spark</tag>
@@ -394,8 +406,8 @@
         <category>Natural Language Processing</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>deep learning</tag>
+        <tag>java</tag>
         <tag>natural language processing</tag>
         <tag>word embeddings</tag>
         <tag>skip-gram</tag>
@@ -409,10 +421,10 @@
         <category>Natural Language Processing</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>deep learning</tag>
-        <tag>deeplearning4j</tag>
+        <tag>java</tag>
         <tag>natural language processing</tag>
+        <tag>deeplearning4j</tag>
         <tag>word embeddings</tag>
         <tag>skip-gram</tag>
         <tag>logistic regression</tag>
@@ -427,8 +439,8 @@
         <category>Machine Learning</category>
       </categories>
       <tags>
-        <tag>java</tag>
         <tag>machine learning</tag>
+        <tag>java</tag>
         <tag>deeplearning4j</tag>
         <tag>spark</tag>
         <tag>scala</tag>
