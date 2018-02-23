@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://isaacchanghau.github.io/2017/03/30/MacOS-Useful-Commands/</loc>
+    
+    <lastmod>2018-02-23T05:00:57.208Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://isaacchanghau.github.io/2018/02/20/How-to-update-multiple-tensors-using-a-single-value-with-tf-scan/</loc>
+    
+    <lastmod>2018-02-23T04:44:27.377Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://isaacchanghau.github.io/2018/02/21/%E4%BD%BF%E7%94%A8TensorFlow%E4%B8%AD%E7%9A%84Dataset-API/</loc>
     
     <lastmod>2018-02-21T13:08:39.406Z</lastmod>
@@ -19,13 +33,6 @@
     <loc>https://isaacchanghau.github.io/2017/09/19/PTransE/</loc>
     
     <lastmod>2018-02-20T09:14:00.202Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://isaacchanghau.github.io/2018/02/20/How-to-update-multiple-tensors-using-a-single-value-with-tf-scan/</loc>
-    
-    <lastmod>2018-02-20T09:03:29.182Z</lastmod>
     
   </url>
   
@@ -313,13 +320,6 @@
     <loc>https://isaacchanghau.github.io/2017/07/14/%E6%96%B0%E5%8A%A0%E5%9D%A1%E4%B8%A4%E5%B9%B4/</loc>
     
     <lastmod>2017-07-23T07:54:41.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://isaacchanghau.github.io/2017/03/30/MacOS-Useful-Commands/</loc>
-    
-    <lastmod>2017-07-23T07:39:52.000Z</lastmod>
     
   </url>
   

@@ -103,7 +103,7 @@
 <meta property="og:site_name" content="Isaac Changhau">
 <meta property="og:description" content="Here are some commonly used commands in Max OS X…">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2017-07-23T07:39:52.000Z">
+<meta property="og:updated_time" content="2018-02-23T05:00:57.208Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MacOS Useful Commands">
 <meta name="twitter:description" content="Here are some commonly used commands in Max OS X…">
@@ -352,8 +352,8 @@
             
               <span class="post-updated">
                 &nbsp; | &nbsp; <i class="fa fa-calendar-check-o"></i> Updated on
-                <time itemprop="dateUpdated" datetime="2017-07-23T15:39:52+08:00" content="2017-07-23">
-                  2017-07-23
+                <time itemprop="dateUpdated" datetime="2018-02-23T13:00:57+08:00" content="2018-02-23">
+                  2018-02-23
                 </time>
               </span>
             
@@ -367,10 +367,10 @@
             <span class="post-letters-count">
               &nbsp; | &nbsp;
               <i class="fa fa-file-word-o"></i>
-            <span>Count 288 words</span>
+            <span>Count 1,734 words</span>
               <!--&nbsp; | &nbsp;
               <i class="fa fa-clock-o"></i>
-            <span>Reading 2 min</span>-->
+            <span>Reading 9 min</span>-->
             </span>
           
 
@@ -422,6 +422,831 @@
 
       
         <p>Here are some commonly used commands in Max OS X…<a id="more"></a></p>
+<h2 id="terminal-cheatsheet-for-mac-basics">Terminal Cheatsheet for Mac (Basics)</h2>
+<p><strong>Note</strong>: Information from <a href="https://github.com/0nn0/terminal-mac-cheatsheet" target="_blank" rel="noopener">[0nn0/terminal-mac-cheatsheet]</a>.<br>
+<em>Letters are shown capitalized for readability only.</em> <em>Capslock should be off.</em></p>
+<h3 id="english-version">English Version</h3>
+<p><strong>SHORTCUTS</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key/Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ctrl + A</td>
+<td>Go to the beginning of the line you are currently typing on. This also works for most text input fields system wide. Netbeans being one exception</td>
+</tr>
+<tr class="even">
+<td>Ctrl + E</td>
+<td>Go to the end of the line you are currently typing on. This also works for most text input fields system wide. Netbeans being one exception</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + Q</td>
+<td>Clears everything on current line</td>
+</tr>
+<tr class="even">
+<td>Ctrl + L</td>
+<td>Clears the Screen</td>
+</tr>
+<tr class="odd">
+<td>Cmd + K</td>
+<td>Clears the Screen</td>
+</tr>
+<tr class="even">
+<td>Ctrl + U</td>
+<td>Cut everything backwards to beginning of line</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + K</td>
+<td>Cut everything forward to end of line</td>
+</tr>
+<tr class="even">
+<td>Ctrl + W</td>
+<td>Cut one word backwards using white space as delimiter</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + Y</td>
+<td>Paste whatever was cut by the last cut command</td>
+</tr>
+<tr class="even">
+<td>Ctrl + H</td>
+<td>Same as backspace</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + C</td>
+<td>Kill whatever you are running</td>
+</tr>
+<tr class="even">
+<td>Ctrl + D</td>
+<td>Exit the current shell when no process is running, or send EOF to a the running process</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + Z</td>
+<td>Puts whatever you are running into a suspended background process. fg restores it.</td>
+</tr>
+<tr class="even">
+<td>Ctrl + _</td>
+<td>Undo the last command. (Underscore. So it’s actually Ctrl + Shift + minus)</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + T</td>
+<td>Swap the last two characters before the cursor</td>
+</tr>
+<tr class="even">
+<td>Ctrl + F</td>
+<td>Move cursor one character forward</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + B</td>
+<td>Move cursor one character backward</td>
+</tr>
+<tr class="even">
+<td>Option + →</td>
+<td>Move cursor one word forward</td>
+</tr>
+<tr class="odd">
+<td>Option + ←</td>
+<td>Move cursor one word backward</td>
+</tr>
+<tr class="even">
+<td>Esc + T</td>
+<td>Swap the last two words before the cursor</td>
+</tr>
+<tr class="odd">
+<td>Tab</td>
+<td>Auto-complete files and folder names</td>
+</tr>
+</tbody>
+</table>
+<p><strong>CORE COMMANDS</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key/Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cd [folder]</td>
+<td>Change directory e.g. <code>cd Documents</code></td>
+</tr>
+<tr class="even">
+<td>cd</td>
+<td>Home directory</td>
+</tr>
+<tr class="odd">
+<td>cd ~</td>
+<td>Home directory</td>
+</tr>
+<tr class="even">
+<td>cd /</td>
+<td>Root of drive</td>
+</tr>
+<tr class="odd">
+<td>cd -</td>
+<td>Previous directory</td>
+</tr>
+<tr class="even">
+<td>ls</td>
+<td>Short listing</td>
+</tr>
+<tr class="odd">
+<td>ls -l</td>
+<td>Long listing</td>
+</tr>
+<tr class="even">
+<td>ls -a</td>
+<td>Listing incl. hidden files</td>
+</tr>
+<tr class="odd">
+<td>ls -lh</td>
+<td>Long listing with Human readable file sizes</td>
+</tr>
+<tr class="even">
+<td>ls -R</td>
+<td>Entire content of folder recursively</td>
+</tr>
+<tr class="odd">
+<td>sudo [command]</td>
+<td>Run command with the security privileges of the superuser (Super User DO)</td>
+</tr>
+<tr class="even">
+<td>open [file]</td>
+<td>Opens a file ( as if you double clicked it )</td>
+</tr>
+<tr class="odd">
+<td>top</td>
+<td>Displays active processes. Press q to quit</td>
+</tr>
+<tr class="even">
+<td>nano [file]</td>
+<td>Opens the file using the nano editor</td>
+</tr>
+<tr class="odd">
+<td>vim [file]</td>
+<td>Opens the file using the vim editor</td>
+</tr>
+<tr class="even">
+<td>clear</td>
+<td>Clears the screen</td>
+</tr>
+<tr class="odd">
+<td>reset</td>
+<td>Resets the terminal display</td>
+</tr>
+</tbody>
+</table>
+<p><strong>CHAINING COMMANDS</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key/Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>[command-a]; [command-b]</td>
+<td>Run command A and then B, regardless of success of A</td>
+</tr>
+<tr class="even">
+<td>[command-a] &amp;&amp; [command-b]</td>
+<td>Run command B if A succeeded</td>
+</tr>
+<tr class="odd">
+<td>[command-a]</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>[command-a] &amp;</td>
+<td>Run command A in background</td>
+</tr>
+</tbody>
+</table>
+<p><strong>PIPING COMMANDS</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key/Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>[command-a] | [command-b]</td>
+<td>Run command A and then pass the result to command B e.g ps auxwww | grep google</td>
+</tr>
+</tbody>
+</table>
+<p><strong>COMMAND HISTORY</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key/Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>history n</td>
+<td>Shows the stuff typed – add a number to limit the last n items</td>
+</tr>
+<tr class="even">
+<td>Ctrl + r</td>
+<td>Interactively search through previously typed commands</td>
+</tr>
+<tr class="odd">
+<td>[value]</td>
+<td>Execute the last command typed that starts with ‘value’</td>
+</tr>
+<tr class="even">
+<td>[value]:p</td>
+<td>Print to the console the last command typed that starts with ‘value’</td>
+</tr>
+<tr class="odd">
+<td>!!</td>
+<td>Execute the last command typed</td>
+</tr>
+<tr class="even">
+<td>!!:p</td>
+<td>Print to the console the last command typed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>FILE MANAGEMENT</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key/Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>touch [file]</td>
+<td>Create a new file</td>
+</tr>
+<tr class="even">
+<td>pwd</td>
+<td>Full path to working directory</td>
+</tr>
+<tr class="odd">
+<td>.</td>
+<td>Current folder, e.g. <code>ls .</code></td>
+</tr>
+<tr class="even">
+<td>..</td>
+<td>Parent/enclosing directory, e.g. <code>ls ..</code></td>
+</tr>
+<tr class="odd">
+<td>ls -l ..</td>
+<td>Long listing of parent directory</td>
+</tr>
+<tr class="even">
+<td>cd ../../</td>
+<td>Move 2 levels up</td>
+</tr>
+<tr class="odd">
+<td>cat</td>
+<td>Concatenate to screen</td>
+</tr>
+<tr class="even">
+<td>rm [file]</td>
+<td>Remove a file, e.g. <code>rm data.tmp</code></td>
+</tr>
+<tr class="odd">
+<td>rm -i [file]</td>
+<td>Remove with confirmation</td>
+</tr>
+<tr class="even">
+<td>rm -r [dir]</td>
+<td>Remove a directory and contents</td>
+</tr>
+<tr class="odd">
+<td>rm -f [file]</td>
+<td>Force removal without confirmation</td>
+</tr>
+<tr class="even">
+<td>cp [file] [newfile]</td>
+<td>Copy file to file</td>
+</tr>
+<tr class="odd">
+<td>cp [file] [dir]</td>
+<td>Copy file to directory</td>
+</tr>
+<tr class="even">
+<td>mv [file] [new filename]</td>
+<td>Move/Rename, e.g. <code>mv file1.ad /tmp</code></td>
+</tr>
+<tr class="odd">
+<td>pbcopy &lt; [file]</td>
+<td>Copies file contents to clipboard</td>
+</tr>
+<tr class="even">
+<td>pbpaste</td>
+<td>Paste clipboard contents</td>
+</tr>
+<tr class="odd">
+<td>pbpaste &gt; [file]</td>
+<td>Paste clipboard contents into file, <code>pbpaste &gt; paste-test.txt</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>DIRECTORY MANAGEMENT</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key/Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>mkdir [dir]</td>
+<td>Create new directory</td>
+</tr>
+<tr class="even">
+<td>mkdir -p [dir]/[dir]</td>
+<td>Create nested directories</td>
+</tr>
+<tr class="odd">
+<td>rmdir [dir]</td>
+<td>Remove directory ( only operates on empty directories )</td>
+</tr>
+<tr class="even">
+<td>rm -R [dir]</td>
+<td>Remove directory and contents</td>
+</tr>
+<tr class="odd">
+<td>less [file]</td>
+<td>Output file content delivered in screensize chunks</td>
+</tr>
+<tr class="even">
+<td>[command] &gt; [file]</td>
+<td>Push output to file, keep in mind it will get overwritten</td>
+</tr>
+<tr class="odd">
+<td>[command] &gt;&gt; [file]</td>
+<td>Append output to existing file</td>
+</tr>
+<tr class="even">
+<td>[command] &lt; [file]</td>
+<td>Tell command to read content from a file</td>
+</tr>
+</tbody>
+</table>
+<p><strong>SEARCH</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key/Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>find [dir] -name [search_pattern]</td>
+<td>Search for files, e.g. <code>find /Users -name &quot;file.txt&quot;</code></td>
+</tr>
+<tr class="even">
+<td>grep [search_pattern] [file]</td>
+<td>Search for all lines that contain the pattern, e.g. <code>grep &quot;Tom&quot; file.txt</code></td>
+</tr>
+<tr class="odd">
+<td>grep -r [search_pattern] [dir]</td>
+<td>Recursively search in all files in specified directory for all lines that contain the pattern</td>
+</tr>
+<tr class="even">
+<td>grep -v [search_pattern] [file]</td>
+<td>Search for all lines that do NOT contain the pattern</td>
+</tr>
+<tr class="odd">
+<td>grep -i [search_pattern] [file]</td>
+<td>Search for all lines that contain the case-insensitive pattern</td>
+</tr>
+<tr class="even">
+<td>mdfind [search_pattern]</td>
+<td>Spotlight search for files (names, content, other metadata), e.g. <code>mdfind skateboard</code></td>
+</tr>
+<tr class="odd">
+<td>mdfind -onlyin [dir] -name [pattern]</td>
+<td>Spotlight search for files named like pattern in the given directory</td>
+</tr>
+</tbody>
+</table>
+<p><strong>HELP</strong>:</p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Key/Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>[command] -h</td>
+<td>Offers help</td>
+</tr>
+<tr class="even">
+<td>[command] –help</td>
+<td>Offers help</td>
+</tr>
+<tr class="odd">
+<td>info [command]</td>
+<td>Offers help</td>
+</tr>
+<tr class="even">
+<td>man [command]</td>
+<td>Show the help manual for [command]</td>
+</tr>
+<tr class="odd">
+<td>whatis [command]</td>
+<td>Gives a one-line description of [command]</td>
+</tr>
+<tr class="even">
+<td>apropos [search-pattern]</td>
+<td>Searches for command with keywords in description</td>
+</tr>
+</tbody>
+</table>
+<h3 id="chinese-version">Chinese Version</h3>
+<p><strong>快捷键</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>按键/命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ctrl + A</td>
+<td>移动光标至行首</td>
+</tr>
+<tr class="even">
+<td>Ctrl + E</td>
+<td>移动光标至行尾</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + L</td>
+<td>清屏</td>
+</tr>
+<tr class="even">
+<td>Command + K</td>
+<td>清屏</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + U</td>
+<td>删除光标前的所有文字。如果光标位于行尾则删除整行。</td>
+</tr>
+<tr class="even">
+<td>Ctrl + H</td>
+<td>与退格键相同</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + R</td>
+<td>检索使用过的命令</td>
+</tr>
+<tr class="even">
+<td>Ctrl + C</td>
+<td>终止当前执行</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + D</td>
+<td>退出当前shell</td>
+</tr>
+<tr class="even">
+<td>Ctrl + Z</td>
+<td>将执行中的任何东西放入后台进程。fg可以将其恢复。</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + W</td>
+<td>删除光标之前的单词</td>
+</tr>
+<tr class="even">
+<td>Ctrl + K</td>
+<td>删除光标后的所有文字</td>
+</tr>
+<tr class="odd">
+<td>Ctrl + T</td>
+<td>将光标前的两个文字进行互换</td>
+</tr>
+<tr class="even">
+<td>Option + →</td>
+<td>光标向前移动一个单词</td>
+</tr>
+<tr class="odd">
+<td>Option + ←</td>
+<td>光标向后移动一个单词</td>
+</tr>
+<tr class="even">
+<td>Esc + T</td>
+<td>将光标前的两个单词进行互换</td>
+</tr>
+<tr class="odd">
+<td>Tab</td>
+<td>自动补全文件或文件夹的名称</td>
+</tr>
+</tbody>
+</table>
+<p><strong>核心命令</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>按键/命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>cd</td>
+<td>Home目录</td>
+</tr>
+<tr class="even">
+<td>cd [folder]</td>
+<td>切换目录</td>
+</tr>
+<tr class="odd">
+<td>cd ~</td>
+<td>Home目录, 例如 ‘cd ~/folder/’</td>
+</tr>
+<tr class="even">
+<td>cd /</td>
+<td>根目录</td>
+</tr>
+<tr class="odd">
+<td>ls</td>
+<td>文件列表</td>
+</tr>
+<tr class="even">
+<td>ls -l</td>
+<td>文件详细列表</td>
+</tr>
+<tr class="odd">
+<td>ls -a</td>
+<td>列出隐藏文件</td>
+</tr>
+<tr class="even">
+<td>ls -lh</td>
+<td>文件详细列表中的文件大小以更友好的形式列出</td>
+</tr>
+<tr class="odd">
+<td>ls -R</td>
+<td>递归显示文件夹中的内容</td>
+</tr>
+<tr class="even">
+<td>sudo [command]</td>
+<td>以超级用户身份执行命令</td>
+</tr>
+<tr class="odd">
+<td>open [file]</td>
+<td>打开文件 ( 相当于双击一个文件 )</td>
+</tr>
+<tr class="even">
+<td>top</td>
+<td>显示运行中的进程，按q终止</td>
+</tr>
+<tr class="odd">
+<td>nano [file]</td>
+<td>打开编辑</td>
+</tr>
+<tr class="even">
+<td>pico [file]</td>
+<td>打开编辑</td>
+</tr>
+<tr class="odd">
+<td>q</td>
+<td>退出</td>
+</tr>
+<tr class="even">
+<td>clear</td>
+<td>清屏</td>
+</tr>
+</tbody>
+</table>
+<p><strong>命令历史</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>按键/命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>history n</td>
+<td>列出最近执行过的n条命令</td>
+</tr>
+<tr class="even">
+<td>ctrl-r</td>
+<td>检索之前执行过的命令</td>
+</tr>
+<tr class="odd">
+<td>[value]</td>
+<td>执行最近以’value’开始的命令</td>
+</tr>
+<tr class="even">
+<td>!!</td>
+<td>执行最近执行过的命令</td>
+</tr>
+</tbody>
+</table>
+<p><strong>文件管理</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>按键/命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>touch [file]</td>
+<td>创建一个新文件</td>
+</tr>
+<tr class="even">
+<td>pwd</td>
+<td>显示当前工作目录</td>
+</tr>
+<tr class="odd">
+<td>..</td>
+<td>上级目录, 例如.</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>‘ls -l ..’ = 上级目录的文件详细列表</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td>‘cd ../../’ = 向上移动两个层级</td>
+</tr>
+<tr class="even">
+<td>.</td>
+<td>当前目录</td>
+</tr>
+<tr class="odd">
+<td>cat</td>
+<td>连接</td>
+</tr>
+<tr class="even">
+<td>rm [file]</td>
+<td>移除文件, 例如 rm [file] [file]</td>
+</tr>
+<tr class="odd">
+<td>rm -i [file]</td>
+<td>移除时出现确认提示</td>
+</tr>
+<tr class="even">
+<td>rm -r [dir]</td>
+<td>移除文件及内容</td>
+</tr>
+<tr class="odd">
+<td>rm -f [file]</td>
+<td>强制移除</td>
+</tr>
+<tr class="even">
+<td>cp [file] [newfile]</td>
+<td>复制文件</td>
+</tr>
+<tr class="odd">
+<td>cp [file] [dir]</td>
+<td>复制文件到指定目录</td>
+</tr>
+<tr class="even">
+<td>mv [file] [new filename]</td>
+<td>移动/重命名, 例如 mv -v [file] [dir]</td>
+</tr>
+</tbody>
+</table>
+<p><strong>目录管理</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>按键/命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>mkdir [dir]</td>
+<td>创建新目录</td>
+</tr>
+<tr class="even">
+<td>mkdir -p [dir]/[dir]</td>
+<td>创建子目录</td>
+</tr>
+<tr class="odd">
+<td>rmdir [dir]</td>
+<td>移除目录 ( 仅限目录下没有内容时 )</td>
+</tr>
+<tr class="even">
+<td>rm -R [dir]</td>
+<td>移除目录及内容</td>
+</tr>
+</tbody>
+</table>
+<p><strong>管道 - 连接多个带有输出的命令</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>按键/命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>more</td>
+<td>按当前窗口大小输出内容</td>
+</tr>
+<tr class="even">
+<td>&gt; [file]</td>
+<td>输出至指定文件, 注意文件将会覆盖</td>
+</tr>
+<tr class="odd">
+<td>&gt;&gt; [file]</td>
+<td>在制定文件的末尾附加内容</td>
+</tr>
+<tr class="even">
+<td>&lt;</td>
+<td>从文件中读取内容</td>
+</tr>
+</tbody>
+</table>
+<p><strong>帮助</strong>:</p>
+<table>
+<thead>
+<tr class="header">
+<th>按键/命令</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>[command] -h</td>
+<td>显示帮助信息</td>
+</tr>
+<tr class="even">
+<td>[command] –help</td>
+<td>显示帮助信息</td>
+</tr>
+<tr class="odd">
+<td>[command] help</td>
+<td>显示帮助信息</td>
+</tr>
+<tr class="even">
+<td>reset</td>
+<td>重置当前终端</td>
+</tr>
+<tr class="odd">
+<td>man [command]</td>
+<td>显示指定命令的帮助信息</td>
+</tr>
+<tr class="even">
+<td>whatis [command]</td>
+<td>显示指定命令的简述</td>
+</tr>
+</tbody>
+</table>
 <h2 id="macos-terminal-themes-vim">MacOS Terminal Themes &amp; VIM</h2>
 <p>Follow this GitHub repository to build your own powerful and colorful Terminal: <a href="https://github.com/lysyi3m/osx-terminal-themes" target="_blank" rel="noopener">[color-theme-link]</a>, <a href="https://github.com/amix/vimrc" target="_blank" rel="noopener">[vimrc-link]</a></p>
 <h2 id="shut-down-and-trun-on-local-back-up">Shut down and trun on local back up</h2>
@@ -433,17 +1258,14 @@
 <h2 id="change-source-.bash_profile-to-source-.profile">Change source ‘.bash_profile’ to source ‘.profile’</h2>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cat .bash_profile &gt;&gt; .profile</span><br><span class="line">$ rm .bash_profile (optional)</span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"source ~/.profile"</span> &gt;&gt; .bash_profile</span><br></pre></td></tr></table></figure>
 <h2 id="open-port-22-in-mac-os-x">open port 22 in Mac OS X</h2>
-<p>Handling the problem of: <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ssh localhost</span><br><span class="line">ssh: connect to host localhost port 22: Connection refused</span><br></pre></td></tr></table></figure></p>
+<p><strong>Note</strong>: most information is borrowed from <a href="https://stackoverflow.com/questions/6313929/how-do-i-open-port-22-in-os-x-10-6-7" target="_blank" rel="noopener">[How do I open port 22 in OS X 10.6.7]</a>.<br>
+Handling the problem of: <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ ssh localhost</span><br><span class="line">ssh: connect to host localhost port 22: Connection refused</span><br></pre></td></tr></table></figure></p>
 <p>The above problem happens since the remote login is closed in Mac OS X <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemsetup -getremotelogin</span><br><span class="line">Remote Login: off</span><br></pre></td></tr></table></figure></p>
 <p>Here is the solution: <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo systemsetup -setremotelogin on</span><br><span class="line">$ ssh localhost</span><br><span class="line">Last login: ......</span><br><span class="line">$ _</span><br></pre></td></tr></table></figure></p>
 <h2 id="uninstall-mysql-on-mac">Uninstall MySQL on Mac</h2>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> ~/</span><br><span class="line">$ sudo rm /usr/<span class="built_in">local</span>/mysql</span><br><span class="line">$ sudo rm -rf /usr/<span class="built_in">local</span>/var/mysql</span><br><span class="line">$ sudo rm -rf /usr/<span class="built_in">local</span>/mysql*</span><br><span class="line">$ sudo rm -rf /Library/StartupItems/MySQLCOM</span><br><span class="line">$ sudo rm -rf /Library/PreferencePanes/My*</span><br></pre></td></tr></table></figure>
 <p>Then open hostconfig: <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/hostconfig</span><br></pre></td></tr></table></figure></p>
 <p>and removed the line: <code>MYSQLCOM=-YES-rm -rf ~/Library/PreferencePanes/My*</code>, after that, removing following: <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ sudo rm -rf /Library/Receipts/mysql*</span><br><span class="line">$ sudo rm -rf /Library/Receipts/MySQL*</span><br><span class="line">$ sudo rm -rf /var/db/receipts/com.mysql.*</span><br></pre></td></tr></table></figure></p>
-<h2 id="reference">Reference</h2>
-<ul>
-<li><a href="https://stackoverflow.com/questions/6313929/how-do-i-open-port-22-in-os-x-10-6-7" target="_blank" rel="noopener">How do I open port 22 in OS X 10.6.7</a></li>
-</ul>
 
       
     </div>
@@ -678,7 +1500,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#macos-terminal-themes-vim"><span class="nav-number">1.</span> <span class="nav-text">MacOS Terminal Themes &amp; VIM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shut-down-and-trun-on-local-back-up"><span class="nav-number">2.</span> <span class="nav-text">Shut down and trun on local back up</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#modify-the-icon-size-of-launchpad"><span class="nav-number">3.</span> <span class="nav-text">Modify the icon size of Launchpad</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change-source-.bash_profile-to-source-.profile"><span class="nav-number">4.</span> <span class="nav-text">Change source ‘.bash_profile’ to source ‘.profile’</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#open-port-22-in-mac-os-x"><span class="nav-number">5.</span> <span class="nav-text">open port 22 in Mac OS X</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#uninstall-mysql-on-mac"><span class="nav-number">6.</span> <span class="nav-text">Uninstall MySQL on Mac</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#terminal-cheatsheet-for-mac-basics"><span class="nav-number">1.</span> <span class="nav-text">Terminal Cheatsheet for Mac (Basics)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#english-version"><span class="nav-number">1.1.</span> <span class="nav-text">English Version</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#chinese-version"><span class="nav-number">1.2.</span> <span class="nav-text">Chinese Version</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#macos-terminal-themes-vim"><span class="nav-number">2.</span> <span class="nav-text">MacOS Terminal Themes &amp; VIM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shut-down-and-trun-on-local-back-up"><span class="nav-number">3.</span> <span class="nav-text">Shut down and trun on local back up</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#modify-the-icon-size-of-launchpad"><span class="nav-number">4.</span> <span class="nav-text">Modify the icon size of Launchpad</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#change-source-.bash_profile-to-source-.profile"><span class="nav-number">5.</span> <span class="nav-text">Change source ‘.bash_profile’ to source ‘.profile’</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#open-port-22-in-mac-os-x"><span class="nav-number">6.</span> <span class="nav-text">open port 22 in Mac OS X</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#uninstall-mysql-on-mac"><span class="nav-number">7.</span> <span class="nav-text">Uninstall MySQL on Mac</span></a></li></ol></div>
             
 
           </div>
